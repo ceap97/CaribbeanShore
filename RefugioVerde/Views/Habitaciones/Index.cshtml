@@ -1,0 +1,173 @@
+﻿@{
+    ViewBag.Title = "Habitaciones";
+    Layout = "_Admin";
+}
+
+@section Estilos {
+    <link href="~/admin/assets/css/buttons.datatables.css" rel="stylesheet" />
+    <link href="~/admin/assets/css/datatables.datatables.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-box">
+            <div class="card-header">
+                <button class="btn btn-success btn-sm float-end" onclick="openCreateModal()">
+                    <img src="Admin/Fonts/circle-plus-solid.svg" alt="Agregar" style="width: 16px; height: 16px; margin-right: 5px;" />
+                    Agregar Nueva Habitación
+                </button>
+            </div>
+            <div class="card-body">
+                <table id="tbHabitaciones" class="table">
+                    <thead>
+                        <tr>
+                            <th>HabitacionId</th>
+                            <th>Número</th>
+                            <th>Nombre de Habitación</th>
+                            <th>Tipo</th>
+                            <th>Precio</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán aquí mediante JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Agregar Habitación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createForm">
+                    <div class="mb-3">
+                        <label for="numero" class="form-label">Número</label>
+                        <input type="text" class="form-control" id="numero" name="numero" required maxlength="4">
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreHabitacion" class="form-label">Nombre de Habitación</label>
+                        <input type="text" class="form-control" id="nombreHabitacion" name="nombreHabitacion" required maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">Tipo</label>
+                        <input type="text" class="form-control" id="tipo" name="tipo" required maxlength="20">
+                    </div>
+                    <div class="mb-3">
+                        <label for="precio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" required min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="estadoHabitacionId" class="form-label">Estado</label>
+                        <select class="form-select" id="estadoHabitacionId" name="estadoHabitacionId" required>
+                            <!-- Las opciones se llenarán dinámicamente -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">Imagen (JPG)</label>
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept=".jpg, .jpeg" onchange="previewImage(event)">
+                        <img id="imagePreview" src="" alt="Vista previa de la imagen" style="display:none; max-width: 100%; margin-top: 10px;">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Habitación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editHabitacionId" name="habitacionId">
+                    <div class="mb-3">
+                        <label for="editNumero" class="form-label">Número</label>
+                        <input type="text" class="form-control" id="editNumero" name="numero" required maxlength="4">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editNombreHabitacion" class="form-label">Nombre de Habitación</label>
+                        <input type="text" class="form-control" id="editNombreHabitacion" name="nombreHabitacion" required maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editTipo" class="form-label">Tipo</label>
+                        <input type="text" class="form-control" id="editTipo" name="tipo" required maxlength="20">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPrecio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="editPrecio" name="precio" step="0.01" required min="0">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEstadoHabitacionId" class="form-label">Estado</label>
+                        <select class="form-select" id="editEstadoHabitacionId" name="estadoHabitacionId" required>
+                            <!-- Las opciones se llenarán dinámicamente -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editImagen" class="form-label">Imagen (JPG)</label>
+                        <input type="file" class="form-control" id="editImagen" name="imagen" accept=".jpg, .jpeg" onchange="previewEditImage(event)">
+                        <img id="editImagePreview" src="" alt="Vista previa de la imagen" style="display:none; max-width: 100%; margin-top: 10px;">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Detalles -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Detalles de la Habitación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>HabitacionId:</strong> <span id="detailsHabitacionId"></span></p>
+                <p><strong>Número:</strong> <span id="detailsNumero"></span></p>
+                <p><strong>Nombre de Habitación:</strong> <span id="detailsNombreHabitacion"></span></p>
+                <p><strong>Tipo:</strong> <span id="detailsTipo"></span></p>
+                <p><strong>Precio:</strong> <span id="detailsPrecio"></span></p>
+                <p><strong>Estado:</strong> <span id="detailsEstado"></span></p>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Eliminar Habitación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar esta habitación?</p>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Eliminar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/admin/vistasmodal/habitacion.js"></script>
+}

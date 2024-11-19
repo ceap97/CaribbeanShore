@@ -1,0 +1,41 @@
+﻿@model IEnumerable<RefugioVerde.Models.Servicio>
+
+<div class="service-catalog">
+    @foreach (var servicio in Model)
+    {
+        <div class="service-card">
+            @if (servicio.Imagen != null)
+            {
+                <img src="data:image;base64,@Convert.ToBase64String(servicio.Imagen)" alt="Imagen de @servicio.Nombre" class="service-image" />
+            }
+            else
+            {
+                <img src="~/images/default-service.png" alt="Imagen no disponible" class="service-image" />
+            }
+            <h2>@servicio.Nombre</h2>
+            <p>@servicio.Descripcion</p>
+            <p>Precio: $@servicio.Precio</p>
+            <a asp-controller="Clientes" asp-action="Reservar" class="btn palatin-btn">Reservar</a>
+        </div>
+    }
+</div>
+
+<style>
+    .service-catalog {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .service-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        width: 200px;
+        text-align: center;
+    }
+
+    .service-image {
+        max-width: 100%;
+        height: auto;
+    }
+</style>

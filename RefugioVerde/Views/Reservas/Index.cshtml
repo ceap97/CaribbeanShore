@@ -1,0 +1,179 @@
+﻿@{
+    ViewBag.Title = "Reservas";
+    Layout = "_Admin";
+}
+@section Estilos {
+    <link href="~/admin/assets/css/buttons.datatables.css" rel="stylesheet" />
+    <link href="~/admin/assets/css/datatables.datatables.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-box">
+            <div class="card-header">
+                <button class="btn btn-success btn-sm float-end" onclick="openCreateModal()">
+                    <img src="Admin/Fonts/circle-plus-solid.svg" alt="Agregar" style="width: 16px; height: 16px; margin-right: 5px;" />
+                    Agregar Nueva Reserva
+                </button>
+            </div>
+            <div class="card-body">
+                <table id="tbReservas" class="table">
+                    <thead>
+                        <tr>
+                            <th>ReservaId</th>
+                            <th>Fecha Reserva</th>
+                            <th>Cliente</th>
+                            <th>Habitación</th>
+                            <th>Estado</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán aquí mediante JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Agregar Reserva</h5>
+            </div>
+            <div class="modal-body">
+                <form id="createForm">
+                    <div class="mb-3">
+                        <label for="fechaReserva" class="form-label">Fecha Reserva</label>
+                        <input type="date" class="form-control" id="fechaReserva" name="fechaReserva" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="clienteId" class="form-label">Cliente</label>
+                        <select class="form-select" id="clienteId" name="clienteId" required>
+                            <!-- Opciones de clientes se cargarán aquí -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="habitacionId" class="form-label">Habitación</label>
+                        <select class="form-select" id="habitacionId" name="habitacionId" required>
+                            <!-- Opciones de habitaciones se cargarán aquí -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estadoReservaId" class="form-label">Estado de Reserva</label>
+                        <select class="form-select" id="estadoReservaId" name="estadoReservaId" required>
+                            <!-- Opciones de estado de reserva se cargarán aquí -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaFin" class="form-label">Fecha Fin</label>
+                        <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editReservaId" name="reservaId">
+                    <div class="mb-3">
+                        <label for="editFechaReserva" class="form-label">Fecha Reserva</label>
+                        <input type="date" class="form-control" id="editFechaReserva" name="fechaReserva" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editClienteId" class="form-label">Cliente</label>
+                        <select class="form-select" id="editClienteId" name="clienteId" required>
+                            <!-- Opciones de clientes se cargarán aquí -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editHabitacionId" class="form-label">Habitación</label>
+                        <select class="form-select" id="editHabitacionId" name="habitacionId" required>
+                            <!-- Opciones de habitaciones se cargarán aquí -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEstadoReservaId" class="form-label">Estado de Reserva</label>
+                        <select class="form-select" id="editEstadoReservaId" name="estadoReservaId" required>
+                            <!-- Opciones de estado de reserva se cargarán aquí -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFechaInicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" class="form-control" id="editFechaInicio" name="fechaInicio" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFechaFin" class="form-label">Fecha Fin</label>
+                        <input type="date" class="form-control" id="editFechaFin" name="fechaFin" required>
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Detalles -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Detalles de la Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>ReservaId:</strong> <span id="detailsReservaId"></span></p>
+                <p><strong>Fecha Reserva:</strong> <span id="detailsFechaReserva"></span></p>
+                <p><strong>Cliente:</strong> <span id="detailsCliente"></span></p>
+                <p><strong>Habitación:</strong> <span id="detailsHabitacion"></span></p>
+                <p><strong>Estado:</strong> <span id="detailsEstadoReserva"></span></p>
+                <p><strong>Fecha Inicio:</strong> <span id="detailsFechaInicio"></span></p>
+                <p><strong>Fecha Fin:</strong> <span id="detailsFechaFin"></span></p>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Eliminar Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar esta reserva?</p>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Eliminar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/admin/vistasmodal/reservas.js"></script>
+}

@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "Servicios";
+    Layout = "_Admin";
+}
+@section Estilos {
+    <link href="~/admin/assets/css/buttons.datatables.css" rel="stylesheet" />
+    <link href="~/admin/assets/css/datatables.datatables.css" rel="stylesheet" />
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-box">
+            <div class="card-header">
+            <div class="card-header">
+                <button class="btn btn-success btn-sm float-end" onclick="openCreateModal()">
+                    <img src="Admin/Fonts/circle-plus-solid.svg" alt="Agregar" style="width: 16px; height: 16px; margin-right: 5px;" />
+                    Agregar Nuevo Servicio
+                </button>
+            </div>
+            <div class="card-body">
+                <table id="tbServicios" class="table">
+                    <thead>
+                        <tr>
+                            <th>ServicioId</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán aquí mediante JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear -->
+<div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createModalLabel">Agregar Servicio</h5>
+            </div>
+            <div class="modal-body">
+                <form id="createForm">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required minlength="4" maxlength="30" pattern="^[a-zA-Z\s]+$" title="El nombre debe tener entre 4 y 30 caracteres y solo puede contener letras y espacios.">
+                    </div>
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="descripcion" name="descripcion" required maxlength="200" title="La descripción no puede tener más de 200 caracteres."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="precio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="precio" name="precio" step="0.01" required min="0.01" title="El precio debe ser un valor positivo.">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Editar Servicio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <input type="hidden" id="editServicioId" name="servicioId">
+                    <div class="mb-3">
+                        <label for="editNombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="editNombre" name="nombre" required minlength="4" maxlength="30" pattern="^[a-zA-Z\s]+$" title="El nombre debe tener entre 4 y 30 caracteres y solo puede contener letras y espacios.">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescripcion" class="form-label">Descripción</label>
+                        <textarea class="form-control" id="editDescripcion" name="descripcion" required maxlength="200" title="La descripción no puede tener más de 200 caracteres."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPrecio" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="editPrecio" name="precio" step="0.01" required min="0.01" title="El precio debe ser un valor positivo.">
+                    </div>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Detalles -->
+<div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailsModalLabel">Detalles del Servicio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><strong>ServicioId:</strong> <span id="detailsServicioId"></span></p>
+                <p><strong>Nombre:</strong> <span id="detailsNombre"></span></p>
+                <p><strong>Descripción:</strong> <span id="detailsDescripcion"></span></p>
+                <p><strong>Precio:</strong> <span id="detailsPrecio"></span></p>
+            </div>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Eliminar Servicio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de que desea eliminar este servicio?</p>
+                <button type="button" class="btn btn-danger" id="confirmDelete">Eliminar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/admin/vistasmodal/servicios.js"></script>
+}

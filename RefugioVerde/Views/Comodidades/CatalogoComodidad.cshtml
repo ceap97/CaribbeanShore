@@ -1,0 +1,42 @@
+﻿@model IEnumerable<RefugioVerde.Models.Comodidad>
+@using System.Security.Claims
+@{
+    Layout = "_Cliente";
+}
+<section class="rooms-area section-padding-100-0">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-6">
+                <div class="section-heading text-center">
+                    <div class="line-"></div>
+                    <h2>Comodidades</h2>
+                    <p></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            @foreach (var comodidad in Model)
+            {
+                <!-- Single Rooms Area -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="single-rooms-area wow fadeInUp" data-wow-delay="100ms">
+                        <!-- Thumbnail -->
+                        <img src="@comodidad.Imagen" alt="Imagen de @comodidad.Nombre" class="bg-thumbnail bg-img" style="background-image: src(@comodidad.Imagen)" />
+                        <!-- Price -->
+                        <p class="price-from">Precio: $@comodidad.Precio</p>
+                        <!-- Rooms Text -->
+                        <div class="rooms-text">
+@*                             <p> @comodidad..Nombre</p>
+ *@                            <div class="line"></div>
+                            <h4>@comodidad.Nombre</h4>
+                            <p>Descripcion: @comodidad.Descripcion</p>
+                        </div>
+                        <!-- Book Room -->
+                        <a href="#" class="book-room-btn btn palatin-btn" onclick="openCreateModal()">Reservar</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

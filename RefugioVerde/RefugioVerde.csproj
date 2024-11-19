@@ -1,0 +1,93 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Models\Cliente.cs" />
+    <Content Include="Models\Comodidad.cs" />
+    <Content Include="Models\Departamento.cs" />
+    <Content Include="Models\Empleado.cs" />
+    <Content Include="Models\ErrorViewModel.cs" />
+    <Content Include="Models\EstadoHabitacion.cs" />
+    <Content Include="Models\EstadoPago.cs" />
+    <Content Include="Models\EstadoReserva.cs" />
+    <Content Include="Models\Habitacion.cs" />
+    <Content Include="Models\Huesped.cs" />
+    <Content Include="Models\Municipio.cs" />
+    <Content Include="Models\Pago.cs" />
+    <Content Include="Models\Permiso.cs" />
+    <Content Include="Models\RefugioVerdeContext.cs" />
+    <Content Include="Models\Reserva.cs" />
+    <Content Include="Models\Role.cs" />
+    <Content Include="Models\Servicio.cs" />
+    <Content Include="Models\Usuario.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Admin\assets\plugins\jstree\themes\default\" />
+    <Folder Include="wwwroot\Admin\assets\plugins\mjolnic-bootstrap-colorpicker\dist\img\" />
+    <Folder Include="wwwroot\images\habitaciones\" />
+    <Folder Include="wwwroot\images\comodidades\" />
+    <Folder Include="wwwroot\images\usuarios\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Cliente\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\style.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_fonts.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_mixin.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_responsive.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_theme_color.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\style.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_fonts.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_mixin.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_responsive.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_theme_color.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\style.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_mixin.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_responsive.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_theme_color.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_variables.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\style.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_mixin.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_responsive.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_theme_color.scssc" />
+    <None Include="wwwroot\Cliente\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_variables.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\style.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_fonts.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_mixin.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_responsive.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\03465f23f19c9b31771cc8acec61089cccc1845c\_theme_color.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\style.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_fonts.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_mixin.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_responsive.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\2cfed2c448772d6e685873b773092857d3e4c2b3\_theme_color.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\style.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_mixin.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_responsive.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_theme_color.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\9568d30ed5d2cebc2ad5df4154c8df8099b75c0b\_variables.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\style.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_mixin.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_responsive.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_theme_color.scssc" />
+    <None Include="wwwroot\Home\.sass-cache\b687762b7660b1f71ae40e600add14c590cfdbc7\_variables.scssc" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="bootstrap" Version="5.3.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="9.0.0" />
+    <PackageReference Include="SweetAlert2" Version="1.0.1" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,137 @@
+﻿@using Microsoft.AspNetCore.Identity
+@{
+    var isLoggedIn = User.Identity.IsAuthenticated;
+    var userName = User.Identity.Name;
+    var userImage = Url.Content($"~/images/usuarios/{userName}.jpeg");
+}
+@if (!isLoggedIn)
+{
+    <div class="alert alert-danger" role="alert">
+        No tienes permiso para acceder a esta página.
+    </div>
+}
+else
+{
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- Title -->
+    <title>The Palatin - Hotel &amp; Resort Template</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="~/Home/img/core-img/favicon.ico">
+
+    <!-- Core Stylesheet -->
+    <link rel="stylesheet" href="~/Home/style.css">
+
+</head>
+
+<body>
+    <!-- Preloader -->
+    <div class="preloader d-flex align-items-center justify-content-center">
+        <div class="cssload-container">
+            <div class="cssload-loading"><i></i><i></i><i></i><i></i></div>
+        </div>
+    </div>
+
+    <!-- ##### Header Area Start ##### -->
+    <header class="header-area">
+        <!-- Navbar Area -->
+        <div class="palatin-main-menu">
+            <div class="classy-nav-container breakpoint-off">
+                <div class="container">
+                    <!-- Menu -->
+                    <nav class="classy-navbar justify-content-between" id="palatinNav">
+
+                        <!-- Nav brand -->
+                        <a href="/Cliente" class="nav-brand"><img src="~/Home/img/logoCarib.png" alt=""></a>
+
+                        <!-- Navbar Toggler -->
+                        <div class="classy-navbar-toggler">
+                            <span class="navbarToggler"><span></span><span></span><span></span></span>
+                        </div>
+
+                        <!-- Menu -->
+                        <div class="classy-menu">
+
+                            <!-- close btn -->
+                            <div class="classycloseIcon">
+                                <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                            </div>
+                            <!-- Nav Start -->
+                            <div class="classynav">
+                                <ul id="nav-links">
+                                        <li><a href="/Cliente">Inicio</a></li>
+                                        <li>
+                                            <a href="#">Reservar</a>
+                                            <ul class="dropdown">
+                                                <li> <a asp-controller="Habitaciones" asp-action="Catalogo">Habitaciones</a></li>
+                                                <li><a href="/Comodidades/Index">Servicios</a></li>
+                                                <li> <a asp-controller="Comodidades" asp-action="CatalogoComodidad">Comodidades</a></li>
+                                            </ul>
+                                        </li>
+                                        <li>
+                                            <a href="#">Perfil</a>
+                                            <ul class="dropdown">
+                                                <li><a href="/Pagos/Index">Mi Perfil</a></li>
+                                                <li><a href="/Reservas/Index">Mis Reservas</a></li>
+                                                <li><a href="/Pagos/Index">Mis Pagos</a></li>
+                                            </ul>
+                                        </li>
+                                        <li><a href="contact.html">Contactanos</a></li>
+                                </ul>
+                                <div class="menu-btn">
+                                        <a asp-controller="Home" asp-action="CerrarSesion" class="btn palatin-btn">Cerrar Sesion</a>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main role="main" class="pb-0">
+            @RenderBody()
+        </main>
+    <footer class="footer-area">
+        <div class="container-fluid">
+            <div class="row">
+
+                <!-- Copywrite Text -->
+                <div class="col-12">
+                    <div class="copywrite-text mt-30">
+                        <p>
+                            <a href="#">
+                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- ##### Footer Area End ##### -->
+    <!-- ##### All Javascript Script ##### -->
+    <!-- jQuery-2.2.4 js -->
+    <script src="~/Home/js/jquery/jquery-2.2.4.min.js"></script>
+    <!-- Popper js -->
+    <script src="~/Home/js/bootstrap/popper.min.js"></script>
+    <!-- Bootstrap js -->
+    <script src="~/Home/js/bootstrap/bootstrap.min.js"></script>
+    <!-- All Plugins js -->
+    <script src="~/Home/js/plugins/plugins.js"></script>
+    <!-- Active js -->
+   
+    <script src="~/Home/js/active.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
+}
