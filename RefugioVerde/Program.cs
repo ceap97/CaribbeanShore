@@ -1,10 +1,11 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using RefugioVerde.Models;
 using RefugioVerde.Servicios.Contrato;
-using RefugioVerde.Servicios.Implementacion;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,11 +13,22 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RefugioVerdeContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("conexion")));
 builder.Services.AddScoped<IUsuarioServices, UsuariosSevices>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+})
 .AddCookie(options =>
 {
     options.LoginPath = "/Inicio/IniciarSesion";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+})
+.AddGoogle(options =>
+{
+    options.ClientId = "881115237966-9r2rcn5il1p1cckmsksmd6td28jabqrn.apps.googleusercontent.com";
+    options.ClientSecret = "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";
+    options.CallbackPath = "/Inicio/GoogleResponse";
 });
 builder.Services.AddControllersWithViews(options =>
 {
@@ -36,40 +48,14 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
     });
 });
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-app.Use(async (context, next) =>
-{
-    var user = context.User;
-    if (user.Identity.IsAuthenticated)
-    {
-        var usuarioService = context.RequestServices.GetRequiredService<IUsuarioServices>();
-        var usuario = await usuarioService.GetUsuario(user.Identity.Name, null); // Assuming null for the second parameter
-        if (usuario != null)
-        {
-            if (context.Request.Path.StartsWithSegments("/Dashboard") && usuario.EmpleadoId == null)
-            {
-                context.Response.Redirect("/Home/Index");
-                return;
-            }
-            if (context.Request.Path.StartsWithSegments("/Cliente") && usuario.EmpleadoId != null)
-            {
-                context.Response.Redirect("/Home/Index");
-                return;
-            }
-        }
-    }
-    await next();
-});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

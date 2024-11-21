@@ -2,7 +2,7 @@
 
 public class HomeViewModel
 {
-    public IEnumerable<Habitacion> Habitaciones { get; set; }
+    public List<Habitacion> Habitaciones { get; set; } = new List<Habitacion>();
     public IEnumerable<Servicio> Servicios { get; set; }
     public IEnumerable<Comodidad> Comodidades { get; set; }
 }

@@ -1,30 +1,32 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RefugioVerde.Servicios.Contrato;
 using RefugioVerde.Models;
+using RefugioVerde.Servicios.Contrato;
 
-namespace RefugioVerde.Servicios.Implementacion
+public class UsuariosSevices : IUsuarioServices
 {
-    public class UsuariosSevices : IUsuarioServices
+    private readonly RefugioVerdeContext _dbContext;
+    public UsuariosSevices(RefugioVerdeContext dbContext)
     {
+        _dbContext = dbContext;
+    }
 
-        private readonly RefugioVerdeContext _dbContext;
-        public UsuariosSevices(RefugioVerdeContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
-        public async Task<Usuario> GetUsuario(string correo, string clave)
-        {
-            Usuario usuario_encontrado = await _dbContext.Usuarios.Where(u => u.Correo == correo && u.Clave == clave)
-                .FirstOrDefaultAsync();
+    public async Task<Usuario> GetUsuario(string correo, string clave)
+    {
+        Usuario usuario_encontrado = await _dbContext.Usuarios.Where(u => u.Correo == correo && u.Clave == clave)
+            .FirstOrDefaultAsync();
 
-            return usuario_encontrado;
-        }
+        return usuario_encontrado;
+    }
 
-        public async Task<Usuario> SaveUsuario(Usuario modelo)
-        {
-            _dbContext.Usuarios.Add(modelo);
-            await _dbContext.SaveChangesAsync();
-            return modelo;
-        }
+    public async Task<Usuario> GetUsuarioPorCorreo(string correo)
+    {
+        return await _dbContext.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
+    }
+
+    public async Task<Usuario> SaveUsuario(Usuario modelo)
+    {
+        _dbContext.Usuarios.Add(modelo);
+        await _dbContext.SaveChangesAsync();
+        return modelo;
     }
 }

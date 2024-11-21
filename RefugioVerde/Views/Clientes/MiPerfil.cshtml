@@ -1,0 +1,56 @@
+﻿@model RefugioVerde.Models.Cliente
+
+@{
+    ViewData["Title"] = "Mi Perfil";
+    Layout = "_Cliente";
+}
+
+<section class="profile-area section-padding-100-0">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="section-heading text-center">
+                    <h2>Mi Perfil</h2>
+                </div>
+                <form asp-action="ActualizarPerfil" method="post" enctype="multipart/form-data">
+                    <div class="mb-3 text-center">
+                        <img src="@Model.Usuario.Imagen" alt="Imagen de @Model.Usuario.NombreUsuario" class="bg-thumbnail bg-img" style="background-image: src(@Model.Usuario.Imagen)" />
+                        <div class="mt-2">
+                            <label for="fotoPerfil" class="form-label">Cambiar Foto de Perfil</label>
+                            <input type="file" class="form-control" id="fotoPerfil" name="FotoPerfil">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="Nombre" value="@Model.Nombre" required minlength="2" maxlength="20">
+                    </div>
+                    <div class="mb-3">
+                        <label for="apellido" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="apellido" name="Apellido" value="@Model.Apellido" required minlength="2" maxlength="20">
+                    </div>
+                    <div class="mb-3">
+                        <label for="documentoIdentidad" class="form-label">Documento de Identidad</label>
+                        <input type="text" class="form-control" id="documentoIdentidad" name="DocumentoIdentidad" value="@Model.DocumentoIdentidad" required minlength="8" maxlength="18">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="telefono" name="Telefono" value="@Model.Telefono" required pattern="\d{10}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="correo" class="form-label">Correo</label>
+                        <input type="email" class="form-control" id="correo" name="Correo" value="@Model.Correo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
+                        <input type="text" class="form-control" id="nombreUsuario" name="Usuario.NombreUsuario" value="@Model.Usuario.NombreUsuario" required maxlength="50">
+                    </div>
+                    <div class="mb-3">
+                        <label for="clave" class="form-label">Clave</label>
+                        <input type="password" class="form-control" id="clave" name="Usuario.Clave" value="@Model.Usuario.Clave" required minlength="6" maxlength="100">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

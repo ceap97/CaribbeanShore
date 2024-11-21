@@ -1,0 +1,4 @@
+﻿.transparent-background {
+    background: transparent;
+    mix-blend-mode: multiply;
+}

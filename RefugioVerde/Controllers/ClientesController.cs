@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -9,6 +10,7 @@ using RefugioVerde.Models;
 
 namespace RefugioVerde.Controllers
 {
+   
     public class ClientesController : Controller
     {
         private readonly RefugioVerdeContext _context;
@@ -16,6 +18,45 @@ namespace RefugioVerde.Controllers
         public ClientesController(RefugioVerdeContext context)
         {
             _context = context;
+        }
+        [HttpGet]
+        public IActionResult MiPerfil()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(userId, out int parsedUserId))
+            {
+                var cliente = _context.Clientes.Include(c => c.Usuario).FirstOrDefault(c => c.UsuarioId == parsedUserId);
+                if (cliente == null)
+                {
+                    return NotFound();
+                }
+                return View(cliente);
+            }
+            return BadRequest("Invalid user ID");
+        }
+
+
+        [HttpPost]
+        public IActionResult ActualizarPerfil(Cliente cliente)
+        {
+            if (ModelState.IsValid)
+            {
+                var clienteDb = _context.Clientes.Include(c => c.Usuario).FirstOrDefault(c => c.ClienteId == cliente.ClienteId);
+                if (clienteDb != null)
+                {
+                    clienteDb.Nombre = cliente.Nombre;
+                    clienteDb.Apellido = cliente.Apellido;
+                    clienteDb.DocumentoIdentidad = cliente.DocumentoIdentidad;
+                    clienteDb.Telefono = cliente.Telefono;
+                    clienteDb.Correo = cliente.Correo;
+                    clienteDb.Usuario.NombreUsuario = cliente.Usuario.NombreUsuario;
+                    clienteDb.Usuario.Clave = cliente.Usuario.Clave;
+
+                    _context.SaveChanges();
+                    return RedirectToAction("MiPerfil");
+                }
+            }
+            return View("MiPerfil", cliente);
         }
         public IActionResult Create()
         {
@@ -27,6 +68,7 @@ namespace RefugioVerde.Controllers
         // POST: Clientes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+       
         public async Task<IActionResult> Create([Bind("Nombre,Apellido,DocumentoIdentidad,MunicipioId,Telefono,Correo,UsuarioId")] Cliente cliente)
         {
             if (ModelState.IsValid)

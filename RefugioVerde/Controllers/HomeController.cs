@@ -20,8 +20,27 @@ namespace RefugioVerde.Controllers
             _logger = logger;
         }
 
+        public IActionResult Contact()
+        {
+            return View();
+        }
 
-        public async Task<IActionResult> Index()
+        [HttpPost]
+        public IActionResult SendContact(string name, string email, string message)
+        {
+            // Aquí puedes agregar la lógica para manejar el envío del formulario,
+            // como enviar un correo electrónico o guardar el mensaje en una base de datos.
+
+            // Por ahora, simplemente redirigimos al usuario a una página de confirmación.
+            return RedirectToAction("ContactConfirmation");
+        }
+
+        public IActionResult ContactConfirmation()
+        {
+            return View();
+        }
+    
+    public async Task<IActionResult> Index()
         {
             var habitaciones = await _context.Habitacions.Include(h => h.EstadoHabitacion).ToListAsync();
             var servicios = await _context.Servicios.ToListAsync();
@@ -32,6 +51,7 @@ namespace RefugioVerde.Controllers
                 Servicios = servicios,
                 Comodidades = comodidades
             };
+
             return View(viewModel);
         }
 

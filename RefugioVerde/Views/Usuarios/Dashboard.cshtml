@@ -45,6 +45,7 @@
             var huespedesData = @Html.Raw(Json.Serialize(ViewBag.HuespedesData));
             var habitacionesData = @Html.Raw(Json.Serialize(ViewBag.HabitacionesData));
             var clientesReservasData = @Html.Raw(Json.Serialize(ViewBag.ClientesReservasData));
+        
 
             // Gráfico de Empleados
             var ctxEmpleados = document.getElementById('empleadosChart').getContext('2d');
@@ -163,5 +164,6 @@
                 }
             });
         });
+        
     </script>
 }

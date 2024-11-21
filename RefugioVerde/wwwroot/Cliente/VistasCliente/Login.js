@@ -17,6 +17,7 @@ function mostrarModalIniciarSesion() {
                     </div>
                     <button type="submit" class="btn btn-primary">Iniciar Sesion</button>
                     <button type="button" class="btn btn-secondary" id="btnRegistrarse">Registrarse</button>
+                    <button type="button" class="btn btn-danger" id="btnGoogleLogin">Iniciar con Google</button>
                 </form>
             `,
         showConfirmButton: false
@@ -53,6 +54,10 @@ function mostrarModalIniciarSesion() {
 
     document.getElementById('btnRegistrarse').addEventListener('click', function () {
         mostrarModalRegistrarse();
+    });
+
+    document.getElementById('btnGoogleLogin').addEventListener('click', function () {
+        window.location.href = '/Inicio/GoogleLogin';
     });
 }
 

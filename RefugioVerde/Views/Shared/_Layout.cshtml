@@ -9,12 +9,15 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <!-- Title -->
     <title>The Palatin - Hotel &amp; Resort Template</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 
     <!-- Favicon -->
     <link rel="icon" href="~/Home/img/core-img/favicon.ico">
-    <link href="~/admin/assets/css/sweetalert2.min.css" rel="stylesheet" />
+
     <!-- Core Stylesheet -->
     <link rel="stylesheet" href="~/Home/style.css">
+
 
 </head>
 
@@ -55,10 +58,11 @@
                             <div class="classynav">
                                 <ul id="nav-links">
                                     <li><a href="/">Inicio</a></li>
-                                    <li><a href="/Home/Reserva">Reserva con nosotros</a></li>
-                                    <li><a href="/Home/Services">Servicios</a></li>
-                                    <li><a href="/Home/Contact">Contactanos</a></li>
+                                    <li><a href="#reserva-con-nosotros">Reserva con nosotros</a></li>
+                                    <li><a href="#comodidades">Comodidades</a></li>
+                                    <li><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContact" aria-controls="offcanvasContact">Contáctanos</a></li>
                                 </ul>
+
                                 <!-- Button -->
                                 <div class="menu-btn">
                                     <a href="javascript:void(0);" class="btn palatin-btn" id="btnIniciarSesion">Iniciar Sesion</a>
@@ -210,7 +214,7 @@
             </div>
         </div>
     </div>
-    <section class="rooms-area section-padding-100-0">
+    <section id="reserva-con-nosotros" class="rooms-area section-padding-100-0">
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-6">
@@ -294,7 +298,7 @@
 
     <!-- ##### Rooms Area End ##### -->
     <!-- ##### Contact Area Start ##### -->
-    <section class="rooms-area section-padding-100-0">
+    <section id="comodidades" class="rooms-area section-padding-100-0">
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-12 col-lg-6">
@@ -329,7 +333,59 @@
                 }
             </div>
         </div>
-    </section>
+    </section><!-- Offcanvas -->
+    <section>
+        <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasContact" aria-labelledby="offcanvasContactLabel">
+            <div class="offcanvas-header ">
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <div class="container mt-4">
+                    <div class="row">
+
+                        <!-- Información de contacto -->
+                        <div class="col-md-6 text-center">
+                            <p>
+                                <img src="/Admin/assets/images/CaribbeanShoreAdmin.jpg" alt="Caribbean Shore" style="max-height: 50px;">
+                            </p>
+                            <h4>Información del Hotel</h4>
+                            <p><strong>Correo:</strong> <a href="mailto:info@caribbeanshore.com">info@caribbeanshore.com</a></p>
+                            <p><strong>Teléfono:</strong> <a href="tel:+573146141152">3146141152</a></p>
+                            <p><strong>Dirección:</strong> Cll 47 # 31 - 27 Hotel Caribbean Shore</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="container mt-4">
+                    <div class="row">
+
+                        <!-- Redes Sociales -->
+                        <div class="col-md-6 text-center">
+                            <h4>Síguenos en nuestras redes</h4>
+                            <div class="d-flex justify-content-center">
+                                <a href="https://www.facebook.com/caribbeanshore" class="me-3" target="_blank" title="Facebook">
+                                    <i class="fab fa-facebook fa-3x"></i>
+                                </a>
+                                <a href="https://www.instagram.com/caribbeanshore" class="me-3" target="_blank" title="Instagram">
+                                    <i class="fab fa-instagram fa-3x"></i>
+                                </a>
+                                <a href="https://www.twitter.com/caribbeanshore" class="me-3" target="_blank" title="Twitter">
+                                    <i class="fab fa-twitter fa-3x"></i>
+                                </a>
+                                <a href="https://wa.me/573146141152" class="me-3" target="_blank" title="WhatsApp">
+                                    <i class="fab fa-whatsapp fa-3x"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> 
+
+
+
+   
+<!-- ##### About Us Area End ##### -->
     <main role="main" class="pb-0">
         @RenderBody()
     </main>
@@ -337,7 +393,7 @@
     <!-- ##### Footer Area Start ##### -->
     <footer class="footer-area">
         <div class="container-fluid">
-            <div class="row">
+            <div class="row justify-content-center">
 
                 <!-- Footer Widget Area -->
                 <div class="col-12 col-lg-5">
@@ -367,6 +423,7 @@
                 </div>
     </footer>
     <!-- ##### Footer Area End ##### -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/admin/assets/js/sweetalert2@11.js"></script>
     <script src="~/Home/js/jquery/jquery-2.2.4.min.js"></script>
     <!-- Popper js -->
@@ -374,10 +431,12 @@
     <!-- Bootstrap js -->
     <script src="~/Home/js/bootstrap/bootstrap.min.js"></script>
     <!-- All Plugins js -->
+   
     <script src="~/Home/js/plugins/plugins.js"></script>
     <!-- Active js -->
     <script src="~/cliente/vistascliente/login.js"></script>
     <script src="~/Home/js/active.js"></script>
+   
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
