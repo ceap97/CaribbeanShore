@@ -57,23 +57,50 @@ function openEditModal(habitacionId) {
 }
 
 function openDeleteModal(habitacionId) {
-    $('#confirmDelete').data('habitacionId', habitacionId);
-    $('#deleteModal').modal('show');
+    Swal.fire({
+        title: '¿Está seguro de que desea eliminar esta habitación?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cerrar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/Habitaciones/Eliminar/${habitacionId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire('Eliminado!', 'La habitación ha sido eliminada.', 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', 'Hubo un problema al eliminar la habitación.', 'error');
+                }
+            }).catch(error => {
+                Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
+            });
+        }
+    });
 }
 
+
 function openDetailsModal(habitacionId) {
-    fetch(`/Habitaciones/Obtener/${habitacionId}`)  // Cambié la ruta a /Habitaciones/Obtener
+    fetch(`/Habitaciones/Obtener/${habitacionId}`)
         .then(response => response.json())
         .then(data => {
-            $('#detailsHabitacionId').text(data.habitacionId);
-            $('#detailsNumero').text(data.numero);
-            $('#detailsNombreHabitacion').text(data.nombreHabitacion);
-            $('#detailsTipo').text(data.tipo);
-            $('#detailsPrecio').text(data.precio);
-            $('#detailsEstado').text(data.estadoHabitacionId);
-            $('#detailsModal').modal('show');
+            Swal.fire({
+                title: 'Detalles de la Habitación',
+                html: `<p><strong>Habitación ID:</strong> ${data.habitacionId}</p>
+                       <p><strong>Número:</strong> ${data.numero}</p>
+                       <p><strong>Nombre:</strong> ${data.nombreHabitacion}</p>
+                       <p><strong>Tipo:</strong> ${data.tipo}</p>
+                       <p><strong>Precio:</strong> ${data.precio}</p>
+                       <p><strong>Estado:</strong> ${data.estadoHabitacionId}</p>`,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
         });
 }
+
 
 $('#createForm').submit(function (e) {
     e.preventDefault();
@@ -112,7 +139,7 @@ $('#confirmDelete').click(function () {
     });
 });
 
-function loadEstadosHabitacion(selectedValue = null) {
+function loadEstadosHabitacion() {
     fetch('/EstadoHabitaciones/Listar')  // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
@@ -121,7 +148,7 @@ function loadEstadosHabitacion(selectedValue = null) {
             estadoSelects.forEach(select => {
                 select.innerHTML = `<option value="">Seleccione un Estado</option>`;
                 data.forEach(estado => {
-                    let option = `<option value="${estado.estadoHabitacionId}" ${estado.estadoHabitacionId == selectedValue ? 'selected' : ''}>${estado.nombre}</option>`;
+                    let option = `<option value="${estado.estadoHabitacionId}" ${estado.estadoHabitacionId}>${estado.nombre}</option>`;
                     select.innerHTML += option;
                 });
             });

@@ -1,0 +1,48 @@
+﻿@model IEnumerable<RefugioVerde.Models.Servicio>
+@using System.Security.Claims
+@{
+    Layout = "_Cliente";
+}
+<section class="rooms-area section-padding-100-0" style="background-image: url('/wwwroot/Cliente/img/Cascada.jpg'); background-size: cover; background-position: center;">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-6">
+                <div class="section-heading text-center">
+                    <div class="line-"></div>
+                    <h2>Reserva con nosotros</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            @foreach (var servicio in Model)
+            {
+                <!-- Single Rooms Area -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="single-rooms-area wow fadeInUp" data-wow-delay="100ms">
+                        <!-- Thumbnail -->
+                        <img src="@servicio.Imagen" alt="Imagen de @servicio.Nombre" class="bg-thumbnail bg-img" style="background-image: src(@servicio.Imagen)" />
+                        <!-- Price -->
+                        <p class="price-from">Precio: $@servicio.Precio</p>
+                        <!-- Rooms Text -->
+                        <div class="rooms-text">
+                            <div class="line"></div>
+                            <h4>@servicio.Nombre</h4>
+                            <p>Descripcion: @servicio.Descripcion</p>
+                        </div>
+                        <!-- Book Room -->
+                        <a href="#" class="book-room-btn btn palatin-btn" onclick="openCreateModal()">Reservar</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+
+<!-- Scripts necesarios -->
+@section Scripts {
+    <script src="~/admin/assets/js/datatables.min.js"></script>
+    <script src="~/admin/vistasmodal/clientes.js"></script>
+}

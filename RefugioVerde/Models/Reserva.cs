@@ -10,11 +10,11 @@ public partial class Reserva
 
     public DateTime FechaReserva { get; set; }
 
-    public int ClienteId { get; set; }
+    public int? ClienteId { get; set; }
 
-    public int HabitacionId { get; set; }
+    public int? HabitacionId { get; set; }
 
-    public int EstadoReservaId { get; set; }
+    public int? EstadoReservaId { get; set; }
 
     public int? ServicioId { get; set; }
 

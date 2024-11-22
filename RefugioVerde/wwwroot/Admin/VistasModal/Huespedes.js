@@ -13,17 +13,19 @@
                     <td>${huesped.documentoIdentidad}</td>
                     <td>${huesped.telefono}</td>
                     <td>${huesped.email}</td>
-                    <td>${huesped.municipio.nombre}</td>
+                    <td>${huesped.municipioId}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" onclick="openEditModal(${huesped.huespedId})">
-                            <img src="Admin/Fonts/pen-to-square-solid.svg" alt="Editar" style="width: 16px; height: 16px;" />
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${huesped.huespedId})">
-                            <img src="Admin/Fonts/trash-solid.svg" alt="Eliminar" style="width: 16px; height: 16px;" />
-                        </button>
-                        <button class="btn btn-info btn-sm" onclick="openDetailsModal(${huesped.huespedId})">
-                            <img src="Admin/Fonts/circle-info-solid.svg" alt="Detalles" style="width: 16px; height: 16px;" />
-                        </button>
+                        <div class="action-buttons">
+                            <button class="btn btn-warning btn-sm" onclick="openEditModal(${huesped.huespedId})">
+                                <img src="Admin/Fonts/pen-to-square-solid.svg" alt="Editar" style="width: 16px; height: 16px; margin-right: 5px;" />
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${huesped.huespedId})">
+                                <img src="Admin/Fonts/trash-solid.svg" alt="Eliminar" style="width: 16px; height: 16px; margin-right: 5px;" />
+                            </button>
+                            <button class="btn btn-info btn-sm" onclick="openDetailsModal(${huesped.huespedId})">
+                                <img src="Admin/Fonts/circle-info-solid.svg" alt="Detalles" style="width: 16px; height: 16px; margin-right: 5px;" />
+                            </button>
+                        </div>
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -36,17 +38,12 @@
                 }
             });
         });
-
-    //// Agregar event listeners para los formularios
-    //document.getElementById('createForm').addEventListener('submit', handleCreateFormSubmit);
-    //document.getElementById('editForm').addEventListener('submit', handleEditFormSubmit);
 });
 
 function openCreateModal() {
     loadMunicipios('#municipioId');
-    loadMunicipios('#reservaId'); 
-    var createModal = new bootstrap.Modal(document.getElementById('createModal'));
-    createModal.show();
+    loadReservas('#reservaId');
+    $('#createModal').modal('show');
 }
 
 function openEditModal(huespedId) {
@@ -54,16 +51,15 @@ function openEditModal(huespedId) {
     fetch(`/Huespedes/Obtener/${huespedId}`)
         .then(response => response.json())
         .then(huesped => {
-            document.getElementById('editHuespedId').value = huesped.huespedId;
-            document.getElementById('editNombre').value = huesped.nombre;
-            document.getElementById('editApellido').value = huesped.apellido;
-            document.getElementById('editDocumentoIdentidad').value = huesped.documentoIdentidad;
-            document.getElementById('editTelefono').value = huesped.telefono;
-            document.getElementById('editEmail').value = huesped.email;
+            $('#editHuespedId').val(huesped.huespedId);
+            $('#editNombre').val(huesped.nombre);
+            $('#editApellido').val(huesped.apellido);
+            $('#editDocumentoIdentidad').val(huesped.documentoIdentidad);
+            $('#editTelefono').val(huesped.telefono);
+            $('#editEmail').val(huesped.email);
             loadMunicipios('#editMunicipioId'); // Cargar municipios
-
-            var editModal = new bootstrap.Modal(document.getElementById('editModal'));
-            editModal.show();
+            loadReservas('#editReservaId'); // Cargar reservas y seleccionar la actual
+            $('#editModal').modal('show');
         });
 }
 
@@ -80,7 +76,7 @@ function openDetailsModal(huespedId) {
                     <p><strong>Documento de Identidad:</strong> ${huesped.documentoIdentidad}</p>
                     <p><strong>Teléfono:</strong> ${huesped.telefono}</p>
                     <p><strong>Email:</strong> ${huesped.email}</p>
-                    <p><strong>Municipio:</strong> ${huesped.municipio.nombre}</p>
+                    <p><strong>Municipio:</strong> ${huesped.municipioId}</p>
                 `,
                 icon: 'info',
                 confirmButtonText: 'Cerrar'
@@ -128,6 +124,64 @@ function openDeleteModal(huespedId) {
     });
 }
 
+$('#createForm').submit(function (e) {
+    e.preventDefault();
+    let formData = new FormData(this);
+    fetch('/Huespedes/Crear', {
+        method: 'POST',
+        body: formData
+    }).then(response => {
+        if (response.ok) {
+            Swal.fire(
+                'Creado!',
+                'El huésped ha sido creado correctamente.',
+                'success'
+            ).then(() => location.reload());
+        } else {
+            Swal.fire(
+                'Error',
+                'Hubo un problema al intentar crear el huésped.',
+                'error'
+            );
+        }
+    }).catch(error => {
+        Swal.fire(
+            'Error',
+            'Hubo un problema con la solicitud.',
+            'error'
+        );
+    });
+});
+
+$('#editForm').submit(function (e) {
+    e.preventDefault();
+    let formData = new FormData(this);
+    fetch('/Huespedes/Editar', {
+        method: 'POST',
+        body: formData
+    }).then(response => {
+        if (response.ok) {
+            Swal.fire(
+                'Actualizado!',
+                'El huésped ha sido actualizado correctamente.',
+                'success'
+            ).then(() => location.reload());
+        } else {
+            Swal.fire(
+                'Error',
+                'Hubo un problema al intentar actualizar el huésped.',
+                'error'
+            );
+        }
+    }).catch(error => {
+        Swal.fire(
+            'Error',
+            'Hubo un problema con la solicitud.',
+            'error'
+        );
+    });
+});
+
 function loadMunicipios(selectId) {
     fetch('/Municipios/Listar')
         .then(response => response.json())
@@ -143,70 +197,40 @@ function loadMunicipios(selectId) {
         });
 }
 
-function handleCreateFormSubmit(e) {
-    e.preventDefault();
 
-    // Obtener los datos del formulario
-    let formData = new FormData(e.target);
 
-    // Enviar los datos al servidor
-    fetch('/Huespedes/Crear', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            if (response.ok) {
-                Swal.fire(
-                    'Creado!',
-                    'El huésped ha sido creado correctamente.',
-                    'success'
-                ).then(() => location.reload());
-            } else {
-                Swal.fire(
-                    'Error',
-                    'Hubo un problema al intentar crear el huésped.',
-                    'error'
-                );
-            }
-        }).catch(error => {
-            Swal.fire(
-                'Error',
-                'Hubo un problema con la solicitud.',
-                'error'
-            );
+function loadReservas() {
+    fetch('/Reservas/Listar')  // Asegúrate de que la ruta sea correcta
+        .then(response => response.json())
+        .then(data => {
+            // Para los selects de estado (Crear y Editar)
+            let reservaSelects = document.querySelectorAll('#reservaId, #editreservaId');
+            reservaSelects.forEach(select => {
+                select.innerHTML = `<option value="">Seleccione una reserva</option>`;
+                data.forEach(reserva => {
+                    let option = `<option value="${reserva.reservaId}" ${reserva.reservaId}>${reserva.reservaId}</option>`;
+                    select.innerHTML += option;
+                });
+            });
+
+            // Mostrar el nombre del estado en los detalles y en el listado
+            updateEstadoHabitacion(data);
         });
 }
-
-function handleEditFormSubmit(e) {
-    e.preventDefault();
-
-    // Obtener los datos del formulario
-    let formData = new FormData(e.target);
-
-    // Enviar los datos al servidor
-    fetch('/Huespedes/Editar', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            if (response.ok) {
-                Swal.fire(
-                    'Actualizado!',
-                    'El huésped ha sido actualizado correctamente.',
-                    'success'
-                ).then(() => location.reload());
-            } else {
-                Swal.fire(
-                    'Error',
-                    'Hubo un problema al intentar actualizar el huésped.',
-                    'error'
-                );
-            }
-        }).catch(error => {
-            Swal.fire(
-                'Error',
-                'Hubo un problema con la solicitud.',
-                'error'
-            );
-        });
-}
+//function loadReservas(selectId, selectedReservaId = null) {
+//    fetch('/Reservas/Listar')
+//        .then(response => response.json())
+//        .then(data => {
+//            let select = document.querySelector(selectId);
+//            select.innerHTML = ''; // Limpiar opciones existentes
+//            data.forEach(reserva => {
+//                let option = document.createElement('option');
+//                option.value = reserva.reservaId;
+//                option.text = `${reserva.reservaId} - ${new Date(reserva.fechaReserva).toLocaleDateString()}`;
+//                if (reserva.reservaId === selectedReservaId) {
+//                    option.selected = true; // Seleccionar la reserva actual
+//                }
+//                select.appendChild(option);
+//            });
+//        });
+//}

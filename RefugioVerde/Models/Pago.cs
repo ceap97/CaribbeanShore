@@ -21,7 +21,7 @@ public partial class Pago
     public byte[] Comprobante { get; set; }
 
     [Required(ErrorMessage = "La reserva es obligatoria.")]
-    public int ReservaId { get; set; }
+    public int? ReservaId { get; set; }
 
     public int? EstadoPagoId { get; set; }
 

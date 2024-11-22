@@ -4,7 +4,9 @@
 }
 @section Estilos {
     <link href="~/admin/assets/css/buttons.datatables.css" rel="stylesheet" />
-    <link href="~/admin/assets/css/datatables.datatables.css" rel="stylesheet" />
+    <link href="~/admin/assets/css/datatables.datatables.min.css" rel="stylesheet" />
+    <link href="~/admin/vistasmodal/invalid.css" rel="stylesheet" />
+    <link href="~/admin/assets/css/sweetalert2.min.css" rel="stylesheet" />
 }
 
 <div class="row">
@@ -37,44 +39,37 @@
         </div>
     </div>
 </div>
-
 <!-- Modal Crear -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="createModalLabel">Agregar Pago</h5>
+                <h5 class="modal-title" id="createModalLabel">Crear Pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="createForm">
                     <div class="mb-3">
-                        <label for="monto" class="form-label">Monto</label>
-                        <input type="number" class="form-control" id="monto" name="monto" required min="0.01" step="0.01" title="El monto debe ser un valor positivo.">
-                        <div class="invalid-feedback">El monto es obligatorio y debe ser un valor positivo.</div>
+                        <label for="createMonto" class="form-label">Monto</label>
+                        <input type="number" class="form-control" id="createMonto" name="monto" required>
                     </div>
                     <div class="mb-3">
-                        <label for="metodoPago" class="form-label">Método de Pago</label>
-                        <input type="text" class="form-control" id="metodoPago" name="metodoPago" required maxlength="50" title="El método de pago no puede tener más de 50 caracteres.">
-                        <div class="invalid-feedback">El método de pago es obligatorio y no puede tener más de 50 caracteres.</div>
+                        <label for="createMetodoPago" class="form-label">Método de Pago</label>
+                        <input type="text" class="form-control" id="createMetodoPago" name="metodoPago" required>
                     </div>
                     <div class="mb-3">
-                        <label for="comprobante" class="form-label">Comprobante (base64)</label>
-                        <input type="text" class="form-control" id="comprobante" name="comprobante" required>
-                        <div class="invalid-feedback">El comprobante es obligatorio.</div>
+                        <label for="createComprobante" class="form-label">Comprobante</label>
+                        <input type="file" class="form-control" id="createComprobante" name="comprobante" required>
                     </div>
                     <div class="mb-3">
-                        <label for="reservaId" class="form-label">Reserva</label>
-                        <select class="form-select" id="reservaId" name="reservaId" required>
-                            <!-- Opciones de reserva se cargarán aquí -->
+                        <label for="createReservaId" class="form-label">Reserva</label>
+                        <select class="form-select" id="createReservaId" name="reservaId" required>
                         </select>
-                        <div class="invalid-feedback">La reserva es obligatoria.</div>
                     </div>
                     <div class="mb-3">
-                        <label for="estadoPagoId" class="form-label">Estado de Pago</label>
-                        <select class="form-select" id="estadoPagoId" name="estadoPagoId" required>
-                            <!-- Opciones de estado de pago se cargarán aquí -->
+                        <label for="createEstadoPagoId" class="form-label">Estado de Pago</label>
+                        <select class="form-select" id="createEstadoPagoId" name="estadoPagoId" required>
                         </select>
-                        <div class="invalid-feedback">El estado de pago es obligatorio.</div>
                     </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -97,32 +92,25 @@
                     <input type="hidden" id="editIdPago" name="idPago">
                     <div class="mb-3">
                         <label for="editMonto" class="form-label">Monto</label>
-                        <input type="number" class="form-control" id="editMonto" name="monto" required min="0.01" step="0.01" title="El monto debe ser un valor positivo.">
-                        <div class="invalid-feedback">El monto es obligatorio y debe ser un valor positivo.</div>
+                        <input type="number" class="form-control" id="editMonto" name="monto" required>
                     </div>
                     <div class="mb-3">
                         <label for="editMetodoPago" class="form-label">Método de Pago</label>
-                        <input type="text" class="form-control" id="editMetodoPago" name="metodoPago" required maxlength="50" title="El método de pago no puede tener más de 50 caracteres.">
-                        <div class="invalid-feedback">El método de pago es obligatorio y no puede tener más de 50 caracteres.</div>
+                        <input type="text" class="form-control" id="editMetodoPago" name="metodoPago" required>
                     </div>
                     <div class="mb-3">
-                        <label for="editComprobante" class="form-label">Comprobante (base64)</label>
-                        <input type="text" class="form-control" id="editComprobante" name="comprobante" required>
-                        <div class="invalid-feedback">El comprobante es obligatorio.</div>
+                        <label for="editComprobante" class="form-label">Comprobante</label>
+                        <input type="file" class="form-control" id="editComprobante" name="comprobante" required>
                     </div>
                     <div class="mb-3">
                         <label for="editReservaId" class="form-label">Reserva</label>
                         <select class="form-select" id="editReservaId" name="reservaId" required>
-                            <!-- Opciones de reserva se cargarán aquí -->
                         </select>
-                        <div class="invalid-feedback">La reserva es obligatoria.</div>
                     </div>
                     <div class="mb-3">
                         <label for="editEstadoPagoId" class="form-label">Estado de Pago</label>
                         <select class="form-select" id="editEstadoPagoId" name="estadoPagoId" required>
-                            <!-- Opciones de estado de pago se cargarán aquí -->
                         </select>
-                        <div class="invalid-feedback">El estado de pago es obligatorio.</div>
                     </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -131,6 +119,8 @@
         </div>
     </div>
 </div>
+
+
 
 <!-- Modal para Detalles -->
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
@@ -171,5 +161,6 @@
 </div>
 
 @section Scripts {
+    <script src="~/admin/assets/js/sweetalert2@11.js"></script>
     <script src="~/admin/vistasmodal/pagos.js"></script>
 }

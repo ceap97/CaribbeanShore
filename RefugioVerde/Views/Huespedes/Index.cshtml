@@ -38,8 +38,7 @@
         </div>
     </div>
 
-</div>
-<!-- Modal Crear -->
+</div><!-- Modal Crear -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -73,6 +72,11 @@
                         <select class="form-select" id="municipioId" name="municipioId" required>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="reservaId" class="form-label">Reserva</label>
+                        <select class="form-select" id="reservaId" name="reservaId" required>
+                        </select>
+                    </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
@@ -80,7 +84,6 @@
         </div>
     </div>
 </div>
-
 <!-- Modal Editar -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -115,7 +118,11 @@
                     <div class="mb-3">
                         <label for="editMunicipioId" class="form-label">Municipio</label>
                         <select class="form-select" id="editMunicipioId" name="municipioId" required>
-                            <!-- Opciones de municipio se cargarán aquí -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editReservaId" class="form-label">Reserva</label>
+                        <select class="form-select" id="editReservaId" name="reservaId" required>
                         </select>
                     </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -125,6 +132,9 @@
         </div>
     </div>
 </div>
+
+
+
 
 <!-- Modal para Detalles -->
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">

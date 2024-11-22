@@ -1,0 +1,61 @@
+﻿@model IEnumerable<RefugioVerde.Models.Reserva>
+
+@{
+    ViewBag.Title = "Historial de Reservas";
+
+    Layout = "_Cliente";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card-box">
+            <div class="card-header">
+                <h4>Historial de Reservas</h4>
+            </div>
+            <div class="card-body">
+                <table id="tbHistorialReservas" class="table">
+                    <thead>
+                        <tr>
+                            <th>ReservaId</th>
+                            <th>Fecha Reserva</th>
+                            <th>Habitación</th>
+                            <th>Comodidad</th>
+                            <th>Servicios</th>
+                            <th>Estado</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Fin</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var reserva in Model)
+
+                        {
+                            <tr>
+                                <td>@reserva.ReservaId</td>
+                                <td>@reserva.FechaReserva.ToString("dd/MM/yyyy")</td>
+                                <td>@reserva.Habitacion.NombreHabitacion</td>
+                                <td>@reserva.Comodidad.Nombre</td>
+                                <td>@reserva.Servicio.Nombre</td>
+                                <td>@reserva.EstadoReserva.Nombre</td>
+                                <td>@reserva.FechaInicio.ToString("dd/MM/yyyy")</td>
+                                <td>@reserva.FechaFin.ToString("dd/MM/yyyy")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#tbHistorialReservas').DataTable({
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                }
+            });
+        });
+    </script>
+}

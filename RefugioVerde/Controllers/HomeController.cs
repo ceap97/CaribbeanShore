@@ -56,18 +56,19 @@ namespace RefugioVerde.Controllers
         }
 
 
-        public IActionResult Cliente()
+        public async Task<IActionResult> Cliente()
         {
-            ClaimsPrincipal claimuser = HttpContext.User;
-            string nombreUsuario = "";
-
-            if (claimuser.Identity.IsAuthenticated)
+            var habitaciones = await _context.Habitacions.Include(h => h.EstadoHabitacion).ToListAsync();
+            var servicios = await _context.Servicios.ToListAsync();
+            var comodidades = await _context.Comodidads.ToListAsync();
+            var viewModel = new HomeViewModel
             {
-                nombreUsuario = claimuser.Claims.Where(c => c.Type == ClaimTypes.Name)
-                    .Select(c => c.Value).SingleOrDefault();
-            }
-            ViewData["nombreUsuario"] = nombreUsuario;
-            return View();
+                Habitaciones = habitaciones,
+                Servicios = servicios,
+                Comodidades = comodidades
+            };
+
+            return View(viewModel);
         }
 
         public IActionResult Privacy()

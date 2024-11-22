@@ -44,21 +44,43 @@ function openEditModal(permisoId) {
 }
 
 function openDeleteModal(permisoId) {
-    $('#confirmDelete').data('permisoId', permisoId);
-    $('#deleteModal').modal('show');
+    Swal.fire({
+        title: '¿Está seguro de que desea eliminar este permiso?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cerrar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/Permisos/Eliminar/${permisoId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire('Eliminado!', 'El permiso ha sido eliminado.', 'success').then(() => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+    });
 }
 
+
 function openDetailsModal(permisoId) {
-    // Lógica para obtener los datos del permiso y mostrar los detalles
     fetch(`/Permisos/Obtener/${permisoId}`)
         .then(response => response.json())
         .then(data => {
-            $('#detailsPermisoId').text(data.permisoId);
-            $('#detailsNombre').text(data.nombre);
-            $('#detailsDescripcion').text(data.descripcion);
-            $('#detailsModal').modal('show');
+            Swal.fire({
+                title: 'Detalles del Permiso',
+                html: `<p><strong>PermisoId:</strong> ${data.permisoId}</p>
+                       <p><strong>Nombre:</strong> ${data.nombre}</p>
+                       <p><strong>Descripción:</strong> ${data.descripcion}</p>`,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
         });
 }
+
 
 $('#createForm').submit(function (e) {
     e.preventDefault();
@@ -94,14 +116,14 @@ $('#editForm').submit(function (e) {
     });
 });
 
-$('#confirmDelete').click(function () {
-    let permisoId = $(this).data('permisoId');
-    // Lógica para eliminar el permiso
-    fetch(`/Permisos/Eliminar/${permisoId}`, {
-        method: 'DELETE'
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
-        }
-    });
-});
+//$('#confirmDelete').click(function () {
+//    let permisoId = $(this).data('permisoId');
+//    // Lógica para eliminar el permiso
+//    fetch(`/Permisos/Eliminar/${permisoId}`, {
+//        method: 'DELETE'
+//    }).then(response => {
+//        if (response.ok) {
+//            location.reload();
+//        }
+//    });
+//});

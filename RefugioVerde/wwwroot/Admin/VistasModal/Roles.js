@@ -46,20 +46,42 @@ function openEditModal(rolId) {
         });
 }
 
-function openDeleteModal(rolId) {
-    $('#confirmDelete').data('rolId', rolId);
-    $('#deleteModal').modal('show');
-}
-
 function openDetailsModal(rolId) {
     fetch(`/Roles/Obtener/${rolId}`)
         .then(response => response.json())
         .then(data => {
-            $('#detailsRolId').text(data.rolId);
-            $('#detailsNombre').text(data.nombre);
-            $('#detailsModal').modal('show');
+            Swal.fire({
+                title: 'Detalles del Rol',
+                html: `<p><strong>RolId:</strong> ${data.rolId}</p>
+                       <p><strong>Nombre:</strong> ${data.nombre}</p>`,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
         });
 }
+
+function openDeleteModal(rolId) {
+    Swal.fire({
+        title: '¿Está seguro de que desea eliminar este rol?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cerrar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/Roles/Eliminar/${rolId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire('Eliminado!', 'El rol ha sido eliminado.', 'success').then(() => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+    });
+}
+
 
 $('#createForm').submit(function (e) {
     e.preventDefault();

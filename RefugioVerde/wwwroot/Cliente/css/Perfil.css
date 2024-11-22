@@ -1,0 +1,24 @@
+﻿/* Estilo para asegurar que el pie de página esté siempre en la parte inferior */
+body, html {
+    height: 100%; /* Asegura que el cuerpo y la página cubran toda la altura de la ventana */
+    margin: 0; /* Elimina márgenes */
+}
+
+.copywrite-text {
+    position: fixed; /* Fija el texto en la parte inferior de la ventana */
+    bottom: 0; /* Coloca el texto en la parte inferior */
+    width: 100%; /* Asegura que el pie ocupe todo el ancho */
+    text-align: center; /* Centra el texto */
+    background-color: #333; /* Color de fondo (opcional, puedes cambiarlo) */
+    color: #fff; /* Color del texto */
+    padding: 10px 0; /* Espaciado superior e inferior */
+}
+
+    .copywrite-text a {
+        color: #fff; /* Color de los enlaces */
+        text-decoration: none; /* Elimina subrayado de enlaces */
+    }
+
+        .copywrite-text a:hover {
+            text-decoration: underline; /* Subraya el enlace al pasar el ratón */
+        }

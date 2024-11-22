@@ -68,42 +68,49 @@ function openEditModal(comodidadId) {
 }
 
 function openDeleteModal(comodidadId) {
-    // Lógica para abrir el modal de eliminación
-    document.getElementById('confirmDelete').onclick = function () {
-        fetch(`/Comodidades/Eliminar/${comodidadId}`, {
-            method: 'DELETE'
-        }).then(response => {
-            if (response.ok) {
-                location.reload(); // Recargar la página si se ha eliminado correctamente
-            } else {
-                console.error('Error al eliminar la comodidad');
-            }
-        }).catch(error => {
-            console.error('Error en la solicitud:', error);
-        });
-    };
-
-    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-    deleteModal.show();
+    Swal.fire({
+        title: '¿Está seguro de que desea eliminar esta comodidad?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cerrar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/Comodidades/Eliminar/${comodidadId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire('Eliminado!', 'La comodidad ha sido eliminada.', 'success').then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire('Error', 'Hubo un problema al eliminar la comodidad.', 'error');
+                }
+            }).catch(error => {
+                Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
+            });
+        }
+    });
 }
 
+
 function openDetailsModal(comodidadId) {
-    // Lógica para abrir el modal de detalles y cargar los datos de la comodidad
     fetch(`/Comodidades/Obtener/${comodidadId}`)
         .then(response => response.json())
         .then(data => {
-            document.getElementById('detailsComodidadId').textContent = data.comodidadId;
-            document.getElementById('detailsNombre').textContent = data.nombre;
-            document.getElementById('detailsDescripcion').textContent = data.descripcion;
-            document.getElementById('detailsPrecio').textContent = data.precio;
-            document.getElementById('detailsImagen').textContent = data.imagen;
-            document.getElementById('detailsImage').src = data.imagen;
-            document.getElementById('detailsImage').style.display = 'block';
-
-            var detailsModal = new bootstrap.Modal(document.getElementById('detailsModal'));
-            detailsModal.show();
+            Swal.fire({
+                title: 'Detalles de la Comodidad',
+                html: `<p><strong>ComodidadId:</strong> ${data.comodidadId}</p>
+                       <p><strong>Nombre:</strong> ${data.nombre}</p>
+                       <p><strong>Descripción:</strong> ${data.descripcion}</p>
+                       <p><strong>Precio:</strong> ${data.precio}</p>
+                       <img src="${data.imagen}" alt="Imagen de la Comodidad" style="width: 100%; height: auto; display: block; margin-top: 10px;" />`,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
         });
 }
+
 
 function handleCreateFormSubmit(e) {
     e.preventDefault();

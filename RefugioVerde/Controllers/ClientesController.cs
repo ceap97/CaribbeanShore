@@ -25,7 +25,7 @@ namespace RefugioVerde.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (int.TryParse(userId, out int parsedUserId))
             {
-                var cliente = _context.Clientes.Include(c => c.Usuario).FirstOrDefault(c => c.UsuarioId == parsedUserId);
+                var cliente = _context.Clientes.Include(c => c.Usuario).Include(m => m.Municipio).FirstOrDefault(c => c.UsuarioId == parsedUserId);
                 if (cliente == null)
                 {
                     return NotFound();

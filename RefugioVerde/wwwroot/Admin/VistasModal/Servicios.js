@@ -45,21 +45,44 @@ function openEditModal(servicioId) {
 }
 
 function openDeleteModal(servicioId) {
-    $('#confirmDelete').data('servicioId', servicioId);
-    $('#deleteModal').modal('show');
+    Swal.fire({
+        title: '¿Está seguro de que desea eliminar este servicio?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cerrar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/Servicios/Eliminar/${servicioId}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire('Eliminado!', 'El servicio ha sido eliminado.', 'success').then(() => {
+                        location.reload();
+                    });
+                }
+            });
+        }
+    });
 }
+
 
 function openDetailsModal(servicioId) {
     fetch(`/Servicios/Obtener/${servicioId}`)
         .then(response => response.json())
         .then(data => {
-            $('#detailsServicioId').text(data.servicioId);
-            $('#detailsNombre').text(data.nombre);
-            $('#detailsDescripcion').text(data.descripcion);
-            $('#detailsPrecio').text(data.precio);
-            $('#detailsModal').modal('show');
+            Swal.fire({
+                title: 'Detalles del Servicio',
+                html: `<p><strong>ServicioId:</strong> ${data.servicioId}</p>
+                       <p><strong>Nombre:</strong> ${data.nombre}</p>
+                       <p><strong>Descripción:</strong> ${data.descripcion}</p>
+                       <p><strong>Precio:</strong> ${data.precio}</p>`,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
         });
 }
+
 
 $('#createForm').submit(function (e) {
     e.preventDefault();

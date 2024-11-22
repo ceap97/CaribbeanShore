@@ -32,6 +32,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function openCreateModal() {
+    loadReservas('#createReservaId');
+    loadEstadosPago('#createEstadoPagoId');
     $('#createModal').modal('show');
 }
 
@@ -43,30 +45,70 @@ function openEditModal(idPago) {
             $('#editMonto').val(data.monto);
             $('#editMetodoPago').val(data.metodoPago);
             $('#editComprobante').val(data.comprobante);
-            $('#editReservaId').val(data.reservaId);
-            $('#editEstadoPagoId').val(data.estadoPagoId);
+            loadReservas('#editReservaId', data.reservaId); // Cargar reservas y seleccionar la actual
+            loadEstadosPago('#editEstadoPagoId', data.estadoPagoId); // Cargar estados de pago y seleccionar el actual
             $('#editModal').modal('show');
         });
 }
 
+
+
 function openDeleteModal(idPago) {
-    $('#confirmDelete').data('idPago', idPago);
-    $('#deleteModal').modal('show');
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esto",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, eliminarlo',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/Pagos/Eliminar/${idPago}`, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    Swal.fire(
+                        'Eliminado',
+                        'El pago ha sido eliminado.',
+                        'success'
+                    ).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire(
+                        'Error',
+                        'Hubo un problema al eliminar el pago.',
+                        'error'
+                    );
+                }
+            });
+        }
+    });
 }
+
 
 function openDetailsModal(idPago) {
     fetch(`/Pagos/Obtener/${idPago}`)
         .then(response => response.json())
         .then(data => {
-            $('#detailsIdPago').text(data.idPago);
-            $('#detailsMonto').text(data.monto);
-            $('#detailsMetodoPago').text(data.metodoPago);
-            $('#detailsComprobante').text(data.comprobante);
-            $('#detailsReservaId').text(data.reservaId);
-            $('#detailsEstadoPago').text(data.estadoPago);
-            $('#detailsModal').modal('show');
+            Swal.fire({
+                title: 'Detalles del Pago',
+                html: `
+                    <p><strong>ID Pago:</strong> ${data.idPago}</p>
+                    <p><strong>Monto:</strong> ${data.monto}</p>
+                    <p><strong>Método de Pago:</strong> ${data.metodoPago}</p>
+                    <p><strong>Comprobante:</strong> ${data.comprobante}</p>
+                    <p><strong>Reserva ID:</strong> ${data.reservaId}</p>
+                    <p><strong>Estado de Pago:</strong> ${data.estadoPago}</p>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Cerrar'
+            });
         });
 }
+
 
 $('#createForm').submit(function (e) {
     e.preventDefault();
@@ -110,3 +152,39 @@ $('#confirmDelete').click(function () {
         }
     });
 });
+
+function loadReservas(selectId, selectedReservaId = null) {
+    fetch('/Reservas/Listar')
+        .then(response => response.json())
+        .then(data => {
+            let select = document.querySelector(selectId);
+            select.innerHTML = ''; // Limpiar opciones existentes
+            data.forEach(reserva => {
+                let option = document.createElement('option');
+                option.value = reserva.reservaId;
+                option.text = `${reserva.reservaId} - ${new Date(reserva.fechaReserva).toLocaleDateString()}`;
+                if (reserva.reservaId === selectedReservaId) {
+                    option.selected = true; // Seleccionar la reserva actual
+                }
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadEstadosPago(selectId, selectedEstadoPagoId = null) {
+    fetch('/EstadoPago/Listar')
+        .then(response => response.json())
+        .then(data => {
+            let select = document.querySelector(selectId);
+            select.innerHTML = ''; // Limpiar opciones existentes
+            data.forEach(estado => {
+                let option = document.createElement('option');
+                option.value = estado.estadoPagoId;
+                option.text = estado.nombre;
+                if (estado.estadoPagoId === selectedEstadoPagoId) {
+                    option.selected = true; // Seleccionar el estado de pago actual
+                }
+                select.appendChild(option);
+            });
+        });
+}
