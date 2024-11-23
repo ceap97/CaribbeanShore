@@ -1,5 +1,4 @@
-﻿
-document.addEventListener('DOMContentLoaded', function () {
+﻿document.addEventListener('DOMContentLoaded', function () {
     fetch('/Pagos/Listar')
         .then(response => response.json())
         .then(data => {
@@ -51,8 +50,6 @@ function openEditModal(idPago) {
         });
 }
 
-
-
 function openDeleteModal(idPago) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -88,7 +85,6 @@ function openDeleteModal(idPago) {
     });
 }
 
-
 function openDetailsModal(idPago) {
     fetch(`/Pagos/Obtener/${idPago}`)
         .then(response => response.json())
@@ -108,7 +104,6 @@ function openDetailsModal(idPago) {
             });
         });
 }
-
 
 $('#createForm').submit(function (e) {
     e.preventDefault();
@@ -153,16 +148,16 @@ $('#confirmDelete').click(function () {
     });
 });
 
-function loadReservas(selectId, selectedReservaId = null) {
-    fetch('/Reservas/Listar')
+function loadReservas(selector, selectedReservaId = null) {
+    fetch('/Reservas/Listar')  // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
-            let select = document.querySelector(selectId);
-            select.innerHTML = ''; // Limpiar opciones existentes
+            let select = document.querySelector(selector);
+            select.innerHTML = `<option value="">Seleccione una reserva</option>`;
             data.forEach(reserva => {
                 let option = document.createElement('option');
                 option.value = reserva.reservaId;
-                option.text = `${reserva.reservaId} - ${new Date(reserva.fechaReserva).toLocaleDateString()}`;
+                option.text = reserva.reservaId;
                 if (reserva.reservaId === selectedReservaId) {
                     option.selected = true; // Seleccionar la reserva actual
                 }
@@ -170,21 +165,35 @@ function loadReservas(selectId, selectedReservaId = null) {
             });
         });
 }
-
-function loadEstadosPago(selectId, selectedEstadoPagoId = null) {
-    fetch('/EstadoPago/Listar')
+function loadEstadosPago() {
+    fetch('/EstadoPago/Listar') // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
-            let select = document.querySelector(selectId);
-            select.innerHTML = ''; // Limpiar opciones existentes
-            data.forEach(estado => {
-                let option = document.createElement('option');
-                option.value = estado.estadoPagoId;
-                option.text = estado.nombre;
-                if (estado.estadoPagoId === selectedEstadoPagoId) {
-                    option.selected = true; // Seleccionar el estado de pago actual
-                }
-                select.appendChild(option);
+            let estadosPagoSelects = document.querySelectorAll('#estadoPagoId, #editEstadoPagoId');
+            estadosPagoSelects.forEach(select => {
+                select.innerHTML = `<option value="">Seleccione un Estado de Reserva</option>`;
+                data.forEach(estadosPago => {
+                    select.innerHTML += `<option value="${estadosPago.estadosPagoId}">${estadosPago.nombre}</option>`;
+                });
             });
         });
 }
+//}
+//function loadEstadosPago(selector, selectedEstadoPagoId = null) {
+//    fetch('/EstadoPago/Listar')
+//        .then(response => response.json()) // Corrected method call
+//        .then(data => {
+//            let select = document.querySelector(selector);
+//            select.innerHTML = `<option value="">Seleccione una reserva</option>`;
+//            data.forEach(reserva => {
+//                let option = document.createElement('option');
+//                option.value = reserva.reservaId;
+//                option.text = reserva.reservaId;
+//                if (reserva.reservaId === selectedEstadoPagoId) {
+//                    option.selected = true; // Seleccionar la reserva actual
+//                }
+//                select.appendChild(option);
+//            });
+//        });
+//}
+

@@ -212,25 +212,6 @@ function loadReservas() {
                     select.innerHTML += option;
                 });
             });
-
-            // Mostrar el nombre del estado en los detalles y en el listado
-            updateEstadoHabitacion(data);
+            updateReservas(data);
         });
 }
-//function loadReservas(selectId, selectedReservaId = null) {
-//    fetch('/Reservas/Listar')
-//        .then(response => response.json())
-//        .then(data => {
-//            let select = document.querySelector(selectId);
-//            select.innerHTML = ''; // Limpiar opciones existentes
-//            data.forEach(reserva => {
-//                let option = document.createElement('option');
-//                option.value = reserva.reservaId;
-//                option.text = `${reserva.reservaId} - ${new Date(reserva.fechaReserva).toLocaleDateString()}`;
-//                if (reserva.reservaId === selectedReservaId) {
-//                    option.selected = true; // Seleccionar la reserva actual
-//                }
-//                select.appendChild(option);
-//            });
-//        });
-//}
