@@ -178,22 +178,4 @@ function loadEstadosPago() {
             });
         });
 }
-//}
-//function loadEstadosPago(selector, selectedEstadoPagoId = null) {
-//    fetch('/EstadoPago/Listar')
-//        .then(response => response.json()) // Corrected method call
-//        .then(data => {
-//            let select = document.querySelector(selector);
-//            select.innerHTML = `<option value="">Seleccione una reserva</option>`;
-//            data.forEach(reserva => {
-//                let option = document.createElement('option');
-//                option.value = reserva.reservaId;
-//                option.text = reserva.reservaId;
-//                if (reserva.reservaId === selectedEstadoPagoId) {
-//                    option.selected = true; // Seleccionar la reserva actual
-//                }
-//                select.appendChild(option);
-//            });
-//        });
-//}
 

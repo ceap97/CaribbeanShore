@@ -1,0 +1,26 @@
+﻿/* Transición suave para el logo */
+#logo img {
+    transition: all 0.3s ease;
+}
+
+/* Ocultar el menú por defecto (si es necesario) */
+.hidden {
+    display: none !important;
+}
+
+/* Mostrar el menú y mantenerlo visible */
+.visible {
+    display: block !important;
+}
+
+/* Contraer el logo */
+.logo-small img {
+    max-width: 100px; /* Tamaño reducido del logo */
+    transition: all 0.3s ease;
+}
+
+/* Expandir el logo */
+.logo-large img {
+    max-width: 150px; /* Tamaño original del logo */
+    transition: all 0.3s ease;
+}

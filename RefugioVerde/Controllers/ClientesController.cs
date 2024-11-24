@@ -34,30 +34,6 @@ namespace RefugioVerde.Controllers
             }
             return BadRequest("Invalid user ID");
         }
-
-
-        [HttpPost]
-        public IActionResult ActualizarPerfil(Cliente cliente)
-        {
-            if (ModelState.IsValid)
-            {
-                var clienteDb = _context.Clientes.Include(c => c.Usuario).FirstOrDefault(c => c.ClienteId == cliente.ClienteId);
-                if (clienteDb != null)
-                {
-                    clienteDb.Nombre = cliente.Nombre;
-                    clienteDb.Apellido = cliente.Apellido;
-                    clienteDb.DocumentoIdentidad = cliente.DocumentoIdentidad;
-                    clienteDb.Telefono = cliente.Telefono;
-                    clienteDb.Correo = cliente.Correo;
-                    clienteDb.Usuario.NombreUsuario = cliente.Usuario.NombreUsuario;
-                    clienteDb.Usuario.Clave = cliente.Usuario.Clave;
-
-                    _context.SaveChanges();
-                    return RedirectToAction("MiPerfil");
-                }
-            }
-            return View("MiPerfil", cliente);
-        }
         public IActionResult Create()
         {
             ViewBag.MunicipioId = new SelectList(_context.Municipios, "Id", "Nombre");

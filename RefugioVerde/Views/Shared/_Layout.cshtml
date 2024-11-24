@@ -17,7 +17,7 @@
 
     <!-- Core Stylesheet -->
     <link rel="stylesheet" href="~/Home/style.css">
-
+    <link href="~/css/topab.css" rel="stylesheet" />
 
 </head>
 
@@ -33,48 +33,43 @@
     <header class="header-area">
         <!-- Navbar Area -->
         <div class="palatin-main-menu">
+            <button class="btn palatin-btn" id="menuToggle">☰</button>
             <div class="classy-nav-container breakpoint-off">
                 <div class="container">
-                    <!-- Menu -->
-                    <nav class="classy-navbar justify-content-between" id="palatinNav">
+                        <div class="classy-menu" id="menuContent">
 
-                        <!-- Nav brand -->
-                        <a href="/" class="nav-brand"><img src="~/Home/img/logoCarib.png" alt=""></a>
-
-                        <!-- Navbar Toggler -->
-                        <div class="classy-navbar-toggler">
-                            <span class="navbarToggler"><span></span><span></span><span></span></span>
-                        </div>
-
-                        <!-- Menu -->
-                        <div class="classy-menu">
-
-                            <!-- close btn -->
-                            <div class="classycloseIcon">
-                                <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
-                            </div>
-
+                             <nav class="classy-navbar justify-content-between align-items-center" id="palatinNav">
+                            <a href="/" class="nav-brand" id="logo">
+                                <img src="~/Home/img/CaribbeanShoreAdmin.png" alt="Logo" style="max-width: 200px; transition: all 0.3s ease;">
+                            </a>
                             <!-- Nav Start -->
                             <div class="classynav">
-                                <ul id="nav-links">
+                                <ul id="nav-links" class="d-flex">
                                     <li><a href="/">Inicio</a></li>
                                     <li><a href="#reserva-con-nosotros">Reserva con nosotros</a></li>
                                     <li><a href="#comodidades">Comodidades</a></li>
-                                    <li><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContact" aria-controls="offcanvasContact">Contáctanos</a></li>
+                                    <li>
+                                        <a href="javascript:void(0);" data-bs-toggle="offcanvas"
+                                           data-bs-target="#offcanvasContact" aria-controls="offcanvasContact">
+                                            Contáctanos
+                                        </a>
+                                    </li>
                                 </ul>
-
                                 <!-- Button -->
                                 <div class="menu-btn">
                                     <a href="javascript:void(0);" class="btn palatin-btn" id="btnIniciarSesion">Iniciar Sesion</a>
                                 </div>
                             </div>
                             <!-- Nav End -->
+                        </nav>
                         </div>
-                    </nav>
                 </div>
             </div>
         </div>
     </header>
+
+
+
     <!-- ##### Header Area End ##### -->
     <!-- ##### Hero Area Start ##### -->
     <section class="hero-area">
@@ -346,7 +341,7 @@
                         <!-- Información de contacto -->
                         <div class="col-md-6 text-center">
                             <p>
-                                <img src="/Admin/assets/images/CaribbeanShoreAdmin.jpg" alt="Caribbean Shore" style="max-height: 50px;">
+                                <img src="/Home/img/CaribbeanShoreAdmin.png" alt="Caribbean Shore" style="max-height: 50px;">
                             </p>
                             <h4>Información del Hotel</h4>
                             <p><strong>Correo:</strong> <a href="mailto:info@caribbeanshore.com">info@caribbeanshore.com</a></p>
@@ -422,6 +417,31 @@
                     </div>
                 </div>
     </footer>
+    <script>
+        document.getElementById("menuToggle").addEventListener("click", function () {
+            const menu = document.getElementById("menuContent");
+            const logo = document.getElementById("logo");
+
+            // Alternar visibilidad del menú
+            if (menu.classList.contains("hidden")) {
+                menu.classList.remove("hidden");
+                menu.classList.add("visible");
+
+                // Cambiar tamaño del logo
+                logo.classList.remove("logo-small");
+                logo.classList.add("logo-large");
+            } else {
+                menu.classList.remove("visible");
+                menu.classList.add("hidden");
+
+                // Reducir tamaño del logo
+                logo.classList.remove("logo-large");
+                logo.classList.add("logo-small");
+            }
+        });
+    </script>
+
+
     <!-- ##### Footer Area End ##### -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/admin/assets/js/sweetalert2@11.js"></script>

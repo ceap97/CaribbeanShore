@@ -1,1 +1,55 @@
-﻿
+﻿@model RefugioVerde.Models.Cliente
+@using Microsoft.AspNetCore.Identity
+
+@{
+    var userName = User.Identity.Name;
+    var userImage = Url.Content($"~/images/usuarios/{userName}.jpeg");
+    
+    Layout = "_Cliente";
+
+ }
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+    <link href="~/css/perfil.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <main class="main-content">
+            <section class="profile-section">
+                <div class="profile-picture">
+                    <img src="@userImage" alt="Foto de Perfil">
+                    <button class="edit-photo">Añadir foto</button>
+                    <h1>@userName<button class="edit-btn">✏️</button></h1>
+                    <textarea placeholder="Cuéntanos sobre tu trabajo..."></textarea>
+                </div>
+            </section>
+            <section class="stats-section">
+                <div class="plan-box">
+                    <h3>Mi informacion</h3>
+                    <div class="section-heading text-left">
+                        <h4> <strong>Nombre:</strong> @Model.Nombre @Model.Apellido</h4>
+                        <h4> <strong>D.I.:</strong> @Model.DocumentoIdentidad</h4>
+                        <h4> <strong>Correo:</strong> @Model.Correo</h4>
+                        <h4> <strong>Telefono:</strong> @Model.Telefono</h4>
+                        <h4> <strong>Ciudad:</strong> @Model.Municipio.Nombre</h4>
+                    </div>
+                    <button class="edit-btn">Editar</button>
+                </div>
+                <div class="wallet-box">
+                    <h3>Historial</h3>
+                    <div class="wallet-stats">
+                        <div class="stat blue">Pagos totales: $0</div>
+                        <div class="stat green">Reservas totales: $0</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
+
