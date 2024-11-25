@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models;
-
 public partial class Reserva
 {
     public int ReservaId { get; set; }
 
-    public DateTime FechaReserva { get; set; }
+    public DateTime FechaReserva { get; set; } = DateTime.Now;
 
     public int? ClienteId { get; set; }
 
     public int? HabitacionId { get; set; }
 
-    public int? EstadoReservaId { get; set; }
+    public int? EstadoReservaId { get; set; } = 2; // Asumiendo que el ID de "Pendiente" es 1
 
     public int? ServicioId { get; set; }
 

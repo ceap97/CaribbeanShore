@@ -20,6 +20,24 @@ namespace RefugioVerde.Controllers
             _context = context;
         }
         [HttpGet]
+        public async Task<IActionResult> ObtenerClienteActual()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(userId, out int parsedUserId))
+            {
+                var cliente = await _context.Clientes
+                    .Include(c => c.Usuario)
+                    .FirstOrDefaultAsync(c => c.UsuarioId == parsedUserId);
+                if (cliente == null)
+                {
+                    return NotFound();
+                }
+                return Json(cliente);
+            }
+            return BadRequest("Invalid user ID");
+        }
+
+        [HttpGet]
         public IActionResult MiPerfil()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

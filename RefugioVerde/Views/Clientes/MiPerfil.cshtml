@@ -4,10 +4,9 @@
 @{
     var userName = User.Identity.Name;
     var userImage = Url.Content($"~/images/usuarios/{userName}.jpeg");
-    
-    Layout = "_Cliente";
 
- }
+    Layout = "_Cliente";
+}
 
 <!DOCTYPE html>
 <html lang="es">
@@ -24,7 +23,7 @@
                 <div class="profile-picture">
                     <img src="@userImage" alt="Foto de Perfil">
                     <button class="edit-photo">Añadir foto</button>
-                    <h1>@userName<button class="edit-btn">✏️</button></h1>
+                    <h1>@userName<button class="edit-btn" onclick="toggleEditForm()">✏️</button></h1>
                     <textarea placeholder="Cuéntanos sobre tu trabajo..."></textarea>
                 </div>
             </section>
@@ -38,7 +37,7 @@
                         <h4> <strong>Telefono:</strong> @Model.Telefono</h4>
                         <h4> <strong>Ciudad:</strong> @Model.Municipio.Nombre</h4>
                     </div>
-                    <button class="edit-btn">Editar</button>
+                    <button class="edit-btn" onclick="toggleEditForm()">Editar</button>
                 </div>
                 <div class="wallet-box">
                     <h3>Historial</h3>
@@ -48,8 +47,45 @@
                     </div>
                 </div>
             </section>
+            <section class="edit-section" id="edit-section" style="display:none;">
+                <form asp-action="UpdateProfile" method="post">
+                    <div class="form-group">
+                        <label for="Nombre">Nombre</label>
+                        <input type="text" id="Nombre" name="Nombre" value="@Model.Nombre" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Apellido">Apellido</label>
+                        <input type="text" id="Apellido" name="Apellido" value="@Model.Apellido" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="DocumentoIdentidad">D.I.</label>
+                        <input type="text" id="DocumentoIdentidad" name="DocumentoIdentidad" value="@Model.DocumentoIdentidad" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Correo">Correo</label>
+                        <input type="email" id="Correo" name="Correo" value="@Model.Correo" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Telefono">Telefono</label>
+                        <input type="text" id="Telefono" name="Telefono" value="@Model.Telefono" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label for="Municipio">Ciudad</label>
+                        <input type="text" id="Municipio" name="Municipio" value="@Model.Municipio.Nombre" class="form-control" />
+                    </div>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="toggleEditForm()">Cancelar</button>
+                </form>
+            </section>
         </main>
     </div>
+    <script>function toggleEditForm() {
+            var editSection = document.getElementById('edit-section');
+            if (editSection.style.display === 'none') {
+                editSection.style.display = 'block';
+            } else {
+                editSection.style.display = 'none';
+            }
+        }</script>
 </body>
 </html>
-

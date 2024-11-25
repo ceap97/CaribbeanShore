@@ -1,5 +1,4 @@
 ﻿@model IEnumerable<RefugioVerde.Models.Habitacion>
-@using System.Security.Claims
 @{
     Layout = "_Cliente";
 }
@@ -43,5 +42,7 @@
 
 <!-- Scripts necesarios -->
 @section Scripts {
-     <script src="~/admin/assets/js/datatables.min.js"></script>
+    <script src="~/admin/assets/js/datatables.min.js"></script>
+    <script src="~/cliente/vistascliente/reservar.js"></script>
+    <script src="~/admin/assets/js/sweetalert2@11.js"></script>
 }
