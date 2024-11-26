@@ -20,6 +20,43 @@ namespace RefugioVerde.Controllers
             _context = context;
         }
         [HttpGet]
+        public async Task<IActionResult> ListarReservasCliente()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(userId, out int parsedUserId))
+            {
+                var cliente = await _context.Clientes
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.Habitacion)
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.EstadoReserva)
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.Servicio)
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.Comodidad)
+                    .FirstOrDefaultAsync(c => c.UsuarioId == parsedUserId);
+
+                if (cliente == null)
+                {
+                    return NotFound();
+                }
+
+                return Json(cliente.Reservas.Select(r => new
+                {
+                    r.FechaReserva,
+                    r.FechaInicio,
+                    r.FechaFin,
+                    Habitacion = r.Habitacion?.NombreHabitacion,
+                    EstadoReserva = r.EstadoReserva?.Nombre,
+                    Servicio = r.Servicio?.Nombre,
+                    Comodidad = r.Comodidad?.Nombre
+                }));
+            }
+            return BadRequest("Invalid user ID");
+        }
+
+
+        [HttpGet]
         public async Task<IActionResult> ObtenerClienteActual()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
