@@ -35,7 +35,7 @@ function mostrarModalIniciarSesion() {
             .then(data => {
                 if (data.success) {
                     if (data.redirectUrl.includes("Cliente")) {
-                        window.location.href = "/Cliente";
+                        window.location.href = "/Clientes/MiPerfil";
                     } else {
                         window.location.href = data.redirectUrl;
                     }
@@ -59,9 +59,7 @@ function mostrarModalIniciarSesion() {
     document.getElementById('btnGoogleLogin').addEventListener('click', function () {
         window.location.href = '/Inicio/GoogleLogin';
     });
-}
-
-function mostrarModalRegistrarse() {
+} function mostrarModalRegistrarse() {
     Swal.fire({
         title: 'Registrarse',
         html: `
@@ -101,7 +99,8 @@ function mostrarModalRegistrarse() {
                         text: '¡Te has registrado exitosamente!',
                         showConfirmButton: true
                     }).then(() => {
-                        mostrarModalIniciarSesion();
+                        // Después de un registro exitoso, iniciamos sesión automáticamente
+                        iniciarSesionAutomatico(form.get('correo'), form.get('clave'));
                     });
                 } else {
                     Swal.fire({
@@ -115,4 +114,34 @@ function mostrarModalRegistrarse() {
                 }
             });
     });
+}
+
+function iniciarSesionAutomatico(correo, clave) {
+    var formData = new FormData();
+    formData.append('correo', correo);
+    formData.append('clave', clave);
+
+    fetch('/Inicio/IniciarSesion', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                if (data.redirectUrl.includes("Cliente")) {
+                    window.location.href = "/Cliente";
+                } else {
+                    window.location.href = data.redirectUrl;
+                }
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message,
+                    showConfirmButton: true
+                }).then(() => {
+                    mostrarModalIniciarSesion();
+                });
+            }
+        });
 }

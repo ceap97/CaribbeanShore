@@ -21,6 +21,17 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+        private int? GetLoggedInUserId()
+        {
+            if (Request.Cookies.TryGetValue("userId", out string userId))
+            {
+                if (int.TryParse(userId, out int id))
+                {
+                    return id;
+                }
+            }
+            return null;
+        }
         public IActionResult Dashboard()
         {
             ViewBag.EmpleadosData = new

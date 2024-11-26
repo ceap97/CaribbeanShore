@@ -4,6 +4,7 @@
 @{
     var userName = User.Identity.Name;
     var userImage = Url.Content($"~/images/usuarios/{userName}.jpeg");
+    var cliente = ViewBag.Cliente as RefugioVerde.Models.Cliente;
 
     Layout = "_Cliente";
 }
@@ -15,77 +16,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfil</title>
     <link href="~/css/perfil.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
 <body>
-    <div class="container">
-        <main class="main-content">
-            <section class="profile-section">
-                <div class="profile-picture">
-                    <img src="@userImage" alt="Foto de Perfil">
-                    <button class="edit-photo">Añadir foto</button>
-                    <h1>@userName<button class="edit-btn" onclick="toggleEditForm()">✏️</button></h1>
-                    <textarea placeholder="Cuéntanos sobre tu trabajo..."></textarea>
-                </div>
-            </section>
-            <section class="stats-section">
-                <div class="plan-box">
-                    <h3>Mi informacion</h3>
-                    <div class="section-heading text-left">
-                        <h4> <strong>Nombre:</strong> @Model.Nombre @Model.Apellido</h4>
-                        <h4> <strong>D.I.:</strong> @Model.DocumentoIdentidad</h4>
-                        <h4> <strong>Correo:</strong> @Model.Correo</h4>
-                        <h4> <strong>Telefono:</strong> @Model.Telefono</h4>
-                        <h4> <strong>Ciudad:</strong> @Model.Municipio.Nombre</h4>
-                    </div>
-                    <button class="edit-btn" onclick="toggleEditForm()">Editar</button>
-                </div>
-                <div class="wallet-box">
-                    <h3>Historial</h3>
-                    <div class="wallet-stats">
-                        <div class="stat blue">Pagos totales: $0</div>
-                        <div class="stat green">Reservas totales: $0</div>
+
+    <section class="rooms-area section-padding-100-0">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-6">
+                    <div class="section-heading text-center">
+                        <div class="line-"></div>
+                        <h2>Mi Perfil</h2>
+                        <p></p>
                     </div>
                 </div>
-            </section>
-            <section class="edit-section" id="edit-section" style="display:none;">
-                <form asp-action="UpdateProfile" method="post">
-                    <div class="form-group">
-                        <label for="Nombre">Nombre</label>
-                        <input type="text" id="Nombre" name="Nombre" value="@Model.Nombre" class="form-control" />
+            </div>
+
+            <div class="dt-container">
+        @if (cliente != null)
+        {
+            <main class="main-content">
+                <section class="profile-section">
+                    <div class="profile-picture">
+                        <img src="@userImage" alt="Foto de Perfil">
+                        <button class="edit-photo">Añadir foto</button>
+                        <h1>@userName<button class="edit-btn" onclick="toggleEditForm()">✏️</button></h1>
+                        <textarea placeholder="Cuéntanos sobre tu trabajo..."></textarea>
                     </div>
-                    <div class="form-group">
-                        <label for="Apellido">Apellido</label>
-                        <input type="text" id="Apellido" name="Apellido" value="@Model.Apellido" class="form-control" />
+                </section>
+                <section class="stats-section">
+                    <div class="plan-box">
+                        <h3>Mi informacion</h3>
+                        <div class="section-heading text-left">
+                            <h4> <strong>Nombre:</strong> @Model.Nombre @Model.Apellido</h4>
+                            <h4> <strong>D.I.:</strong> @Model.DocumentoIdentidad</h4>
+                            <h4> <strong>Correo:</strong> @Model.Correo</h4>
+                            <h4> <strong>Telefono:</strong> @Model.Telefono</h4>
+                            <h4> <strong>Ciudad:</strong> @Model.Municipio.Nombre</h4>
+                        </div>
+                        <button class="edit-btn" onclick="toggleEditForm()">Editar</button>
                     </div>
-                    <div class="form-group">
-                        <label for="DocumentoIdentidad">D.I.</label>
-                        <input type="text" id="DocumentoIdentidad" name="DocumentoIdentidad" value="@Model.DocumentoIdentidad" class="form-control" />
+                    <div class="wallet-box">
+                        <h3>Historial</h3>
+                        <div class="wallet-stats">
+                            <div class="stat blue">Pagos totales: $0</div>
+                            <div class="stat green">Reservas totales: $0</div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="Correo">Correo</label>
-                        <input type="email" id="Correo" name="Correo" value="@Model.Correo" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="Telefono">Telefono</label>
-                        <input type="text" id="Telefono" name="Telefono" value="@Model.Telefono" class="form-control" />
-                    </div>
-                    <div class="form-group">
-                        <label for="Municipio">Ciudad</label>
-                        <input type="text" id="Municipio" name="Municipio" value="@Model.Municipio.Nombre" class="form-control" />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <button type="button" class="btn btn-secondary" onclick="toggleEditForm()">Cancelar</button>
-                </form>
-            </section>
-        </main>
+                </section>
+                <section class="edit-section" id="edit-section" style="display:none;">
+                    <form asp-action="UpdateProfile" method="post">
+                        <div class="form-group">
+                            <label for="Nombre">Nombre</label>
+                            <input type="text" id="Nombre" name="Nombre" value="@Model.Nombre" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Apellido">Apellido</label>
+                            <input type="text" id="Apellido" name="Apellido" value="@Model.Apellido" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="DocumentoIdentidad">D.I.</label>
+                            <input type="text" id="DocumentoIdentidad" name="DocumentoIdentidad" value="@Model.DocumentoIdentidad" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Correo">Correo</label>
+                            <input type="email" id="Correo" name="Correo" value="@Model.Correo" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Telefono">Telefono</label>
+                            <input type="text" id="Telefono" name="Telefono" value="@Model.Telefono" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="Municipio">Ciudad</label>
+                            <input type="text" id="Municipio" name="Municipio" value="@Model.Municipio.Nombre" class="form-control" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditForm()">Cancelar</button>
+                    </form>
+                </section>
+            </main>
+        }
+        else
+        {
+            <div class="user-info">
+                <h1>@userName</h1>
+                <img src="@userImage" alt="Foto de Perfil">
+                <p>Información del usuario no disponible.</p>
+                <button type="button" class="btn btn-primary" onclick="openAddClientModal()">Agregar Cliente</button>
+            </div>
+        }
     </div>
-    <script>function toggleEditForm() {
-            var editSection = document.getElementById('edit-section');
-            if (editSection.style.display === 'none') {
-                editSection.style.display = 'block';
-            } else {
-                editSection.style.display = 'none';
-            }
-        }</script>
+        </div>
+
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/cliente/vistascliente/agregarcliente.js"></script>
 </body>
 </html>

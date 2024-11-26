@@ -44,14 +44,12 @@ namespace RefugioVerde.Controllers
             if (int.TryParse(userId, out int parsedUserId))
             {
                 var cliente = _context.Clientes.Include(c => c.Usuario).Include(m => m.Municipio).FirstOrDefault(c => c.UsuarioId == parsedUserId);
-                if (cliente == null)
-                {
-                    return NotFound();
-                }
+                ViewBag.Cliente = cliente;
                 return View(cliente);
             }
             return BadRequest("Invalid user ID");
         }
+
         public IActionResult Create()
         {
             ViewBag.MunicipioId = new SelectList(_context.Municipios, "Id", "Nombre");
