@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -21,16 +22,22 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
-        private int? GetLoggedInUserId()
+        [HttpGet]
+        public async Task<IActionResult> ObtenerUsuarioActual()
         {
-            if (Request.Cookies.TryGetValue("userId", out string userId))
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(userId, out int parsedUserId))
             {
-                if (int.TryParse(userId, out int id))
+                var usuario = await _context.Usuarios
+                    .Include(u => u.Empleado)
+                    .FirstOrDefaultAsync(u => u.UsuarioId == parsedUserId);
+                if (usuario == null)
                 {
-                    return id;
+                    return NotFound();
                 }
+                return Json(usuario);
             }
-            return null;
+            return BadRequest("Invalid user ID");
         }
         public IActionResult Dashboard()
         {

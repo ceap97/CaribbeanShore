@@ -31,7 +31,7 @@ public partial class Cliente
     [EmailAddress(ErrorMessage = "El correo no tiene un formato válido.")]
     public string Correo { get; set; }
     [Required]
-    public int? UsuarioId { get; set; }
+    public int? UsuarioId { get; set; } = null!;
 
     [JsonIgnore]
     public virtual Municipio Municipio { get; set; }

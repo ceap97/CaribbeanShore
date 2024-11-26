@@ -35,7 +35,7 @@ function mostrarModalIniciarSesion() {
             .then(data => {
                 if (data.success) {
                     if (data.redirectUrl.includes("Cliente")) {
-                        window.location.href = "/Clientes/MiPerfil";
+                        window.location.href = "/Cliente";
                     } else {
                         window.location.href = data.redirectUrl;
                     }
@@ -129,7 +129,7 @@ function iniciarSesionAutomatico(correo, clave) {
         .then(data => {
             if (data.success) {
                 if (data.redirectUrl.includes("Cliente")) {
-                    window.location.href = "/Cliente";
+                    window.location.href = "/Clientes/MiPerfil";
                 } else {
                     window.location.href = data.redirectUrl;
                 }
