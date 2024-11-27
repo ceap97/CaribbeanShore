@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,43 @@ namespace RefugioVerde.Controllers
         public ReservasController(RefugioVerdeContext context)
         {
             _context = context;
+        }
+        [HttpGet]
+        public async Task<IActionResult> ListarReservasCliente()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (int.TryParse(userId, out int parsedUserId))
+            {
+                var cliente = await _context.Clientes
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.Habitacion)
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.EstadoReserva)
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.Servicio)
+                    .Include(c => c.Reservas)
+                        .ThenInclude(r => r.Comodidad)
+                    .FirstOrDefaultAsync(c => c.UsuarioId == parsedUserId);
+
+                if (cliente == null)
+                {
+                    return NotFound();
+                }
+
+                var reservasViewModel = cliente.Reservas.Select(r => new ReservaViewModel
+                {
+                    FechaReserva = r.FechaReserva,
+                    FechaInicio = r.FechaInicio,
+                    FechaFin = r.FechaFin,
+                    Habitacion = r.Habitacion?.NombreHabitacion,
+                    EstadoReserva = r.EstadoReserva?.Nombre,
+                    Servicio = r.Servicio?.Nombre,
+                    Comodidad = r.Comodidad?.Nombre
+                }).ToList();
+
+                return View(reservasViewModel);
+            }
+            return BadRequest("Invalid user ID");
         }
 
         public async Task<IActionResult> Index()

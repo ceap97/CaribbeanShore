@@ -13,7 +13,7 @@ public partial class Reserva
 
     public int? HabitacionId { get; set; }
 
-    public int? EstadoReservaId { get; set; } = 2; // Asumiendo que el ID de "Pendiente" es 1
+    public int? EstadoReservaId { get; set; } = 2; 
 
     public int? ServicioId { get; set; }
 

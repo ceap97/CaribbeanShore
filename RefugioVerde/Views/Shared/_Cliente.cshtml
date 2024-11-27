@@ -71,7 +71,7 @@ else
                                             <a href="#">Perfil</a>
                                             <ul class="dropdown">
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#miPerfilModal">Mi perfil</a></li>
-                                                <li><a href="javascript:void(0);" onclick="listarReservasCliente()">Mis Reservas</a></li>
+                                                <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#misReservasModal">Mis Reservas</a></li>
                                                 <li><a href="/Pagos/Index">Mis Pagos</a></li>
                                             </ul>
                                         </li>
@@ -175,7 +175,6 @@ else
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
         <script src="~/Cliente/VistasCliente/Reservar.js"></script>
-        <script src="~/cliente/vistascliente/listarreservascliente.js"></script>
         @await RenderSectionAsync("Scripts", required: false)
 
         <!-- Modal Mi Perfil -->
@@ -188,6 +187,21 @@ else
                     </div>
                     <div class="modal-body">
                         <iframe src="@Url.Action("MiPerfil", "Clientes")" width="101%" height="700px" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Mis Reservas -->
+        <div class="modal fade" id="misReservasModal" tabindex="-1" aria-labelledby="misReservasModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="misReservasModalLabel">Mis Reservas</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe src="@Url.Action("ListarReservasCliente", "Reservas")" width="101%" height="800px" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>

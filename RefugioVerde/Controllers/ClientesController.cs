@@ -41,16 +41,18 @@ namespace RefugioVerde.Controllers
                     return NotFound();
                 }
 
-                return Json(cliente.Reservas.Select(r => new
+                var reservasViewModel = cliente.Reservas.Select(r => new ReservaViewModel
                 {
-                    r.FechaReserva,
-                    r.FechaInicio,
-                    r.FechaFin,
+                    FechaReserva = r.FechaReserva,
+                    FechaInicio = r.FechaInicio,
+                    FechaFin = r.FechaFin,
                     Habitacion = r.Habitacion?.NombreHabitacion,
                     EstadoReserva = r.EstadoReserva?.Nombre,
                     Servicio = r.Servicio?.Nombre,
                     Comodidad = r.Comodidad?.Nombre
-                }));
+                }).ToList();
+
+                return View(reservasViewModel);
             }
             return BadRequest("Invalid user ID");
         }
