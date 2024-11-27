@@ -1,34 +1,5 @@
 ﻿
-
-    document.body.insertAdjacentHTML('beforeend', modalTemplate);
-    loadMunicipios().then(() => {
-        // Establecer el usuario por defecto como el usuario asociado al usuario que inició sesión
-        fetch('/Usuarios/ObtenerUsuarioActual')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('usuarioId').value = data.usuarioId;
-            });
-    });
-    $('#clientModal').modal('show');
-
-    document.getElementById('clientForm').addEventListener('submit', function (e) {
-        e.preventDefault();
-        let formData = new FormData(this);
-        console.log('Datos enviados:', Object.fromEntries(formData.entries())); // Verificar los datos enviados
-        fetch('/Clientes/Crear', {
-            method: 'POST',
-            body: formData
-        }).then(response => {
-            if (response.ok) {
-                $('#clientModal').modal('hide');
-                location.reload();
-            } else {
-                Swal.fire('Error', 'Hubo un problema al crear el cliente.', 'error');
-            }
-        }).catch(error => {
-            Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
-        });
-    });
+    
 
 
 function openEditClientModal(clienteId) {
@@ -111,6 +82,123 @@ function openEditClientModal(clienteId) {
             Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
         });
     });
+}
+
+function openEditReservaModal(reservaId) {
+    // Remove any existing modals first
+    const existingModal = document.getElementById('editModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    if (!reservaId) {
+        Swal.fire('Error', 'ID de reserva no válido', 'error');
+        return;
+    }
+
+    fetch(`/Reservas/Obtener/${reservaId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Reserva no encontrada');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const modalTemplate = `
+                <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="editModalLabel">Editar Reserva</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="editForm">
+                                    <input type="hidden" id="editReservaId" name="reservaId" value="${data.reservaId}">
+                                    <input type="hidden" id="editFechaReserva" name="fechaReserva" value="${data.fechaReserva?.split('T')[0]}">
+                                    <input type="hidden" id="editClienteId" name="clienteId" value="${data.clienteId}">
+                                    <input type="hidden" id="editEstadoReservaId" name="estadoReservaId" value="${data.estadoReservaId}">
+                                    
+                                    <div class="mb-3">
+                                        <label for="editHabitacionId" class="form-label">Habitación</label>
+                                        <select class="form-select" id="editHabitacionId" name="habitacionId" required>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="editComodidadId" class="form-label">Comodidad</label>
+                                        <select class="form-select" id="editComodidadId" name="comodidadId" required>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="editServicioId" class="form-label">Servicio</label>
+                                        <select class="form-select" id="editServicioId" name="servicioId" required>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="editFechaInicio" class="form-label">Fecha Inicio</label>
+                                        <input type="date" class="form-control" id="editFechaInicio" name="fechaInicio" 
+                                            value="${data.fechaInicio?.split('T')[0]}" required>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="editFechaFin" class="form-label">Fecha Fin</label>
+                                        <input type="date" class="form-control" id="editFechaFin" name="fechaFin" 
+                                            value="${data.fechaFin?.split('T')[0]}" required>
+                                    </div>
+                                    
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalTemplate);
+
+            // Initialize dropdowns
+            Promise.all([
+                loadHabitaciones(data.habitacionId),
+                loadComodidades(data.comodidadId),
+                loadServicios(data.servicioId),
+                loadEstadosReserva(data.estadoReservaId)
+            ]).then(() => {
+                const modal = new bootstrap.Modal(document.getElementById('editModal'));
+                modal.show();
+            });
+
+            // Set up form submission
+            document.getElementById('editForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(this);
+
+                fetch('/Reservas/Editar', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.ok) {
+                        const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                        modal.hide();
+                        location.reload();
+                    } else {
+                        throw new Error('Error al editar la reserva');
+                    }
+                })
+                .catch(error => {
+                    Swal.fire('Error', error.message, 'error');
+                });
+            });
+        })
+        .catch(error => {
+            Swal.fire('Error', error.message, 'error');
+        });
 }
 
 function loadMunicipios() {

@@ -41,6 +41,7 @@ namespace RefugioVerde.Controllers
 
                 var reservasViewModel = cliente.Reservas.Select(r => new ReservaViewModel
                 {
+                    ReservaId = r.ReservaId,
                     FechaReserva = r.FechaReserva,
                     FechaInicio = r.FechaInicio,
                     FechaFin = r.FechaFin,
