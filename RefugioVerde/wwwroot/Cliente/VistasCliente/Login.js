@@ -4,7 +4,7 @@
 
 function mostrarModalIniciarSesion() {
     Swal.fire({
-        title: 'Iniciar Sesion',
+        title: 'Iniciar Sesión',
         html: `
                 <form id="loginForm">
                     <div class="form-group mb-3">

@@ -42,8 +42,6 @@ namespace RefugioVerde.Controllers
             }
             return Json(pago);
         }
-
-       [HttpPost]
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
         {
@@ -83,6 +81,7 @@ namespace RefugioVerde.Controllers
 
             return BadRequest(ModelState);
         }
+
         [HttpPost]
         public async Task<IActionResult> Editar([FromForm] Pago pago)
         {

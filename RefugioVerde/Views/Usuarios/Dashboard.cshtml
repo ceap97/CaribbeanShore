@@ -4,166 +4,77 @@
 }
 
 @section Estilos {
-     <link href="~/admin/assets/css/buttons.datatables.css" rel="stylesheet" />
+    <link href="~/admin/assets/css/buttons.datatables.css" rel="stylesheet" />
     <link href="~/admin/assets/css/datatables.datatables.min.css" rel="stylesheet" />
 }
 
-<div class="row m-4">
-    <div class="col-sm-12">
-        <h2>Dashboard</h2>
-        <div class="row">
-            <div class="col-md-6">
-                <canvas id="empleadosChart"></canvas>
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white mb-4">
+            <div class="card-body">
+                Total de Clientes
+                <h2>@ViewBag.TotalClientes</h2>
             </div>
-            <div class="col-md-6">
-                <canvas id="usuariosChart"></canvas>
-            </div>
-        </div>
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <canvas id="huespedesChart"></canvas>
-            </div>
-            <div class="col-md-6">
-                <canvas id="habitacionesChart"></canvas>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="#">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <canvas id="clientesReservasChart"></canvas>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white mb-4">
+            <div class="card-body">
+                Total de Reservas
+                <h2>@ViewBag.TotalReservas</h2>
+            </div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="#">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white mb-4">
+            <div class="card-body">
+                Total de Pagos
+                <h2>@ViewBag.TotalPagos</h2>
+            </div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="#">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-danger text-white mb-4">
+            <div class="card-body">
+                Monto Total de Pagos por Mes
+                <h2>@ViewBag.MontoTotalPagosPorMes</h2>
+            </div>
+            <div class="card-footer d-flex align-items-center justify-content-between">
+                <a class="small text-white stretched-link" href="#">View Details</a>
+                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
             </div>
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <script src="~/admin/assets/js/datatables.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Datos de ejemplo, reemplaza con tus datos reales
-            var empleadosData = @Html.Raw(Json.Serialize(ViewBag.EmpleadosData));
-            var usuariosData = @Html.Raw(Json.Serialize(ViewBag.UsuariosData));
-            var huespedesData = @Html.Raw(Json.Serialize(ViewBag.HuespedesData));
-            var habitacionesData = @Html.Raw(Json.Serialize(ViewBag.HabitacionesData));
-            var clientesReservasData = @Html.Raw(Json.Serialize(ViewBag.ClientesReservasData));
-        
-
-            // Gráfico de Empleados
-            var ctxEmpleados = document.getElementById('empleadosChart').getContext('2d');
-            new Chart(ctxEmpleados, {
-                type: 'bar',
-                data: {
-                    labels: empleadosData.labels,
-                    datasets: [{
-                        label: 'Empleados',
-                        data: empleadosData.data,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Gráfico de Usuarios
-            var ctxUsuarios = document.getElementById('usuariosChart').getContext('2d');
-            new Chart(ctxUsuarios, {
-                type: 'bar',
-                data: {
-                    labels: usuariosData.labels,
-                    datasets: [{
-                        label: 'Usuarios Registrados',
-                        data: usuariosData.data,
-                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Gráfico de Huéspedes
-            var ctxHuespedes = document.getElementById('huespedesChart').getContext('2d');
-            new Chart(ctxHuespedes, {
-                type: 'bar',
-                data: {
-                    labels: huespedesData.labels,
-                    datasets: [{
-                        label: 'Huéspedes',
-                        data: huespedesData.data,
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-
-            // Gráfico de Habitaciones
-            var ctxHabitaciones = document.getElementById('habitacionesChart').getContext('2d');
-            new Chart(ctxHabitaciones, {
-                type: 'pie',
-                data: {
-                    labels: habitacionesData.labels,
-                    datasets: [{
-                        label: 'Habitaciones',
-                        data: habitacionesData.data,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)'
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true
-                }
-            });
-
-            // Gráfico de Clientes con Reservas
-            var ctxClientesReservas = document.getElementById('clientesReservasChart').getContext('2d');
-            new Chart(ctxClientesReservas, {
-                type: 'bar',
-                data: {
-                    labels: clientesReservasData.labels,
-                    datasets: [{
-                        label: 'Clientes con Reservas',
-                        data: clientesReservasData.data,
-                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        });
-        
-    </script>
-}
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-area me-1"></i>
+                Area Chart Example
+            </div>
+            <div class="card-body"><canvas id="usuariosChart" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-1"></i>
+                Bar Chart Example
+            </div>
+            <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+        </div>
+    </div>
+</div>

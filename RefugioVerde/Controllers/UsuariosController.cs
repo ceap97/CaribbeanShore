@@ -41,6 +41,9 @@ namespace RefugioVerde.Controllers
         }
         public IActionResult Dashboard()
         {
+            ViewBag.TotalClientes = _context.Clientes.Count();
+            ViewBag.TotalReservas = _context.Reservas.Count();
+            ViewBag.TotalPagos = _context.Pagos.Count();
             ViewBag.EmpleadosData = new
             {
                 labels = new[] { "Empleados" },
@@ -63,9 +66,9 @@ namespace RefugioVerde.Controllers
             {
                 labels = new[] { "Reservadas", "Disponibles" },
                 data = new[] {
-                    _context.Habitacions.Count(h => h.EstadoHabitacionId == 2), 
-                    _context.Habitacions.Count(h => h.EstadoHabitacionId == 1)  
-                }
+            _context.Habitacions.Count(h => h.EstadoHabitacionId == 2),
+            _context.Habitacions.Count(h => h.EstadoHabitacionId == 1)
+        }
             };
 
             ViewBag.ClientesReservasData = new
@@ -76,6 +79,7 @@ namespace RefugioVerde.Controllers
 
             return View();
         }
+
         public async Task<IActionResult> Index()
         {
             var usuarios = await _context.Usuarios.Include(u => u.Empleado).ToListAsync();

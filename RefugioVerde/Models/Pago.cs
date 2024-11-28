@@ -17,7 +17,7 @@ public partial class Pago
     [StringLength(50, ErrorMessage = "El método de pago no puede tener más de 50 caracteres.")]
     public string MetodoPago { get; set; } = null!;
 
-    [Required(ErrorMessage = "El comprobante es obligatorio.")]
+    
     public string Comprobante { get; set; }
 
     [Required(ErrorMessage = "La reserva es obligatoria.")]
