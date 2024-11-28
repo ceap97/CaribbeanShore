@@ -18,7 +18,7 @@ public partial class Pago
     public string MetodoPago { get; set; } = null!;
 
     [Required(ErrorMessage = "El comprobante es obligatorio.")]
-    public byte[] Comprobante { get; set; }
+    public string Comprobante { get; set; }
 
     [Required(ErrorMessage = "La reserva es obligatoria.")]
     public int? ReservaId { get; set; }

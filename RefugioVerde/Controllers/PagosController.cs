@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,6 +12,7 @@ namespace RefugioVerde.Controllers
     public class PagosController : Controller
     {
         private readonly RefugioVerdeContext _context;
+        private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/comprobantes");
 
         public PagosController(RefugioVerdeContext context)
         {
@@ -30,7 +32,6 @@ namespace RefugioVerde.Controllers
             return Json(pagos);
         }
 
-        // GET: /Pagos/Obtener/{id}
         [HttpGet]
         public async Task<IActionResult> Obtener(int id)
         {
@@ -42,20 +43,46 @@ namespace RefugioVerde.Controllers
             return Json(pago);
         }
 
-        // POST: /Pagos/Crear
+       [HttpPost]
         [HttpPost]
-        public async Task<IActionResult> Crear([FromForm] Pago pago)
+        public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
         {
             if (ModelState.IsValid)
             {
+                if (comprobante != null && comprobante.Length > 0)
+                {
+                    var fileName = $"{Guid.NewGuid()}.jpeg";  // Usar un GUID como nombre del archivo para evitar colisiones
+                    var filePath = Path.Combine(_uploadPath, fileName);
+
+                    // Crear el directorio si no existe
+                    if (!Directory.Exists(_uploadPath))
+                    {
+                        Directory.CreateDirectory(_uploadPath);
+                    }
+
+                    // Guardar la imagen en el servidor
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await comprobante.CopyToAsync(stream);
+                    }
+
+                    pago.Comprobante = filePath;  // Guardar la ruta del archivo en la base de datos
+                }
+
                 _context.Pagos.Add(pago);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
+
+            // Registrar los errores de validación
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            foreach (var error in errors)
+            {
+                Console.WriteLine(error);
+            }
+
             return BadRequest(ModelState);
         }
-
-        // POST: /Pagos/Editar
         [HttpPost]
         public async Task<IActionResult> Editar([FromForm] Pago pago)
         {
@@ -68,7 +95,6 @@ namespace RefugioVerde.Controllers
             return BadRequest(ModelState);
         }
 
-        // DELETE: /Pagos/Eliminar/{id}
         [HttpDelete]
         public async Task<IActionResult> Eliminar(int id)
         {

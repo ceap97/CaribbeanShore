@@ -37,6 +37,7 @@
     <Folder Include="wwwroot\Admin\assets\plugins\mjolnic-bootstrap-colorpicker\dist\img\" />
     <Folder Include="wwwroot\images\habitaciones\" />
     <Folder Include="wwwroot\images\comodidades\" />
+    <Folder Include="wwwroot\images\comprobantes\" />
     <Folder Include="wwwroot\images\usuarios\" />
   </ItemGroup>
 
