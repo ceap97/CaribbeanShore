@@ -17,6 +17,31 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
+        [HttpPost]
+        public IActionResult CancelarReserva(int id)
+        {
+            var reserva = _context.Reservas
+                .Include(r => r.EstadoReserva)
+                .FirstOrDefault(r => r.ReservaId == id);
+            if (reserva == null)
+            {
+                return NotFound();
+            }
+
+            var estadoCancelada = _context.EstadoReservas
+                .FirstOrDefault(e => e.Nombre == "Cancelada");
+            if (estadoCancelada == null)
+            {
+                return NotFound("Estado 'Cancelada' no encontrado");
+            }
+
+            reserva.EstadoReserva = estadoCancelada;
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
         [HttpGet]
         public async Task<IActionResult> ListarReservasCliente()
         {

@@ -72,7 +72,7 @@ else
                                             <ul class="dropdown">
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#miPerfilModal">Mi perfil</a></li>
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#misReservasModal">Mis Reservas</a></li>
-                                                <li><a href="/Pagos/Index">Mis Pagos</a></li>
+                                                <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#historialPagosModal">Historial de Pagos</a></li>
                                             </ul>
                                         </li>
                                         <li><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContact" aria-controls="offcanvasContact">Contáctanos</a></li>
@@ -202,6 +202,21 @@ else
                     </div>
                     <div class="modal-body">
                         <iframe src="@Url.Action("ListarReservasCliente", "Reservas")" width="101%" height="800px" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Historial de Pagos -->
+        <div class="modal fade" id="historialPagosModal" tabindex="-1" aria-labelledby="historialPagosModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="historialPagosModalLabel">Historial de Pagos</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe src="@Url.Action("Historial", "Pagos")" width="100%" height="1000px" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>
