@@ -4,7 +4,7 @@
 
 function cancelarReserva(reservaId) {
     $.ajax({
-        url: '@Url.Action("CancelarReserva", "Reservas")',
+        url: cancelarReservaUrl,
         type: 'POST',
         data: { id: reservaId },
         success: function () {
