@@ -1,8 +1,4 @@
-﻿
-    
-
-
-function openEditClientModal(clienteId) {
+﻿function openEditClientModal(clienteId) {
     const modalTemplate = `
         <div class="modal fade" id="clientModal" tabindex="-1" aria-labelledby="clientModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -118,6 +114,9 @@ function openEditReservaModal(reservaId) {
                                     <input type="hidden" id="editFechaReserva" name="fechaReserva" value="${data.fechaReserva?.split('T')[0]}">
                                     <input type="hidden" id="editClienteId" name="clienteId" value="${data.clienteId}">
                                     <input type="hidden" id="editEstadoReservaId" name="estadoReservaId" value="${data.estadoReservaId}">
+                                    <input type="hidden" id="editPrecioHabitacion" name="precioHabitacion">
+                                    <input type="hidden" id="editPrecioComodidad" name="precioComodidad">
+                                    <input type="hidden" id="editPrecioServicio" name="precioServicio">
                                     
                                     <div class="mb-3">
                                         <label for="editHabitacionId" class="form-label">Habitación</label>
@@ -149,6 +148,11 @@ function openEditReservaModal(reservaId) {
                                             value="${data.fechaFin?.split('T')[0]}" required>
                                     </div>
                                     
+                                    <div class="mb-3">
+                                        <label for="editTotal" class="form-label">Total</label>
+                                        <input type="text" class="form-control" id="editTotal" name="total" readonly>
+                                    </div>
+                                    
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                                         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -171,10 +175,13 @@ function openEditReservaModal(reservaId) {
             ]).then(() => {
                 const modal = new bootstrap.Modal(document.getElementById('editModal'));
                 modal.show();
+                // Set initial prices and calculate total
+                setInitialPrices(data);
+                calculateEditTotal();
             });
 
             // Set up form submission
-            document.getElementById('editForm').addEventListener('submit', function(e) {
+            document.getElementById('editForm').addEventListener('submit', function (e) {
                 e.preventDefault();
                 const formData = new FormData(this);
 
@@ -182,24 +189,65 @@ function openEditReservaModal(reservaId) {
                     method: 'POST',
                     body: formData
                 })
-                .then(response => {
-                    if (response.ok) {
-                        const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-                        modal.hide();
-                        location.reload();
-                    } else {
-                        throw new Error('Error al editar la reserva');
-                    }
-                })
-                .catch(error => {
-                    Swal.fire('Error', error.message, 'error');
-                });
+                    .then(response => {
+                        if (response.ok) {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                            modal.hide();
+                            location.reload();
+                        } else {
+                            throw new Error('Error al editar la reserva');
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire('Error', error.message, 'error');
+                    });
             });
+
+            // Add event listeners for calculating total
+            document.getElementById('editHabitacionId').addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById('editPrecioHabitacion').value = selectedOption.getAttribute('data-precio');
+                calculateEditTotal();
+            });
+            document.getElementById('editComodidadId').addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById('editPrecioComodidad').value = selectedOption.getAttribute('data-precio');
+                calculateEditTotal();
+            });
+            document.getElementById('editServicioId').addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById('editPrecioServicio').value = selectedOption.getAttribute('data-precio');
+                calculateEditTotal();
+            });
+            document.getElementById('editFechaInicio').addEventListener('change', calculateEditTotal);
+            document.getElementById('editFechaFin').addEventListener('change', calculateEditTotal);
         })
         .catch(error => {
             Swal.fire('Error', error.message, 'error');
         });
 }
+
+function setInitialPrices(data) {
+    document.getElementById('editPrecioHabitacion').value = data.precioHabitacion || 0;
+    document.getElementById('editPrecioComodidad').value = data.precioComodidad || 0;
+    document.getElementById('editPrecioServicio').value = data.precioServicio || 0;
+}
+
+function calculateEditTotal() {
+    const precioHabitacion = parseFloat(document.getElementById('editPrecioHabitacion').value) || 0;
+    const precioComodidad = parseFloat(document.getElementById('editPrecioComodidad').value) || 0;
+    const precioServicio = parseFloat(document.getElementById('editPrecioServicio').value) || 0;
+
+    const fechaInicio = new Date(document.getElementById('editFechaInicio').value);
+    const fechaFin = new Date(document.getElementById('editFechaFin').value);
+
+    const diffTime = Math.abs(fechaFin - fechaInicio);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir el día de inicio
+
+    const total = (precioHabitacion + precioComodidad + precioServicio) * diffDays;
+    document.getElementById('editTotal').value = total.toFixed(2);
+}
+
 
 function loadMunicipios() {
     return fetch('/Municipios/Listar')
@@ -225,3 +273,107 @@ function loadMunicipios() {
         });
 }
 
+
+function loadHabitaciones(selectedHabitacionId) {
+    return fetch('/Habitaciones/Listar')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener la lista de habitaciones');
+            }
+            return response.json();
+        })
+        .then(data => {
+            let habitacionSelects = document.querySelectorAll('#habitacionId, #editHabitacionId');
+            habitacionSelects.forEach(select => {
+                select.innerHTML = '<option value="">Seleccione una habitación</option>';
+                data.forEach(habitacion => {
+                    let option = document.createElement('option');
+                    option.value = habitacion.habitacionId;
+                    option.textContent = habitacion.nombreHabitacion;
+                    option.setAttribute('data-precio', habitacion.precio);
+                    if (habitacion.habitacionId === selectedHabitacionId) {
+                        option.selected = true;
+                        document.getElementById('editPrecioHabitacion').value = habitacion.precio;
+                    }
+                    select.appendChild(option);
+                });
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('Error', 'Hubo un problema al cargar la lista de habitaciones.', 'error');
+        });
+}
+
+function loadComodidades(selectedComodidadId) {
+    return fetch('/Comodidades/Listar') // Asegúrate de que la ruta sea correcta
+        .then(response => response.json())
+        .then(data => {
+            let comodidadSelects = document.querySelectorAll('#comodidadId, #editComodidadId');
+            comodidadSelects.forEach(select => {
+                select.innerHTML = `<option value="">Seleccione una Comodidad</option>`;
+                data.forEach(comodidad => {
+                    let option = document.createElement('option');
+                    option.value = comodidad.comodidadId;
+                    option.textContent = comodidad.nombre;
+                    option.setAttribute('data-precio', comodidad.precio);
+                    if (comodidad.comodidadId === selectedComodidadId) {
+                        option.selected = true;
+                        document.getElementById('editPrecioComodidad').value = comodidad.precio;
+                    }
+                    select.appendChild(option);
+                });
+            });
+        });
+}
+
+function loadServicios(selectedServicioId) {
+    return fetch('/Servicios/Listar') // Asegúrate de que la ruta sea correcta
+        .then(response => response.json())
+        .then(data => {
+            let servicioSelects = document.querySelectorAll('#servicioId, #editServicioId');
+            servicioSelects.forEach(select => {
+                select.innerHTML = `<option value="">Seleccione un Servicio</option>`;
+                data.forEach(servicio => {
+                    let option = document.createElement('option');
+                    option.value = servicio.servicioId;
+                    option.textContent = servicio.nombre;
+                    option.setAttribute('data-precio', servicio.precio);
+                    if (servicio.servicioId === selectedServicioId) {
+                        option.selected = true;
+                        document.getElementById('editPrecioServicio').value = servicio.precio;
+                    }
+                    select.appendChild(option);
+                });
+            });
+        });
+}
+
+
+function loadClientes() {
+    return fetch('/Clientes/Listar') // Asegúrate de que la ruta sea correcta
+        .then(response => response.json())
+        .then(data => {
+            let clienteSelects = document.querySelectorAll('#clienteId, #editClienteId');
+            clienteSelects.forEach(select => {
+                select.innerHTML = `<option value="">Seleccione un Cliente</option>`;
+                data.forEach(cliente => {
+                    select.innerHTML += `<option value="${cliente.clienteId}">${cliente.nombre}</option>`;
+                });
+            });
+        });
+}
+
+function loadEstadosReserva() {
+    return fetch('/EstadoReservas/Listar') // Asegúrate de que la ruta sea correcta
+        .then(response => response.json())
+        .then(data => {
+            let estadoReservaSelects = document.querySelectorAll('#estadoReservaId, #editEstadoReservaId');
+            estadoReservaSelects.forEach(select => {
+                select.innerHTML = `<option value="">Seleccione un Estado de Reserva</option>`;
+                data.forEach(estadoReserva => {
+                    select.innerHTML += `<option value="${estadoReserva.estadoReservaId}">${estadoReserva.nombre}</option>`;
+                });
+            });
+        });
+}
