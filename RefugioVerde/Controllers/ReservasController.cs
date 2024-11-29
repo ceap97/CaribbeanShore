@@ -131,6 +131,11 @@ namespace RefugioVerde.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Reserva reserva)
         {
+            if (reserva.FechaFin <= reserva.FechaInicio)
+            {
+                ModelState.AddModelError("FechaFin", "La fecha de fin debe ser mayor que la fecha de inicio.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Reservas.Add(reserva);
@@ -144,6 +149,11 @@ namespace RefugioVerde.Controllers
         [HttpPost]
         public async Task<IActionResult> Editar([FromForm] Reserva reserva)
         {
+            if (reserva.FechaFin <= reserva.FechaInicio)
+            {
+                ModelState.AddModelError("FechaFin", "La fecha de fin debe ser mayor que la fecha de inicio.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Reservas.Update(reserva);

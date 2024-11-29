@@ -22,6 +22,7 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
         public async Task<IActionResult> ObtenerUsuarioActual()
         {
@@ -39,42 +40,55 @@ namespace RefugioVerde.Controllers
             }
             return BadRequest("Invalid user ID");
         }
+
         public IActionResult Dashboard()
         {
             ViewBag.TotalClientes = _context.Clientes.Count();
             ViewBag.TotalReservas = _context.Reservas.Count();
             ViewBag.TotalPagos = _context.Pagos.Count();
-            ViewBag.EmpleadosData = new
-            {
-                labels = new[] { "Empleados" },
-                data = new[] { _context.Empleados.Count() }
-            };
 
-            ViewBag.UsuariosData = new
-            {
-                labels = new[] { "Usuarios Registrados" },
-                data = new[] { _context.Usuarios.Count() }
-            };
+            // Datos para el gráfico de clientes registrados por mes
+            //var clientesPorMes = _context.Clientes
+            //    .GroupBy(c => new { c.FechaRegistro.Year, c.FechaRegistro.Month })
+            //    .Select(g => new { Mes = g.Key.Month, Año = g.Key.Year, Total = g.Count() })
+            //    .OrderBy(g => g.Año).ThenBy(g => g.Mes)
+            //    .ToList();
+            //ViewBag.ClientesPorMesLabels = clientesPorMes.Select(c => $"{c.Mes}/{c.Año}").ToList();
+            //ViewBag.ClientesPorMesData = clientesPorMes.Select(c => c.Total).ToList();
 
-            ViewBag.HuespedesData = new
-            {
-                labels = new[] { "Huéspedes" },
-                data = new[] { _context.Huespeds.Count() }
-            };
+            // Datos para el gráfico de reservas por mes
+            var reservasPorMes = _context.Reservas
+                .GroupBy(r => new { r.FechaReserva.Year, r.FechaReserva.Month })
+                .Select(g => new { Mes = g.Key.Month, Año = g.Key.Year, Total = g.Count() })
+                .OrderBy(g => g.Año).ThenBy(g => g.Mes)
+                .ToList();
+            ViewBag.ReservasPorMesLabels = reservasPorMes.Select(r => $"{r.Mes}/{r.Año}").ToList();
+            ViewBag.ReservasPorMesData = reservasPorMes.Select(r => r.Total).ToList();
 
-            ViewBag.HabitacionesData = new
-            {
-                labels = new[] { "Reservadas", "Disponibles" },
-                data = new[] {
-            _context.Habitacions.Count(h => h.EstadoHabitacionId == 2),
-            _context.Habitacions.Count(h => h.EstadoHabitacionId == 1)
-        }
-            };
+            // Datos para el gráfico de reservas por estado
+            var reservasPorEstado = _context.Reservas
+                .GroupBy(r => r.EstadoReserva.Nombre)
+                .Select(g => new { Estado = g.Key, Total = g.Count() })
+                .ToList();
+            ViewBag.ReservasPorEstadoLabels = reservasPorEstado.Select(r => r.Estado).ToList();
+            ViewBag.ReservasPorEstadoData = reservasPorEstado.Select(r => r.Total).ToList();
 
-            ViewBag.ClientesReservasData = new
+            // Datos para el gráfico de pagos por estado
+            var pagosPorEstado = _context.Pagos
+                .GroupBy(p => p.EstadoPago.Nombre)
+                .Select(g => new { Estado = g.Key, Total = g.Count() })
+                .ToList();
+            ViewBag.PagosPorEstadoLabels = pagosPorEstado.Select(p => p.Estado).ToList();
+            ViewBag.PagosPorEstadoData = pagosPorEstado.Select(p => p.Total).ToList();
+
+            // Datos para el gráfico de comparación de pagos, clientes, reservas y huéspedes
+            ViewBag.ComparacionDatosLabels = new List<string> { "Pagos", "Clientes", "Reservas", "Huéspedes" };
+            ViewBag.ComparacionDatosData = new List<int>
             {
-                labels = new[] { "Clientes con Reservas" },
-                data = new[] { _context.Clientes.Count(c => c.Reservas.Any()) }
+                _context.Pagos.Count(),
+                _context.Clientes.Count(),
+                _context.Reservas.Count(),
+                _context.Huespeds.Count()
             };
 
             return View();

@@ -242,7 +242,7 @@ function calculateEditTotal() {
     const fechaFin = new Date(document.getElementById('editFechaFin').value);
 
     const diffTime = Math.abs(fechaFin - fechaInicio);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir el día de inicio
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 0; // +1 para incluir el día de inicio
 
     const total = (precioHabitacion + precioComodidad + precioServicio) * diffDays;
     document.getElementById('editTotal').value = total.toFixed(2);

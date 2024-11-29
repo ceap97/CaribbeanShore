@@ -45,7 +45,7 @@
                                 <input type="text" class="form-control" id="total" name="total" readonly>
                             </div>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar</button>
+                            <button type="submit" class="btn btn-primary" id="guardarBtn">Guardar</button>
                         </form>
                     </div>
                 </div>
@@ -100,12 +100,12 @@
         });
     });
 
-    // Agregar eventos para calcular el total
+    // Agregar eventos para calcular el total y validar fechas
     document.getElementById('habitacionId').addEventListener('change', calculateTotal);
     document.getElementById('comodidadId').addEventListener('change', calculateTotal);
     document.getElementById('servicioId').addEventListener('change', calculateTotal);
-    document.getElementById('fechaInicio').addEventListener('change', calculateTotal);
-    document.getElementById('fechaFin').addEventListener('change', calculateTotal);
+    document.getElementById('fechaInicio').addEventListener('change', validateDates);
+    document.getElementById('fechaFin').addEventListener('change', validateDates);
 }
 
 function calculateTotal() {
@@ -117,10 +117,24 @@ function calculateTotal() {
     const fechaFin = new Date(document.getElementById('fechaFin').value);
 
     const diffTime = Math.abs(fechaFin - fechaInicio);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 para incluir el día de inicio
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 0; // +1 para incluir el día de inicio
 
     const total = (precioHabitacion + precioComodidad + precioServicio) * diffDays;
     document.getElementById('total').value = total.toFixed(2);
+}
+
+function validateDates() {
+    const fechaInicio = new Date(document.getElementById('fechaInicio').value);
+    const fechaFin = new Date(document.getElementById('fechaFin').value);
+    const guardarBtn = document.getElementById('guardarBtn');
+
+    if (fechaFin <= fechaInicio) {
+        Swal.fire('Error', 'La fecha de fin debe ser mayor que la fecha de inicio.', 'error');
+        guardarBtn.disabled = true;
+    } else {
+        guardarBtn.disabled = false;
+        calculateTotal();
+    }
 }
 
 function loadHabitaciones() {
@@ -210,4 +224,3 @@ function loadEstadosReserva() {
             });
         });
 }
-
