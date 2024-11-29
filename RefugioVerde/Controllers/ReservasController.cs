@@ -73,7 +73,10 @@ namespace RefugioVerde.Controllers
                     Habitacion = r.Habitacion?.NombreHabitacion,
                     EstadoReserva = r.EstadoReserva?.Nombre,
                     Servicio = r.Servicio?.Nombre,
-                    Comodidad = r.Comodidad?.Nombre
+                    Comodidad = r.Comodidad?.Nombre,
+                    PrecioHabitacion = r.Habitacion?.Precio ?? 0,
+                    PrecioComodidad = r.Comodidad?.Precio ?? 0,
+                    PrecioServicio = r.Servicio?.Precio ?? 0
                 }).ToList();
 
                 return View(reservasViewModel);
