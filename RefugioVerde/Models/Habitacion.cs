@@ -36,4 +36,5 @@ public partial class Habitacion
 
     [JsonIgnore]
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
+    public virtual ICollection<EncuestaSatisfaccion> EncuestasSatisfaccion { get; set; }
 }

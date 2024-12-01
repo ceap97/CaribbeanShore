@@ -18,7 +18,17 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+        [HttpGet]
+        public async Task<IActionResult> Historial(int clienteId)
+        {
+            var pagos = await _context.Pagos
+                .Include(p => p.EstadoPago)
+                .Include(p => p.Reserva)
+                .Where(p => p.Reserva.ClienteId == clienteId)
+                .ToListAsync();
 
+            return View(pagos);
+        }
         public async Task<IActionResult> Index()
         {
             var pagos = await _context.Pagos.Include(p => p.EstadoPago).Include(p => p.Reserva).ToListAsync();

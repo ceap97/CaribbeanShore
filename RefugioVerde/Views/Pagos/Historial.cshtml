@@ -1,0 +1,27 @@
+﻿@model IEnumerable<RefugioVerde.Models.Pago>
+
+@{
+    ViewData["Title"] = "Historial de Pagos";
+}
+
+<h2>Historial de Pagos</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Monto</th>
+            <th>Método de Pago</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var pago in Model)
+        {
+            <tr>
+                <td>@pago.Monto</td>
+                <td>@pago.MetodoPago</td>
+                <td>@pago.EstadoPago.Nombre</td>
+            </tr>
+        }
+    </tbody>
+</table>

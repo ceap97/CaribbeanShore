@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RefugioVerde.Models;
 
@@ -11,9 +12,11 @@ using RefugioVerde.Models;
 namespace RefugioVerde.Migrations
 {
     [DbContext(typeof(RefugioVerdeContext))]
-    partial class RefugioVerdeContextModelSnapshot : ModelSnapshot
+    [Migration("20241201192401_AddEncuestaSatisfaccion")]
+    partial class AddEncuestaSatisfaccion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -189,17 +192,7 @@ namespace RefugioVerde.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<int>("EmpleadoId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("HabitacionId")
-                        .HasColumnType("int");
-
                     b.HasKey("EncuestaSatisfaccionId");
-
-                    b.HasIndex("EmpleadoId");
-
-                    b.HasIndex("HabitacionId");
 
                     b.ToTable("EncuestasSatisfaccion");
                 });
@@ -621,25 +614,6 @@ namespace RefugioVerde.Migrations
                     b.Navigation("Rol");
                 });
 
-            modelBuilder.Entity("RefugioVerde.Models.EncuestaSatisfaccion", b =>
-                {
-                    b.HasOne("RefugioVerde.Models.Empleado", "Empleado")
-                        .WithMany("EncuestasSatisfaccion")
-                        .HasForeignKey("EmpleadoId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EncuestaSatisfaccion_Empleado");
-
-                    b.HasOne("RefugioVerde.Models.Habitacion", "Habitacion")
-                        .WithMany("EncuestasSatisfaccion")
-                        .HasForeignKey("HabitacionId")
-                        .IsRequired()
-                        .HasConstraintName("FK_EncuestaSatisfaccion_Habitacion");
-
-                    b.Navigation("Empleado");
-
-                    b.Navigation("Habitacion");
-                });
-
             modelBuilder.Entity("RefugioVerde.Models.Habitacion", b =>
                 {
                     b.HasOne("RefugioVerde.Models.EstadoHabitacion", "EstadoHabitacion")
@@ -777,8 +751,6 @@ namespace RefugioVerde.Migrations
 
             modelBuilder.Entity("RefugioVerde.Models.Empleado", b =>
                 {
-                    b.Navigation("EncuestasSatisfaccion");
-
                     b.Navigation("Usuarios");
                 });
 
@@ -799,8 +771,6 @@ namespace RefugioVerde.Migrations
 
             modelBuilder.Entity("RefugioVerde.Models.Habitacion", b =>
                 {
-                    b.Navigation("EncuestasSatisfaccion");
-
                     b.Navigation("Reservas");
                 });
 

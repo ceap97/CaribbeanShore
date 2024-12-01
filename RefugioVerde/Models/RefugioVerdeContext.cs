@@ -14,6 +14,7 @@ public partial class RefugioVerdeContext : DbContext
         : base(options)
     {
     }
+    public DbSet<EncuestaSatisfaccion> EncuestasSatisfaccion { get; set; }
 
     public virtual DbSet<Cliente> Clientes { get; set; }
 
@@ -53,6 +54,24 @@ public partial class RefugioVerdeContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<EncuestaSatisfaccion>(entity =>
+        {
+            entity.HasKey(e => e.EncuestaSatisfaccionId);
+
+            entity.Property(e => e.Comentarios).HasMaxLength(500);
+
+            entity.HasOne(e => e.Habitacion)
+                .WithMany(h => h.EncuestasSatisfaccion)
+                .HasForeignKey(e => e.HabitacionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_EncuestaSatisfaccion_Habitacion");
+
+            entity.HasOne(e => e.Empleado)
+                .WithMany(emp => emp.EncuestasSatisfaccion)
+                .HasForeignKey(e => e.EmpleadoId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_EncuestaSatisfaccion_Empleado");
+        });
         modelBuilder.Entity<Cliente>(entity =>
         {
             entity.HasKey(e => e.ClienteId).HasName("PK__Cliente__71ABD0875D9F5CC3");
