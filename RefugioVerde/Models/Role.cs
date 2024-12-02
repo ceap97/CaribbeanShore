@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models;
@@ -18,4 +19,8 @@ public partial class Role
 
     [JsonIgnore]
     public virtual ICollection<Permiso> Permisos { get; set; } = new List<Permiso>();
+
+    [NotMapped]
+    public List<int> PermisosSeleccionados { get; set; } = new List<int>();
 }
+

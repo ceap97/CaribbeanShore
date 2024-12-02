@@ -1,8 +1,13 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
+    cargarRoles();
+});
+
+function cargarRoles() {
     fetch('/Roles/Listar')
         .then(response => response.json())
         .then(data => {
             let tbody = document.querySelector('#tbRoles tbody');
+            tbody.innerHTML = ''; // Limpiar el contenido existente
             data.forEach(rol => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -24,15 +29,23 @@
                 `;
                 tbody.appendChild(tr);
             });
-            let table = new DataTable('#tbRoles', {
+
+            // Destruir la instancia existente de DataTable si existe
+            if ($.fn.DataTable.isDataTable('#tbRoles')) {
+                $('#tbRoles').DataTable().destroy();
+            }
+
+            // Inicializar DataTable
+            $('#tbRoles').DataTable({
                 language: {
                     url: 'https://cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
                 }
             });
         });
-});
+}
 
 function openCreateModal() {
+    $('#createForm')[0].reset(); // Limpiar el formulario
     $('#createModal').modal('show');
 }
 
@@ -42,6 +55,10 @@ function openEditModal(rolId) {
         .then(data => {
             $('#editRolId').val(data.rolId);
             $('#editNombre').val(data.nombre);
+            // Marcar los checkboxes de permisos seleccionados
+            data.permisosSeleccionados.forEach(permisoId => {
+                $(`#editPermiso_${permisoId}`).prop('checked', true);
+            });
             $('#editModal').modal('show');
         });
 }
@@ -50,10 +67,13 @@ function openDetailsModal(rolId) {
     fetch(`/Roles/Obtener/${rolId}`)
         .then(response => response.json())
         .then(data => {
+            let permisosHtml = data.permisosSeleccionados.map(permisoId => `<li>${permisoId}</li>`).join('');
             Swal.fire({
                 title: 'Detalles del Rol',
                 html: `<p><strong>RolId:</strong> ${data.rolId}</p>
-                       <p><strong>Nombre:</strong> ${data.nombre}</p>`,
+                       <p><strong>Nombre:</strong> ${data.nombre}</p>
+                       <p><strong>Permisos:</strong></p>
+                       <ul>${permisosHtml}</ul>`,
                 icon: 'info',
                 confirmButtonText: 'Cerrar'
             });
@@ -74,14 +94,23 @@ function openDeleteModal(rolId) {
             }).then(response => {
                 if (response.ok) {
                     Swal.fire('Eliminado!', 'El rol ha sido eliminado.', 'success').then(() => {
-                        location.reload();
+                        cargarRoles();
+                    });
+                } else {
+                    response.json().then(data => {
+                        if (data.message && data.message.includes('administrador')) {
+                            Swal.fire('Error', 'El rol de administrador no se puede eliminar.', 'error');
+                        } else {
+                            Swal.fire('Error', data.message || 'No se pudo eliminar el rol.', 'error');
+                        }
                     });
                 }
+            }).catch(error => {
+                Swal.fire('Error', 'Ocurrió un error al eliminar el rol.', 'error');
             });
         }
     });
 }
-
 
 $('#createForm').submit(function (e) {
     e.preventDefault();
@@ -94,8 +123,15 @@ $('#createForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            $('#createModal').modal('hide');
+            Swal.fire('Éxito', 'El rol ha sido creado exitosamente.', 'success').then(() => {
+                cargarRoles();
+            });
+        } else {
+            Swal.fire('Error', 'No se pudo crear el rol.', 'error');
         }
+    }).catch(error => {
+        Swal.fire('Error', 'Ocurrió un error al crear el rol.', 'error');
     });
 });
 
@@ -110,21 +146,18 @@ $('#editForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            $('#editModal').modal('hide');
+            Swal.fire('Éxito', 'El rol ha sido editado exitosamente.', 'success').then(() => {
+                cargarRoles();
+            });
+        } else {
+            Swal.fire('Error', 'No se pudo editar el rol.', 'error');
         }
+    }).catch(error => {
+        Swal.fire('Error', 'Ocurrió un error al editar el rol.', 'error');
     });
 });
 
-$('#confirmDelete').click(function () {
-    let rolId = $(this).data('rolId');
-    fetch(`/Roles/Eliminar/${rolId}`, {
-        method: 'DELETE'
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
-        }
-    });
-});
 function validateForm(form) {
     let isValid = true;
     $(form).find('input, select').each(function () {

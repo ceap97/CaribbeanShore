@@ -1,0 +1,28 @@
+﻿@model List<RefugioVerde.Models.RolePermisoViewModel>
+
+@{
+    ViewData["Title"] = "Roles y Permisos";
+    Layout = "~/Views/Shared/_Admin.cshtml";
+}
+
+<h2>Roles y Permisos</h2>
+
+@foreach (var rol in Model)
+{
+    <form asp-action="Guardar" method="post">
+        <input type="hidden" asp-for="@rol.RolId" />
+        <h3>@rol.NombreRol</h3>
+        <div>
+            @foreach (var permiso in rol.Permisos)
+            {
+                <div class="form-check">
+                    <input type="checkbox" asp-for="@permiso.Asignado" class="form-check-input" />
+                    <label class="form-check-label" asp-for="@permiso.Asignado">@permiso.NombrePermiso</label>
+                    <input type="hidden" asp-for="@permiso.PermisoId" />
+                    <input type="hidden" asp-for="@permiso.NombrePermiso" />
+                </div>
+            }
+        </div>
+        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    </form>
+}
