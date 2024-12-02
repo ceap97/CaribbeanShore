@@ -13,7 +13,6 @@
     <div class="col-12">
         <div class="card-box">
             <div class="card-header">
-            <div class="card-header">
                 <button class="btn btn-success btn-sm float-end" onclick="openCreateModal()">
                     <img src="Admin/Fonts/circle-plus-solid.svg" alt="Agregar" style="width: 16px; height: 16px; margin-right: 5px;" />
                     Agregar Nuevo Servicio
@@ -38,7 +37,6 @@
         </div>
     </div>
 </div>
-</div>
 
 <!-- Modal Crear -->
 <div class="modal fade" id="createModal" tabindex="-1" aria-labelledby="createModalLabel" aria-hidden="true">
@@ -60,6 +58,11 @@
                     <div class="mb-3">
                         <label for="precio" class="form-label">Precio</label>
                         <input type="number" class="form-control" id="precio" name="precio" step="0.01" required min="0.01" title="El precio debe ser un valor positivo.">
+                    </div>
+                    <div class="mb-3">
+                        <label for="imagen" class="form-label">Imagen</label>
+                        <input type="file" class="form-control" id="imagen" name="imagen" accept="image/*">
+                        <img id="imagePreview" style="display:none; width: 100%; height: auto; margin-top: 10px;" />
                     </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -92,6 +95,11 @@
                         <label for="editPrecio" class="form-label">Precio</label>
                         <input type="number" class="form-control" id="editPrecio" name="precio" step="0.01" required min="0.01" title="El precio debe ser un valor positivo.">
                     </div>
+                    <div class="mb-3">
+                        <label for="editImagen" class="form-label">Imagen</label>
+                        <input type="file" class="form-control" id="editImagen" name="imagen" accept="image/*">
+                        <img id="editImagePreview" style="display:none; width: 100%; height: auto; margin-top: 10px;" />
+                    </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
@@ -113,6 +121,7 @@
                 <p><strong>Nombre:</strong> <span id="detailsNombre"></span></p>
                 <p><strong>Descripción:</strong> <span id="detailsDescripcion"></span></p>
                 <p><strong>Precio:</strong> <span id="detailsPrecio"></span></p>
+                <img id="detailsImagePreview" style="width: 100%; height: auto; margin-top: 10px;" />
             </div>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>
