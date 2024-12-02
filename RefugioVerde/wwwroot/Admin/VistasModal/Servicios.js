@@ -66,7 +66,6 @@ function openDeleteModal(servicioId) {
     });
 }
 
-
 function openDetailsModal(servicioId) {
     fetch(`/Servicios/Obtener/${servicioId}`)
         .then(response => response.json())
@@ -83,7 +82,6 @@ function openDetailsModal(servicioId) {
         });
 }
 
-
 $('#createForm').submit(function (e) {
     e.preventDefault();
     let formData = $(this).serialize();
@@ -95,8 +93,29 @@ $('#createForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire({
+                title: 'Servicio creado',
+                text: 'El servicio ha sido creado correctamente.',
+                icon: 'success',
+                confirmButtonText: 'Cerrar'
+            }).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'Hubo un problema al crear el servicio.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            });
         }
+    }).catch(error => {
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema con la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'Cerrar'
+        });
     });
 });
 
@@ -111,18 +130,28 @@ $('#editForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire({
+                title: 'Servicio editado',
+                text: 'El servicio ha sido editado correctamente.',
+                icon: 'success',
+                confirmButtonText: 'Cerrar'
+            }).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'Hubo un problema al editar el servicio.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            });
         }
-    });
-});
-
-$('#confirmDelete').click(function () {
-    let servicioId = $(this).data('servicioId');
-    fetch(`/Servicios/Eliminar/${servicioId}`, {
-        method: 'DELETE'
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
-        }
+    }).catch(error => {
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema con la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'Cerrar'
+        });
     });
 });

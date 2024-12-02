@@ -166,8 +166,29 @@ $('#createForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire({
+                title: 'Empleado creado',
+                text: 'El empleado ha sido creado correctamente.',
+                icon: 'success',
+                confirmButtonText: 'Cerrar'
+            }).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'Hubo un problema al crear el empleado.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            });
         }
+    }).catch(error => {
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema con la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'Cerrar'
+        });
     });
 });
 
@@ -183,7 +204,28 @@ $('#editForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire({
+                title: 'Empleado editado',
+                text: 'El empleado ha sido editado correctamente.',
+                icon: 'success',
+                confirmButtonText: 'Cerrar'
+            }).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                Swal.fire({
+                    title: 'Error',
+                    text: data.message || 'Hubo un problema al editar el empleado.',
+                    icon: 'error',
+                    confirmButtonText: 'Cerrar'
+                });
+            });
         }
+    }).catch(error => {
+        Swal.fire({
+            title: 'Error',
+            text: 'Hubo un problema con la solicitud.',
+            icon: 'error',
+            confirmButtonText: 'Cerrar'
+        });
     });
 });

@@ -16,6 +16,7 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
         public async Task<IActionResult> CatalogoServicios()
         {
             var servicios = await _context.Servicios.ToListAsync();
@@ -53,6 +54,11 @@ namespace RefugioVerde.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (await _context.Servicios.AnyAsync(s => s.Nombre == servicio.Nombre))
+                {
+                    return BadRequest(new { message = "El nombre del servicio ya existe." });
+                }
+
                 _context.Servicios.Add(servicio);
                 await _context.SaveChangesAsync();
                 return Ok();
@@ -66,6 +72,11 @@ namespace RefugioVerde.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (await _context.Servicios.AnyAsync(s => s.Nombre == servicio.Nombre && s.ServicioId != servicio.ServicioId))
+                {
+                    return BadRequest(new { message = "El nombre del servicio ya existe." });
+                }
+
                 _context.Servicios.Update(servicio);
                 await _context.SaveChangesAsync();
                 return Ok();

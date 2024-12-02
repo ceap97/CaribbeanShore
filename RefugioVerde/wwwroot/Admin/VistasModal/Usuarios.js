@@ -159,9 +159,24 @@ function submitFormData(formData) {
     }).then(response => {
         if (response.ok) {
             location.reload(); // Recargar la página si se ha creado con éxito
+        } else {
+            return response.json().then(data => {
+                if (data.message) {
+                    Swal.fire('Error', data.message, 'error');
+                } else {
+                    Swal.fire('Error', 'Ocurrió un error al procesar la solicitud.', 'error');
+                }
+            });
         }
+    }).catch(error => {
+        Swal.fire('Error', 'Ocurrió un error al procesar la solicitud.', 'error');
+        console.error('Error:', error);
     });
 }
+
+
+
+
 
 
 // Enviar formulario de Editar Comodidad
@@ -199,6 +214,12 @@ function submitEditFormData(formData) {
     }).then(response => {
         if (response.ok) {
             location.reload(); // Recargar la página si se ha editado correctamente
+        } else {
+            return response.json().then(data => {
+                if (data.message) {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            });
         }
     });
 }

@@ -121,44 +121,51 @@ namespace RefugioVerde.Controllers
             return Json(usuario);
         }
         [HttpPost]
-        public async Task<IActionResult> Crear([FromForm] Usuario usuario, [FromForm] IFormFile imagen)
+        public async Task<IActionResult> Editar([FromForm] Usuario usuario, [FromForm] IFormFile imagen)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    // Verificar si el correo ya está registrado
-                    var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
+                    var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == usuario.Correo && u.UsuarioId != usuario.UsuarioId);
                     if (usuarioExistente != null)
                     {
                         return BadRequest(new { message = "El correo ya está registrado. Intente con otro." });
                     }
 
-                    // Encriptar la contraseña antes de guardar
-                    usuario.Clave = Utilidades.EncriptarClave(usuario.Clave);
+                    var usuarioDb = await _context.Usuarios.FindAsync(usuario.UsuarioId);
+                    if (usuarioDb == null)
+                    {
+                        return NotFound();
+                    }
 
-                    // Si se proporciona una imagen, se guarda en el servidor
+                    usuarioDb.NombreUsuario = usuario.NombreUsuario;
+                    usuarioDb.Correo = usuario.Correo;
+                    if (!string.IsNullOrEmpty(usuario.Clave))
+                    {
+                        usuarioDb.Clave = Utilidades.EncriptarClave(usuario.Clave);
+                    }
+                    usuarioDb.EmpleadoId = usuario.EmpleadoId;
+
                     if (imagen != null && imagen.Length > 0)
                     {
-                        var fileName = $"{usuario.NombreUsuario}.jpeg";  // Usar el nombre de usuario como nombre del archivo
+                        var fileName = $"{usuario.NombreUsuario}.jpeg";
                         var filePath = Path.Combine(_uploadPath, fileName);
 
-                        // Crear el directorio si no existe
                         if (!Directory.Exists(_uploadPath))
                         {
                             Directory.CreateDirectory(_uploadPath);
                         }
 
-                        // Guardar la imagen en el servidor
                         using (var stream = new FileStream(filePath, FileMode.Create))
                         {
                             await imagen.CopyToAsync(stream);
                         }
 
-                        usuario.Imagen = $"/images/usuarios/{fileName}";  // Guardar la ruta relativa en la base de datos
+                        usuarioDb.Imagen = $"/images/usuarios/{fileName}";
                     }
 
-                    _context.Usuarios.Add(usuario);
+                    _context.Usuarios.Update(usuarioDb);
                     await _context.SaveChangesAsync();
                     return Ok();
                 }
@@ -166,63 +173,12 @@ namespace RefugioVerde.Controllers
             }
             catch (Exception ex)
             {
-                // Registrar el error
-                _logger.LogError(ex, "Ocurrió un error al crear el usuario.");
+                _logger.LogError(ex, "Ocurrió un error al editar el usuario.");
                 return StatusCode(500, "Ocurrió un error en el servidor.");
             }
         }
 
 
-
-        // POST: /Usuarios/Editar
-        [HttpPost]
-        public async Task<IActionResult> Editar([FromForm] Usuario usuario, [FromForm] IFormFile imagen)
-        {
-            if (ModelState.IsValid)
-            {
-                // Si la clave tiene un valor (es decir, el usuario está cambiando la contraseña)
-                if (!string.IsNullOrEmpty(usuario.Clave))
-                {
-                    // Encriptar la contraseña antes de guardar
-                    usuario.Clave = Utilidades.EncriptarClave(usuario.Clave);
-                }
-
-                // Si se proporciona una nueva imagen, se guarda en el servidor
-                if (imagen != null && imagen.Length > 0)
-                {
-                    var fileName = $"{usuario.NombreUsuario}.jpeg";  // Usar el nombre de usuario como nombre del archivo
-                    var filePath = Path.Combine(_uploadPath, fileName);
-
-                    // Crear el directorio si no existe
-                    if (!Directory.Exists(_uploadPath))
-                    {
-                        Directory.CreateDirectory(_uploadPath);
-                    }
-
-                    // Guardar la nueva imagen
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imagen.CopyToAsync(stream);
-                    }
-
-                    usuario.Imagen = $"/images/usuarios/{fileName}";  // Guardar la ruta relativa en la base de datos
-                }
-                else
-                {
-                    // Si no se proporciona una nueva imagen, mantener la imagen existente
-                    var existingUsuario = await _context.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.UsuarioId == usuario.UsuarioId);
-                    if (existingUsuario != null)
-                    {
-                        usuario.Imagen = existingUsuario.Imagen;
-                    }
-                }
-
-                _context.Usuarios.Update(usuario);
-                await _context.SaveChangesAsync();
-                return Ok();
-            }
-            return BadRequest(ModelState);
-        }
 
         // DELETE: /Usuarios/Eliminar/{id}
         [HttpDelete]

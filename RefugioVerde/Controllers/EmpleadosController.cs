@@ -43,11 +43,18 @@ namespace RefugioVerde.Controllers
         }
 
         // POST: /Empleados/Crear
+        // POST: /Empleados/Crear
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Empleado empleado)
         {
             if (ModelState.IsValid)
             {
+                var empleadoExistente = await _context.Empleados.FirstOrDefaultAsync(e => e.Correo == empleado.Correo);
+                if (empleadoExistente != null)
+                {
+                    return BadRequest(new { message = "El correo ya está registrado. Intente con otro." });
+                }
+
                 _context.Empleados.Add(empleado);
                 await _context.SaveChangesAsync();
                 return Ok();
@@ -61,6 +68,12 @@ namespace RefugioVerde.Controllers
         {
             if (ModelState.IsValid)
             {
+                var empleadoExistente = await _context.Empleados.FirstOrDefaultAsync(e => e.Correo == empleado.Correo && e.EmpleadoId != empleado.EmpleadoId);
+                if (empleadoExistente != null)
+                {
+                    return BadRequest(new { message = "El correo ya está registrado. Intente con otro." });
+                }
+
                 _context.Empleados.Update(empleado);
                 await _context.SaveChangesAsync();
                 return Ok();

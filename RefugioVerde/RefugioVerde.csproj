@@ -38,7 +38,6 @@
     <Folder Include="wwwroot\images\habitaciones\" />
     <Folder Include="wwwroot\images\comodidades\" />
     <Folder Include="wwwroot\images\comprobantes\" />
-    <Folder Include="wwwroot\images\usuarios\" />
   </ItemGroup>
 
   <ItemGroup>
