@@ -18,12 +18,14 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
         public async Task<IActionResult> ObtenerMunicipios()
         {
             var municipios = await _context.Municipios.ToListAsync();
             return Json(municipios);
         }
+
         public async Task<IActionResult> Catalogo()
         {
             var habitaciones = await _context.Habitacions.Include(h => h.EstadoHabitacion).ToListAsync();
@@ -61,77 +63,91 @@ namespace RefugioVerde.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Habitacion habitacion, [FromForm] IFormFile imagen)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Si se proporciona una imagen, se guarda en el servidor
-                if (imagen != null && imagen.Length > 0)
+                if (ModelState.IsValid)
                 {
-                    var fileName = $"{habitacion.NombreHabitacion}.jpeg";  // Usar el ID de la habitación como nombre del archivo
-                    var filePath = Path.Combine(_uploadPath, fileName);
-
-                    // Crear el directorio si no existe
-                    if (!Directory.Exists(_uploadPath))
+                    // Si se proporciona una imagen, se guarda en el servidor
+                    if (imagen != null && imagen.Length > 0)
                     {
-                        Directory.CreateDirectory(_uploadPath);
+                        var fileName = $"{habitacion.NombreHabitacion}.jpeg";  // Usar el ID de la habitación como nombre del archivo
+                        var filePath = Path.Combine(_uploadPath, fileName);
+
+                        // Crear el directorio si no existe
+                        if (!Directory.Exists(_uploadPath))
+                        {
+                            Directory.CreateDirectory(_uploadPath);
+                        }
+
+                        // Guardar la imagen en el servidor
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imagen.CopyToAsync(stream);
+                        }
+
+                        habitacion.Imagen = $"/images/habitaciones/{fileName}";  // Guardar la ruta relativa en la base de datos
                     }
 
-                    // Guardar la imagen en el servidor
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imagen.CopyToAsync(stream);
-                    }
-
-                    habitacion.Imagen = $"/images/habitaciones/{fileName}";  // Guardar la ruta relativa en la base de datos
+                    _context.Habitacions.Add(habitacion);
+                    await _context.SaveChangesAsync();
+                    return Ok();
                 }
-
-                _context.Habitacions.Add(habitacion);
-                await _context.SaveChangesAsync();
-                return Ok();
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // POST: /Habitaciones/Editar
         [HttpPost]
         public async Task<IActionResult> Editar([FromForm] Habitacion habitacion, [FromForm] IFormFile imagen)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Si se proporciona una nueva imagen, se guarda en el servidor
-                if (imagen != null && imagen.Length > 0)
+                if (ModelState.IsValid)
                 {
-                    var fileName = $"{habitacion.NombreHabitacion}.jpeg";  // Usar el ID de la habitación como nombre del archivo
-                    var filePath = Path.Combine(_uploadPath, fileName);
-
-                    // Crear el directorio si no existe
-                    if (!Directory.Exists(_uploadPath))
+                    // Si se proporciona una nueva imagen, se guarda en el servidor
+                    if (imagen != null && imagen.Length > 0)
                     {
-                        Directory.CreateDirectory(_uploadPath);
+                        var fileName = $"{habitacion.NombreHabitacion}.jpeg";  // Usar el ID de la habitación como nombre del archivo
+                        var filePath = Path.Combine(_uploadPath, fileName);
+
+                        // Crear el directorio si no existe
+                        if (!Directory.Exists(_uploadPath))
+                        {
+                            Directory.CreateDirectory(_uploadPath);
+                        }
+
+                        // Guardar la nueva imagen
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imagen.CopyToAsync(stream);
+                        }
+
+                        habitacion.Imagen = $"/images/habitaciones/{fileName}";  // Guardar la ruta relativa en la base de datos
+                    }
+                    else
+                    {
+                        // Si no se proporciona una nueva imagen, mantener la imagen existente
+                        var existingHabitacion = await _context.Habitacions.AsNoTracking().FirstOrDefaultAsync(h => h.HabitacionId == habitacion.HabitacionId);
+                        if (existingHabitacion != null)
+                        {
+                            habitacion.Imagen = existingHabitacion.Imagen;
+                        }
                     }
 
-                    // Guardar la nueva imagen
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await imagen.CopyToAsync(stream);
-                    }
-
-                    habitacion.Imagen = $"/images/habitaciones/{fileName}";  // Guardar la ruta relativa en la base de datos
+                    _context.Habitacions.Update(habitacion);
+                    await _context.SaveChangesAsync();
+                    return Ok();
                 }
-                else
-                {
-                    // Si no se proporciona una nueva imagen, mantener la imagen existente
-                    var existingHabitacion = await _context.Habitacions.AsNoTracking().FirstOrDefaultAsync(h => h.HabitacionId == habitacion.HabitacionId);
-                    if (existingHabitacion != null)
-                    {
-                        habitacion.Imagen = existingHabitacion.Imagen;
-                    }
-                }
-
-                _context.Habitacions.Update(habitacion);
-                await _context.SaveChangesAsync();
-                return Ok();
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         // DELETE: /Habitaciones/Eliminar/{id}

@@ -93,7 +93,6 @@ function openDeleteModal(comodidadId) {
     });
 }
 
-
 function openDetailsModal(comodidadId) {
     fetch(`/Comodidades/Obtener/${comodidadId}`)
         .then(response => response.json())
@@ -110,7 +109,6 @@ function openDetailsModal(comodidadId) {
             });
         });
 }
-
 
 function handleCreateFormSubmit(e) {
     e.preventDefault();
@@ -166,14 +164,16 @@ function submitFormData(formData) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload(); // Recargar la página si se ha creado con éxito
+            Swal.fire('Creado!', 'La comodidad ha sido creada con éxito.', 'success').then(() => {
+                location.reload(); // Recargar la página si se ha creado con éxito
+            });
         } else {
             response.json().then(data => {
-                console.error('Error al crear la comodidad:', data);
+                Swal.fire('Error', `Error al crear la comodidad: ${data.message}`, 'error');
             });
         }
     }).catch(error => {
-        console.error('Error en la solicitud:', error);
+        Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
     });
 }
 
@@ -183,14 +183,16 @@ function submitEditFormData(formData) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload(); // Recargar la página si se ha editado correctamente
+            Swal.fire('Editado!', 'La comodidad ha sido editada con éxito.', 'success').then(() => {
+                location.reload(); // Recargar la página si se ha editado correctamente
+            });
         } else {
             response.json().then(data => {
-                console.error('Error al editar la comodidad:', data);
+                Swal.fire('Error', `Error al editar la comodidad: ${data.message}`, 'error');
             });
         }
     }).catch(error => {
-        console.error('Error en la solicitud:', error);
+        Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
     });
 }
 

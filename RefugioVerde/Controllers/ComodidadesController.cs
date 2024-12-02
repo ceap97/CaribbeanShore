@@ -16,11 +16,13 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
         public async Task<IActionResult> CatalogoComodidad()
         {
             var comodidades = await _context.Comodidads.ToListAsync();
             return View(comodidades);
         }
+
         public async Task<IActionResult> Index()
         {
             var comodidades = await _context.Comodidads.ToListAsync();
@@ -49,94 +51,104 @@ namespace RefugioVerde.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear(IFormCollection form)
         {
-            // Recibir datos del formulario
-            string nombre = form["nombre"];
-            string descripcion = form["descripcion"];
-            decimal precio = Convert.ToDecimal(form["precio"]);
-            string imagenBase64 = form["imagen"];
-
-            // Crear una nueva instancia de Comodidad
-            var comodidad = new Comodidad
+            try
             {
-                Nombre = nombre,
-                Descripcion = descripcion,
-                Precio = precio
-            };
+                // Recibir datos del formulario
+                string nombre = form["nombre"];
+                string descripcion = form["descripcion"];
+                decimal precio = Convert.ToDecimal(form["precio"]);
+                string imagenBase64 = form["imagen"];
 
-            // Guardar la imagen en la carpeta images/comodidades
-            if (!string.IsNullOrEmpty(imagenBase64))
-            {
-                // Limpiar la cadena base64 para eliminar el encabezado de los datos de imagen
-                string imageData = imagenBase64.Replace("data:image/jpeg;base64,", "");
-                byte[] imageBytes = Convert.FromBase64String(imageData);
+                // Crear una nueva instancia de Comodidad
+                var comodidad = new Comodidad
+                {
+                    Nombre = nombre,
+                    Descripcion = descripcion,
+                    Precio = precio
+                };
 
-                // Generar un nombre de archivo basado en el nombre de la comodidad
-                string sanitizedNombre = nombre.Replace(" ", "_").Replace("/", "_"); // Reemplazar espacios y barras por guiones bajos
-                string imageName = sanitizedNombre + ".jpg";
-                string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/comodidades", imageName);
+                // Guardar la imagen en la carpeta images/comodidades
+                if (!string.IsNullOrEmpty(imagenBase64))
+                {
+                    // Limpiar la cadena base64 para eliminar el encabezado de los datos de imagen
+                    string imageData = imagenBase64.Replace("data:image/jpeg;base64,", "");
+                    byte[] imageBytes = Convert.FromBase64String(imageData);
 
-                // Guardar la imagen en el sistema de archivos
-                await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+                    // Generar un nombre de archivo basado en el nombre de la comodidad
+                    string sanitizedNombre = nombre.Replace(" ", "_").Replace("/", "_"); // Reemplazar espacios y barras por guiones bajos
+                    string imageName = sanitizedNombre + ".jpg";
+                    string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/comodidades", imageName);
 
-                // Guardar la ruta de la imagen en la base de datos
-                comodidad.Imagen = "/images/comodidades/" + imageName;
+                    // Guardar la imagen en el sistema de archivos
+                    await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+
+                    // Guardar la ruta de la imagen en la base de datos
+                    comodidad.Imagen = "/images/comodidades/" + imageName;
+                }
+
+                // Guardar la comodidad en la base de datos
+                _context.Comodidads.Add(comodidad);
+                await _context.SaveChangesAsync();
+
+                return Ok(); // Devuelve una respuesta exitosa
             }
-
-            // Guardar la comodidad en la base de datos
-            _context.Comodidads.Add(comodidad);
-            await _context.SaveChangesAsync();
-
-            return Ok(); // Devuelve una respuesta exitosa
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-
-
 
         // POST: /Comodidades/Editar
         [HttpPost]
         public async Task<IActionResult> Editar(IFormCollection form)
         {
-            // Recibir los datos del formulario
-            int comodidadId = Convert.ToInt32(form["comodidadId"]);
-            string nombre = form["nombre"];
-            string descripcion = form["descripcion"];
-            decimal precio = Convert.ToDecimal(form["precio"]);
-            string imagenBase64 = form["imagen"];
-
-            // Obtener la comodidad existente
-            var comodidad = await _context.Comodidads.FindAsync(comodidadId);
-            if (comodidad == null) return NotFound();
-
-            // Actualizar los campos de la comodidad
-            comodidad.Nombre = nombre;
-            comodidad.Descripcion = descripcion;
-            comodidad.Precio = precio;
-
-            // Si se ha recibido una imagen nueva, se reemplaza la imagen anterior
-            if (!string.IsNullOrEmpty(imagenBase64))
+            try
             {
-                // Limpiar la cadena base64 para eliminar el encabezado de los datos de imagen
-                string imageData = imagenBase64.Replace("data:image/jpeg;base64,", "");
-                byte[] imageBytes = Convert.FromBase64String(imageData);
+                // Recibir los datos del formulario
+                int comodidadId = Convert.ToInt32(form["comodidadId"]);
+                string nombre = form["nombre"];
+                string descripcion = form["descripcion"];
+                decimal precio = Convert.ToDecimal(form["precio"]);
+                string imagenBase64 = form["imagen"];
 
-                // Generar un nombre de archivo basado en el nombre de la comodidad
-                string sanitizedNombre = nombre.Replace(" ", "_").Replace("/", "_"); // Reemplazar espacios y barras por guiones bajos
-                string imageName = sanitizedNombre + ".jpg";
-                string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/comodidades", imageName);
+                // Obtener la comodidad existente
+                var comodidad = await _context.Comodidads.FindAsync(comodidadId);
+                if (comodidad == null) return NotFound();
 
-                // Guardar la imagen en el sistema de archivos
-                await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+                // Actualizar los campos de la comodidad
+                comodidad.Nombre = nombre;
+                comodidad.Descripcion = descripcion;
+                comodidad.Precio = precio;
 
-                // Guardar la ruta de la imagen en la base de datos
-                comodidad.Imagen = "/images/comodidades/" + imageName;
+                // Si se ha recibido una imagen nueva, se reemplaza la imagen anterior
+                if (!string.IsNullOrEmpty(imagenBase64))
+                {
+                    // Limpiar la cadena base64 para eliminar el encabezado de los datos de imagen
+                    string imageData = imagenBase64.Replace("data:image/jpeg;base64,", "");
+                    byte[] imageBytes = Convert.FromBase64String(imageData);
+
+                    // Generar un nombre de archivo basado en el nombre de la comodidad
+                    string sanitizedNombre = nombre.Replace(" ", "_").Replace("/", "_"); // Reemplazar espacios y barras por guiones bajos
+                    string imageName = sanitizedNombre + ".jpg";
+                    string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/comodidades", imageName);
+
+                    // Guardar la imagen en el sistema de archivos
+                    await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+
+                    // Guardar la ruta de la imagen en la base de datos
+                    comodidad.Imagen = "/images/comodidades/" + imageName;
+                }
+
+                _context.Comodidads.Update(comodidad);
+                await _context.SaveChangesAsync();
+
+                return Ok(); // Respuesta exitosa
             }
-
-            _context.Comodidads.Update(comodidad);
-            await _context.SaveChangesAsync();
-
-            return Ok(); // Respuesta exitosa
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
-
-
 
         // DELETE: /Comodidades/Eliminar/{id}
         [HttpDelete]

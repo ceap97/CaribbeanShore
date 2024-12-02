@@ -43,6 +43,7 @@ namespace RefugioVerde.Controllers
         }
 
         // POST: /EstadoReservas/Crear
+        // POST: /EstadoReservas/Crear
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] EstadoReserva estadoReserva)
         {
@@ -67,6 +68,7 @@ namespace RefugioVerde.Controllers
             }
             return BadRequest(ModelState);
         }
+
 
         // DELETE: /EstadoReservas/Eliminar/{id}
         [HttpDelete]

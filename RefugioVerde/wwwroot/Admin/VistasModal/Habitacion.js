@@ -34,6 +34,10 @@
                 }
             });
         });
+
+    // Agregar event listeners para los formularios
+    document.getElementById('createForm').addEventListener('submit', handleCreateFormSubmit);
+    document.getElementById('editForm').addEventListener('submit', handleEditFormSubmit);
 });
 
 function openCreateModal() {
@@ -82,7 +86,6 @@ function openDeleteModal(habitacionId) {
     });
 }
 
-
 function openDetailsModal(habitacionId) {
     fetch(`/Habitaciones/Obtener/${habitacionId}`)
         .then(response => response.json())
@@ -101,43 +104,53 @@ function openDetailsModal(habitacionId) {
         });
 }
 
-
-$('#createForm').submit(function (e) {
+function handleCreateFormSubmit(e) {
     e.preventDefault();
-    let formData = new FormData(this);
+
+    // Obtener los datos del formulario
+    let formData = new FormData(e.target);
+
     fetch('/Habitaciones/Crear', {
         method: 'POST',
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire('Creado!', 'La habitación ha sido creada con éxito.', 'success').then(() => {
+                location.reload(); // Recargar la página si se ha creado con éxito
+            });
+        } else {
+            response.json().then(data => {
+                Swal.fire('Error', `Error al crear la habitación: ${data.message}`, 'error');
+            });
         }
+    }).catch(error => {
+        Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
     });
-});
+}
 
-$('#editForm').submit(function (e) {
+function handleEditFormSubmit(e) {
     e.preventDefault();
-    let formData = new FormData(this);
+
+    // Obtener los datos del formulario
+    let formData = new FormData(e.target);
+
     fetch('/Habitaciones/Editar', {
         method: 'POST',
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire('Editado!', 'La habitación ha sido editada con éxito.', 'success').then(() => {
+                location.reload(); // Recargar la página si se ha editado correctamente
+            });
+        } else {
+            response.json().then(data => {
+                Swal.fire('Error', `Error al editar la habitación: ${data.message}`, 'error');
+            });
         }
+    }).catch(error => {
+        Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
     });
-});
-
-$('#confirmDelete').click(function () {
-    let habitacionId = $(this).data('habitacionId');
-    fetch(`/Habitaciones/Eliminar/${habitacionId}`, {
-        method: 'DELETE'
-    }).then(response => {
-        if (response.ok) {
-            location.reload();
-        }
-    });
-});
+}
 
 function loadEstadosHabitacion() {
     fetch('/EstadoHabitaciones/Listar')  // Asegúrate de que la ruta sea correcta
