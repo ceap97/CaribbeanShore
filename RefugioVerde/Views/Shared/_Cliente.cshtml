@@ -73,8 +73,11 @@ else
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#miPerfilModal">Mi perfil</a></li>
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#misReservasModal">Mis Reservas</a></li>
                                                 <li> <a asp-controller="Pagos" asp-action="Historial">Historial</a></li>
+                                                <li> <a asp-controller="EncuestaSatisfaccion" asp-action="Create">EncuestaSatisfaccion</a></li>
+
                                             </ul>
                                         </li>
+                                        <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#encuestaModalLabel">Cuentanos tu experiencia</a></li>
                                         <li><a href="javascript:void(0);" data-bs-toggle="offcanvas" data-bs-target="#offcanvasContact" aria-controls="offcanvasContact">Contáctanos</a></li>
                                     </ul>
                                     <div class="menu-btn">
@@ -202,6 +205,19 @@ else
                     </div>
                     <div class="modal-body">
                         <iframe src="@Url.Action("ListarReservasCliente", "Reservas")" width="101%" height="800px" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="encuestaModalLabel" tabindex="-1" aria-labelledby="encuestaModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="encuestaModalLabel">Cuentanos tu experiencia</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe src="@Url.Action("Create", "EncuestaSatisfaccion")" width="100%" height="330px" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>

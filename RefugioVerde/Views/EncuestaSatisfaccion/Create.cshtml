@@ -4,46 +4,124 @@
     ViewData["Title"] = "Encuesta de Satisfacción";
 }
 
-<h2>Encuesta de Satisfacción</h2>
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h2>Encuesta de Satisfacción</h2>
+        <p class="mb-0">Queremos saber tu opinión para seguir mejorando.</p>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" id="encuestaForm">
+            <div class="row">
+                <!-- Selección de habitación -->
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="HabitacionId" class="form-label">Habitación en la que se hospedó</label>
+                        <select asp-for="HabitacionId" class="form-select select2" asp-items="ViewBag.Habitaciones" data-placeholder="Seleccione una habitación">
+                            <option value="">Seleccione una habitación</option>
+                        </select>
+                        <span asp-validation-for="HabitacionId" class="text-danger"></span>
+                    </div>
+                </div>
 
-<form asp-action="Create">
-    <div class="form-group">
-        <label asp-for="CalificacionGeneral" class="control-label"></label>
-        <input asp-for="CalificacionGeneral" class="form-control" />
-        <span asp-validation-for="CalificacionGeneral" class="text-danger"></span>
+                <!-- Selección de empleado -->
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="EmpleadoId" class="form-label">¿Cuál de nuestros empleados le atendió?</label>
+                        <select asp-for="EmpleadoId" class="form-select select2" asp-items="ViewBag.Empleados" data-placeholder="Seleccione un empleado">
+                            <option value="">Seleccione un empleado</option>
+                        </select>
+                        <span asp-validation-for="EmpleadoId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de calificaciones -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Aspecto</th>
+                                    <th>Malo</th>
+                                    <th>Regular</th>
+                                    <th>Bueno</th>
+                                    <th>Muy Bueno</th>
+                                    <th>Excelente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Calificación General</td>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <td>
+                                            <input type="radio" name="CalificacionGeneral" value="@i">
+                                        </td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td>Calificación de la Habitación</td>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <td>
+                                            <input type="radio" name="CalificacionHabitacion" value="@i">
+                                        </td>
+                                    }
+                                </tr>
+                                <tr>
+                                    <td>Calificación de la Atención</td>
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <td>
+                                            <input type="radio" name="CalificacionAtencion" value="@i">
+                                        </td>
+                                    }
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Comentarios -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="Comentarios" class="form-label">Comentarios</label>
+                        <textarea asp-for="Comentarios" class="form-control" rows="4" placeholder="Escribe tus comentarios aquí"></textarea>
+                        <span asp-validation-for="Comentarios" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="form-group text-end">
+                <button type="submit" class="btn palatin-btn">Enviar Encuesta</button>
+            </div>
+        </form>
     </div>
-    <div class="form-group">
-        <label asp-for="CalificacionHabitacion" class="control-label"></label>
-        <input asp-for="CalificacionHabitacion" class="form-control" />
-        <span asp-validation-for="CalificacionHabitacion" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="CalificacionAtencion" class="control-label"></label>
-        <input asp-for="CalificacionAtencion" class="form-control" />
-        <span asp-validation-for="CalificacionAtencion" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="Comentarios" class="control-label"></label>
-        <textarea asp-for="Comentarios" class="form-control"></textarea>
-        <span asp-validation-for="Comentarios" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="HabitacionId" class="control-label"></label>
-        <select asp-for="HabitacionId" class="form-control" asp-items="ViewBag.Habitaciones"></select>
-        <span asp-validation-for="HabitacionId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <label asp-for="EmpleadoId" class="control-label"></label>
-        <select asp-for="EmpleadoId" class="form-control" asp-items="ViewBag.Empleados"></select>
-        <span asp-validation-for="EmpleadoId" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-        <input type="submit" value="Enviar" class="btn btn-primary" />
-    </div>
-</form>
+</div>
+
+@section Styles {
+    <link href="//cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link href="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        .select2-container .select2-selection--single {
+            height: 38px;
+        }
+    </style>
+}
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script src="//cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2();
+        });
+    </script>
 }

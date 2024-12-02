@@ -1,8 +1,4 @@
 ﻿document.addEventListener('DOMContentLoaded', function () {
-    cargarRoles();
-});
-
-function cargarRoles() {
     fetch('/Roles/Listar')
         .then(response => response.json())
         .then(data => {
@@ -42,7 +38,7 @@ function cargarRoles() {
                 }
             });
         });
-}
+});
 
 function openCreateModal() {
     $('#createForm')[0].reset(); // Limpiar el formulario
@@ -94,7 +90,7 @@ function openDeleteModal(rolId) {
             }).then(response => {
                 if (response.ok) {
                     Swal.fire('Eliminado!', 'El rol ha sido eliminado.', 'success').then(() => {
-                        cargarRoles();
+                        location.reload();
                     });
                 } else {
                     response.json().then(data => {
@@ -111,7 +107,28 @@ function openDeleteModal(rolId) {
         }
     });
 }
+function validateForm(form) {
+    let isValid = true;
+    $(form).find('input, select').each(function () {
+        if (!this.checkValidity()) {
+            isValid = false;
+            $(this).addClass('is-invalid');
+        } else {
+            $(this).removeClass('is-invalid');
+        }
+    });
 
+    if (!isValid) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor, complete todos los campos requeridos.',
+            icon: 'error',
+            confirmButtonText: 'Cerrar'
+        });
+    }
+
+    return isValid;
+}
 $('#createForm').submit(function (e) {
     e.preventDefault();
     let formData = $(this).serialize();
@@ -125,7 +142,7 @@ $('#createForm').submit(function (e) {
         if (response.ok) {
             $('#createModal').modal('hide');
             Swal.fire('Éxito', 'El rol ha sido creado exitosamente.', 'success').then(() => {
-                cargarRoles();
+                location.reload();
             });
         } else {
             Swal.fire('Error', 'No se pudo crear el rol.', 'error');
@@ -148,7 +165,7 @@ $('#editForm').submit(function (e) {
         if (response.ok) {
             $('#editModal').modal('hide');
             Swal.fire('Éxito', 'El rol ha sido editado exitosamente.', 'success').then(() => {
-                cargarRoles();
+                location.reload();
             });
         } else {
             Swal.fire('Error', 'No se pudo editar el rol.', 'error');
@@ -170,3 +187,5 @@ function validateForm(form) {
     });
     return isValid;
 }
+
+

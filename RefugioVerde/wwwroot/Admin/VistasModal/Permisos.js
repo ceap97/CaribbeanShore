@@ -59,12 +59,17 @@ function openDeleteModal(permisoId) {
                     Swal.fire('Eliminado!', 'El permiso ha sido eliminado.', 'success').then(() => {
                         location.reload();
                     });
+                } else {
+                    response.json().then(data => {
+                        Swal.fire('Error', data.message || 'No se pudo eliminar el permiso.', 'error');
+                    });
                 }
+            }).catch(error => {
+                Swal.fire('Error', 'Ocurrió un error al eliminar el permiso.', 'error');
             });
         }
     });
 }
-
 
 function openDetailsModal(permisoId) {
     fetch(`/Permisos/Obtener/${permisoId}`)
@@ -81,7 +86,6 @@ function openDetailsModal(permisoId) {
         });
 }
 
-
 $('#createForm').submit(function (e) {
     e.preventDefault();
     // Lógica para enviar los datos del formulario de creación
@@ -94,8 +98,15 @@ $('#createForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            $('#createModal').modal('hide');
+            Swal.fire('Éxito', 'El permiso ha sido creado exitosamente.', 'success').then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire('Error', 'No se pudo crear el permiso.', 'error');
         }
+    }).catch(error => {
+        Swal.fire('Error', 'Ocurrió un error al crear el permiso.', 'error');
     });
 });
 
@@ -111,19 +122,14 @@ $('#editForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            $('#editModal').modal('hide');
+            Swal.fire('Éxito', 'El permiso ha sido editado exitosamente.', 'success').then(() => {
+                location.reload();
+            });
+        } else {
+            Swal.fire('Error', 'No se pudo editar el permiso.', 'error');
         }
+    }).catch(error => {
+        Swal.fire('Error', 'Ocurrió un error al editar el permiso.', 'error');
     });
 });
-
-//$('#confirmDelete').click(function () {
-//    let permisoId = $(this).data('permisoId');
-//    // Lógica para eliminar el permiso
-//    fetch(`/Permisos/Eliminar/${permisoId}`, {
-//        method: 'DELETE'
-//    }).then(response => {
-//        if (response.ok) {
-//            location.reload();
-//        }
-//    });
-//});
