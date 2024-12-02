@@ -90,7 +90,14 @@ function mostrarModalIniciarSesion() {
             method: 'POST',
             body: form
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(error => {
+                        throw new Error(error.message);
+                    });
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     Swal.fire({
@@ -112,6 +119,14 @@ function mostrarModalIniciarSesion() {
                         mostrarModalRegistrarse();
                     });
                 }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message,
+                    showConfirmButton: true
+                });
             });
     });
 }

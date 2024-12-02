@@ -12,9 +12,12 @@ namespace RefugioVerde.Controllers
     public class InicioController : Controller
     {
         private readonly IUsuarioServices _usuariosServicio;
-        public InicioController(IUsuarioServices usuariosServicio)
+        private readonly ILogger<InicioController> _logger;
+
+        public InicioController(IUsuarioServices usuariosServicio, ILogger<InicioController> logger)
         {
             _usuariosServicio = usuariosServicio;
+            _logger = logger;
         }
         public IActionResult GoogleLogin()
         {
@@ -89,14 +92,30 @@ namespace RefugioVerde.Controllers
         [HttpPost]
         public async Task<IActionResult> Registrarse(Usuario modelo)
         {
-            modelo.Clave = Utilidades.EncriptarClave(modelo.Clave);
-            Usuario usuario_creado = await _usuariosServicio.SaveUsuario(modelo);
-            if (usuario_creado.UsuarioId > 0)
+            try
             {
-                return Json(new { success = true });
-            }
+                // Verificar si el correo ya está registrado
+                var usuarioExistente = await _usuariosServicio.GetUsuarioPorCorreo(modelo.Correo);
+                if (usuarioExistente != null)
+                {
+                    return BadRequest(new { message = "El correo ya está registrado. Intente con otro." });
+                }
 
-            return Json(new { success = false, message = "No se pudo crear el usuario" });
+                modelo.Clave = Utilidades.EncriptarClave(modelo.Clave);
+                Usuario usuario_creado = await _usuariosServicio.SaveUsuario(modelo);
+                if (usuario_creado.UsuarioId > 0)
+                {
+                    return Json(new { success = true });
+                }
+
+                return Json(new { success = false, message = "No se pudo crear el usuario" });
+            }
+            catch (Exception ex)
+            {
+                // Registrar el error
+                _logger.LogError(ex, "Ocurrió un error al registrar el usuario.");
+                return StatusCode(500, "Ocurrió un error en el servidor.");
+            }
         }
         public IActionResult IniciarSesion()
         {

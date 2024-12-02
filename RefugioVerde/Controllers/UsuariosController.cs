@@ -16,13 +16,14 @@ namespace RefugioVerde.Controllers
     public class UsuariosController : Controller
     {
         private readonly RefugioVerdeContext _context;
+        private readonly ILogger<UsuariosController> _logger;
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "usuarios");
 
-        public UsuariosController(RefugioVerdeContext context)
+        public UsuariosController(RefugioVerdeContext context, ILogger<UsuariosController> logger)
         {
             _context = context;
+            _logger = logger;
         }
-
         [HttpGet]
         public async Task<IActionResult> ObtenerUsuarioActual()
         {
@@ -119,43 +120,59 @@ namespace RefugioVerde.Controllers
             }
             return Json(usuario);
         }
-
-        // POST: /Usuarios/Crear
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Usuario usuario, [FromForm] IFormFile imagen)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Encriptar la contraseña antes de guardar
-                usuario.Clave = Utilidades.EncriptarClave(usuario.Clave);
-
-                // Si se proporciona una imagen, se guarda en el servidor
-                if (imagen != null && imagen.Length > 0)
+                if (ModelState.IsValid)
                 {
-                    var fileName = $"{usuario.NombreUsuario}.jpeg";  // Usar el nombre de usuario como nombre del archivo
-                    var filePath = Path.Combine(_uploadPath, fileName);
-
-                    // Crear el directorio si no existe
-                    if (!Directory.Exists(_uploadPath))
+                    // Verificar si el correo ya está registrado
+                    var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
+                    if (usuarioExistente != null)
                     {
-                        Directory.CreateDirectory(_uploadPath);
+                        return BadRequest(new { message = "El correo ya está registrado. Intente con otro." });
                     }
 
-                    // Guardar la imagen en el servidor
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    // Encriptar la contraseña antes de guardar
+                    usuario.Clave = Utilidades.EncriptarClave(usuario.Clave);
+
+                    // Si se proporciona una imagen, se guarda en el servidor
+                    if (imagen != null && imagen.Length > 0)
                     {
-                        await imagen.CopyToAsync(stream);
+                        var fileName = $"{usuario.NombreUsuario}.jpeg";  // Usar el nombre de usuario como nombre del archivo
+                        var filePath = Path.Combine(_uploadPath, fileName);
+
+                        // Crear el directorio si no existe
+                        if (!Directory.Exists(_uploadPath))
+                        {
+                            Directory.CreateDirectory(_uploadPath);
+                        }
+
+                        // Guardar la imagen en el servidor
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imagen.CopyToAsync(stream);
+                        }
+
+                        usuario.Imagen = $"/images/usuarios/{fileName}";  // Guardar la ruta relativa en la base de datos
                     }
 
-                    usuario.Imagen = $"/images/usuarios/{fileName}";  // Guardar la ruta relativa en la base de datos
+                    _context.Usuarios.Add(usuario);
+                    await _context.SaveChangesAsync();
+                    return Ok();
                 }
-
-                _context.Usuarios.Add(usuario);
-                await _context.SaveChangesAsync();
-                return Ok();
+                return BadRequest(ModelState);
             }
-            return BadRequest(ModelState);
+            catch (Exception ex)
+            {
+                // Registrar el error
+                _logger.LogError(ex, "Ocurrió un error al crear el usuario.");
+                return StatusCode(500, "Ocurrió un error en el servidor.");
+            }
         }
+
+
 
         // POST: /Usuarios/Editar
         [HttpPost]
