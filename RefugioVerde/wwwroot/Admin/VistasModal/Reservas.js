@@ -126,8 +126,27 @@ $('#createForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire(
+                'Creado!',
+                'La reserva ha sido creada correctamente.',
+                'success'
+            ).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                let errors = Object.values(data.errors).flat().join('<br>');
+                Swal.fire(
+                    'Error',
+                    errors,
+                    'error'
+                );
+            });
         }
+    }).catch(error => {
+        Swal.fire(
+            'Error',
+            'Hubo un problema con la solicitud.',
+            'error'
+        );
     });
 });
 
@@ -139,10 +158,30 @@ $('#editForm').submit(function (e) {
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire(
+                'Editado!',
+                'La reserva ha sido editada correctamente.',
+                'success'
+            ).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                let errors = Object.values(data.errors).flat().join('<br>');
+                Swal.fire(
+                    'Error',
+                    errors,
+                    'error'
+                );
+            });
         }
+    }).catch(error => {
+        Swal.fire(
+            'Error',
+            'Hubo un problema con la solicitud.',
+            'error'
+        );
     });
 });
+
 
 $('#confirmDelete').click(function () {
     let reservaId = $(this).data('reservaId');

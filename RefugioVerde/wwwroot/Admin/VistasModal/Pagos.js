@@ -107,35 +107,68 @@ function openDetailsModal(idPago) {
 
 $('#createForm').submit(function (e) {
     e.preventDefault();
-    let formData = $(this).serialize();
+    let formData = new FormData(this);
     fetch('/Pagos/Crear', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire(
+                'Creado!',
+                'El pago ha sido creado correctamente.',
+                'success'
+            ).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                let errors = Object.values(data.errors).flat().join('<br>');
+                Swal.fire(
+                    'Error',
+                    errors,
+                    'error'
+                );
+            });
         }
+    }).catch(error => {
+        Swal.fire(
+            'Error',
+            'Hubo un problema con la solicitud.',
+            'error'
+        );
     });
 });
 
 $('#editForm').submit(function (e) {
     e.preventDefault();
-    let formData = $(this).serialize();
+    let formData = new FormData(this);
     fetch('/Pagos/Editar', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        },
         body: formData
     }).then(response => {
         if (response.ok) {
-            location.reload();
+            Swal.fire(
+                'Editado!',
+                'El pago ha sido editado correctamente.',
+                'success'
+            ).then(() => location.reload());
+        } else {
+            return response.json().then(data => {
+                let errors = Object.values(data.errors).flat().join('<br>');
+                Swal.fire(
+                    'Error',
+                    errors,
+                    'error'
+                );
+            });
         }
+    }).catch(error => {
+        Swal.fire(
+            'Error',
+            'Hubo un problema con la solicitud.',
+            'error'
+        );
     });
 });
+
 
 $('#confirmDelete').click(function () {
     let idPago = $(this).data('idPago');

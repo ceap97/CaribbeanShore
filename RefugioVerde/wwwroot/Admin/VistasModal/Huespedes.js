@@ -138,11 +138,14 @@ $('#createForm').submit(function (e) {
                 'success'
             ).then(() => location.reload());
         } else {
-            Swal.fire(
-                'Error',
-                'Hubo un problema al intentar crear el huésped.',
-                'error'
-            );
+            return response.json().then(data => {
+                let errors = Object.values(data.errors).flat().join('<br>');
+                Swal.fire(
+                    'Error',
+                    errors,
+                    'error'
+                );
+            });
         }
     }).catch(error => {
         Swal.fire(
@@ -167,11 +170,14 @@ $('#editForm').submit(function (e) {
                 'success'
             ).then(() => location.reload());
         } else {
-            Swal.fire(
-                'Error',
-                'Hubo un problema al intentar actualizar el huésped.',
-                'error'
-            );
+            return response.json().then(data => {
+                let errors = Object.values(data.errors).flat().join('<br>');
+                Swal.fire(
+                    'Error',
+                    errors,
+                    'error'
+                );
+            });
         }
     }).catch(error => {
         Swal.fire(
@@ -196,8 +202,6 @@ function loadMunicipios(selectId) {
             });
         });
 }
-
-
 
 function loadReservas() {
     fetch('/Reservas/Listar')  // Asegúrate de que la ruta sea correcta
