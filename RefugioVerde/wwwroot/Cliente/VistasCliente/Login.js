@@ -18,6 +18,9 @@ function mostrarModalIniciarSesion() {
                     <button type="submit" class="btn btn-primary">Iniciar Sesion</button>
                     <button type="button" class="btn btn-secondary" id="btnRegistrarse">Registrarse</button>
                     <button type="button" class="btn btn-danger" id="btnGoogleLogin">Iniciar con Google</button>
+                    <button type="button" class="btn btn-link" id="btnOlvideContraseña">
+                        Olvidé mi contraseña
+                    </button>
                 </form>
             `,
         showConfirmButton: false
@@ -59,7 +62,13 @@ function mostrarModalIniciarSesion() {
     document.getElementById('btnGoogleLogin').addEventListener('click', function () {
         window.location.href = '/Inicio/GoogleLogin';
     });
-} function mostrarModalRegistrarse() {
+
+    document.getElementById('btnOlvideContraseña').addEventListener('click', function() {
+        mostrarModalRecuperarContraseña();
+    });
+}
+
+function mostrarModalRegistrarse() {
     Swal.fire({
         title: 'Registrarse',
         html: `
@@ -159,4 +168,108 @@ function iniciarSesionAutomatico(correo, clave) {
                 });
             }
         });
+}
+
+function mostrarModalRecuperarContraseña() {
+    Swal.fire({
+        title: 'Recuperar Contraseña',
+        html: `
+            <form id="recuperarForm">
+                <div class="form-group mb-3">
+                    <label for="correo">Correo Electrónico</label>
+                    <input class="form-control" type="email" required 
+                        placeholder="Ingrese su correo" id="correo" name="correo">
+                </div>
+                <button type="submit" class="btn btn-primary">Enviar</button>
+            </form>
+        `,
+        showConfirmButton: false
+    });
+
+    document.getElementById('recuperarForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var form = new FormData(this);
+
+        fetch('/Usuarios/SolicitarRestablecerContraseña', {
+            method: 'POST',
+            body: form
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                mostrarModalIngresarToken(form.get('correo'));
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error al procesar la solicitud.'
+            });
+        });
+    });
+}
+
+function mostrarModalIngresarToken(correo) {
+    Swal.fire({
+        title: 'Restablecer Contraseña',
+        html: `
+            <form id="restablecerForm">
+                <input type="hidden" name="correo" value="${correo}">
+                <div class="form-group mb-3">
+                    <label for="token">Código de Verificación</label>
+                    <input class="form-control" type="text" required 
+                        placeholder="Ingrese el código" id="token" name="token">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="nuevaClave">Nueva Contraseña</label>
+                    <input class="form-control" type="password" required 
+                        placeholder="Nueva contraseña" id="nuevaClave" name="nuevaClave">
+                </div>
+                <button type="submit" class="btn btn-primary">Restablecer</button>
+            </form>
+        `,
+        showConfirmButton: false,
+        allowOutsideClick: false
+    });
+
+    document.getElementById('restablecerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+
+        Swal.showLoading();
+
+        fetch('/Usuarios/RestablecerContraseña', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(error => {
+                    throw new Error(error.message || 'Error al restablecer la contraseña');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: 'Contraseña actualizada correctamente',
+                confirmButtonText: 'Iniciar Sesión'
+            }).then(() => {
+                mostrarModalIniciarSesion();
+            });
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Ocurrió un error al restablecer la contraseña'
+            }).then(() => {
+                // Volver a mostrar el modal de ingreso de token
+                mostrarModalIngresarToken(correo);
+            });
+        });
+    });
 }

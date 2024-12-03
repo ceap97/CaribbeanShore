@@ -13,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RefugioVerdeContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("conexion")));
 builder.Services.AddScoped<IUsuarioServices, UsuariosSevices>();
+builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<IPermisoService, PermisoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuariosSevices>();
 builder.Services.AddAuthentication(options =>

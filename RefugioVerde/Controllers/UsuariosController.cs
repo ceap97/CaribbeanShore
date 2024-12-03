@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RefugioVerde.Models;
 using RefugioVerde.Recursos;
+using MimeKit;
+using MailKit.Net.Smtp;
+using MailKit.Security;
 
 namespace RefugioVerde.Controllers
 {
@@ -18,11 +21,14 @@ namespace RefugioVerde.Controllers
         private readonly RefugioVerdeContext _context;
         private readonly ILogger<UsuariosController> _logger;
         private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "usuarios");
+        private readonly EmailService _emailService;
+        private const int TOKEN_EXPIRY_MINUTES = 15;
 
-        public UsuariosController(RefugioVerdeContext context, ILogger<UsuariosController> logger)
+        public UsuariosController(RefugioVerdeContext context, ILogger<UsuariosController> logger, EmailService emailService)
         {
             _context = context;
             _logger = logger;
+            _emailService = emailService;
         }
         [HttpGet]
         public async Task<IActionResult> ObtenerUsuarioActual()
@@ -178,7 +184,62 @@ namespace RefugioVerde.Controllers
             }
         }
 
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> SolicitarRestablecerContraseña([FromForm] string correo)
+        {
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
+            if (usuario == null)
+            {
+                return BadRequest(new { message = "No existe una cuenta con este correo." });
+            }
 
+            // Generar token aleatorio
+            var token = Guid.NewGuid().ToString("N");
+
+            // Guardar token en TempData (en producción usar base de datos)
+            TempData[$"ResetToken_{correo}"] = token;
+            TempData[$"ResetTokenExpiry_{correo}"] = DateTime.UtcNow.AddMinutes(TOKEN_EXPIRY_MINUTES);
+
+            await _emailService.SendPasswordResetEmailAsync(correo, token);
+
+            return Ok(new { message = "Se ha enviado un correo con las instrucciones." });
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> RestablecerContraseña([FromForm] string correo,
+            [FromForm] string token, [FromForm] string nuevaClave)
+        {
+            var storedToken = TempData[$"ResetToken_{correo}"]?.ToString();
+            var expiryStr = TempData[$"ResetTokenExpiry_{correo}"]?.ToString();
+
+            if (string.IsNullOrEmpty(storedToken) || string.IsNullOrEmpty(expiryStr))
+            {
+                return BadRequest(new { message = "Token inválido o expirado." });
+            }
+
+            if (DateTime.Parse(expiryStr) < DateTime.UtcNow)
+            {
+                return BadRequest(new { message = "El token ha expirado." });
+            }
+
+            if (token != storedToken)
+            {
+                return BadRequest(new { message = "Token inválido." });
+            }
+
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == correo);
+            if (usuario == null)
+            {
+                return BadRequest(new { message = "Usuario no encontrado." });
+            }
+
+            usuario.Clave = Utilidades.EncriptarClave(nuevaClave);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Contraseña actualizada correctamente." });
+        }
 
         // DELETE: /Usuarios/Eliminar/{id}
         [HttpDelete]
@@ -204,5 +265,39 @@ namespace RefugioVerde.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+    }
+}
+
+public class EmailService
+{
+    private readonly IConfiguration _configuration;
+
+    public EmailService(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public async Task SendPasswordResetEmailAsync(string toEmail, string resetToken)
+    {
+        var email = new MimeMessage();
+        email.From.Add(MailboxAddress.Parse(_configuration["EmailSettings:Mail"]));
+        email.To.Add(MailboxAddress.Parse(toEmail));
+        email.Subject = "Restablecer Contraseña - Refugio Verde";
+
+        var builder = new BodyBuilder();
+        builder.HtmlBody = $@"
+            <h1>Restablecer Contraseña</h1>
+            <p>Use este token para restablecer su contraseña: {resetToken}</p>
+            <p>Este token expirará en 15 minutos.</p>";
+
+        email.Body = builder.ToMessageBody();
+
+        using var smtp = new SmtpClient();
+        await smtp.ConnectAsync(_configuration["EmailSettings:Host"],
+            int.Parse(_configuration["EmailSettings:Port"]), SecureSocketOptions.StartTls);
+        await smtp.AuthenticateAsync(_configuration["EmailSettings:Mail"],
+            _configuration["EmailSettings:Password"]);
+        await smtp.SendAsync(email);
+        await smtp.DisconnectAsync(true);
     }
 }
