@@ -19,18 +19,16 @@
                                 <input type="hidden" id="precioHabitacion" name="precioHabitacion">
                             </div>
                             <div class="mb-3">
-                                <label for="comodidadId" class="form-label">Comodidad</label>
-                                <select class="form-select" id="comodidadId" name="comodidadId" required>
-                                    <!-- Opciones de comodidades se cargarán aquí -->
-                                </select>
-                                <input type="hidden" id="precioComodidad" name="precioComodidad">
+                                <label for="comodidades" class="form-label">Comodidades</label>
+                                <div id="comodidades">
+                                    <!-- Checkboxes de comodidades se cargarán aquí -->
+                                </div>
                             </div>
                             <div class="mb-3">
-                                <label for="servicioId" class="form-label">Servicio</label>
-                                <select class="form-select" id="servicioId" name="servicioId" required>
-                                    <!-- Opciones de servicios se cargarán aquí -->
-                                </select>
-                                <input type="hidden" id="precioServicio" name="precioServicio">
+                                <label for="servicios" class="form-label">Servicios</label>
+                                <div id="servicios">
+                                    <!-- Checkboxes de servicios se cargarán aquí -->
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="fechaInicio" class="form-label">Fecha Inicio</label>
@@ -85,6 +83,17 @@
     document.getElementById('createForm').addEventListener('submit', function (e) {
         e.preventDefault();
         let formData = new FormData(this);
+
+        // Agregar comodidades seleccionadas al formData
+        document.querySelectorAll('#comodidades input[type="checkbox"]:checked').forEach(checkbox => {
+            formData.append('comodidades', checkbox.value);
+        });
+
+        // Agregar servicios seleccionados al formData
+        document.querySelectorAll('#servicios input[type="checkbox"]:checked').forEach(checkbox => {
+            formData.append('servicios', checkbox.value);
+        });
+
         fetch('/Reservas/Crear', {
             method: 'POST',
             body: formData
@@ -102,16 +111,24 @@
 
     // Agregar eventos para calcular el total y validar fechas
     document.getElementById('habitacionId').addEventListener('change', calculateTotal);
-    document.getElementById('comodidadId').addEventListener('change', calculateTotal);
-    document.getElementById('servicioId').addEventListener('change', calculateTotal);
+    document.getElementById('comodidades').addEventListener('change', calculateTotal);
+    document.getElementById('servicios').addEventListener('change', calculateTotal);
     document.getElementById('fechaInicio').addEventListener('change', validateDates);
     document.getElementById('fechaFin').addEventListener('change', validateDates);
 }
 
 function calculateTotal() {
     const precioHabitacion = parseFloat(document.getElementById('precioHabitacion').value) || 0;
-    const precioComodidad = parseFloat(document.getElementById('precioComodidad').value) || 0;
-    const precioServicio = parseFloat(document.getElementById('precioServicio').value) || 0;
+
+    let precioComodidades = 0;
+    document.querySelectorAll('#comodidades input[type="checkbox"]:checked').forEach(checkbox => {
+        precioComodidades += parseFloat(checkbox.getAttribute('data-precio')) || 0;
+    });
+
+    let precioServicios = 0;
+    document.querySelectorAll('#servicios input[type="checkbox"]:checked').forEach(checkbox => {
+        precioServicios += parseFloat(checkbox.getAttribute('data-precio')) || 0;
+    });
 
     const fechaInicio = new Date(document.getElementById('fechaInicio').value);
     const fechaFin = new Date(document.getElementById('fechaFin').value);
@@ -119,7 +136,7 @@ function calculateTotal() {
     const diffTime = Math.abs(fechaFin - fechaInicio);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 0; // +1 para incluir el día de inicio
 
-    const total = (precioHabitacion + precioComodidad + precioServicio) * diffDays;
+    const total = (precioHabitacion + precioComodidades + precioServicios) * diffDays;
     document.getElementById('total').value = total.toFixed(2);
 }
 
@@ -161,18 +178,17 @@ function loadComodidades() {
     return fetch('/Comodidades/Listar') // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
-            let comodidadSelects = document.querySelectorAll('#comodidadId, #editComodidadId');
-            comodidadSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione una Comodidad</option>`;
-                data.forEach(comodidad => {
-                    select.innerHTML += `<option value="${comodidad.comodidadId}" data-precio="${comodidad.precio}">${comodidad.nombre}</option>`;
-                });
-            });
-
-            document.getElementById('comodidadId').addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                document.getElementById('precioComodidad').value = selectedOption.getAttribute('data-precio');
-                calculateTotal();
+            let comodidadesDiv = document.getElementById('comodidades');
+            comodidadesDiv.innerHTML = '';
+            data.forEach(comodidad => {
+                comodidadesDiv.innerHTML += `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${comodidad.comodidadId}" data-precio="${comodidad.precio}" id="comodidad-${comodidad.comodidadId}">
+                        <label class="form-check-label" for="comodidad-${comodidad.comodidadId}">
+                            ${comodidad.nombre} - ${comodidad.precio.toFixed(2)} €
+                        </label>
+                    </div>
+                `;
             });
         });
 }
@@ -181,18 +197,17 @@ function loadServicios() {
     return fetch('/Servicios/Listar') // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
-            let servicioSelects = document.querySelectorAll('#servicioId, #editServicioId');
-            servicioSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione un Servicio</option>`;
-                data.forEach(servicio => {
-                    select.innerHTML += `<option value="${servicio.servicioId}" data-precio="${servicio.precio}">${servicio.nombre}</option>`;
-                });
-            });
-
-            document.getElementById('servicioId').addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                document.getElementById('precioServicio').value = selectedOption.getAttribute('data-precio');
-                calculateTotal();
+            let serviciosDiv = document.getElementById('servicios');
+            serviciosDiv.innerHTML = '';
+            data.forEach(servicio => {
+                serviciosDiv.innerHTML += `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${servicio.servicioId}" data-precio="${servicio.precio}" id="servicio-${servicio.servicioId}">
+                        <label class="form-check-label" for="servicio-${servicio.servicioId}">
+                            ${servicio.nombre} - ${servicio.precio.toFixed(2)} €
+                        </label>
+                    </div>
+                `;
             });
         });
 }

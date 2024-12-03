@@ -257,9 +257,7 @@ public partial class RefugioVerdeContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Reserva__Cliente__72C60C4A");
 
-            entity.HasOne(d => d.Comodidad).WithMany(p => p.Reservas)
-                .HasForeignKey(d => d.ComodidadId)
-                .HasConstraintName("FK__Reserva__Comodid__76969D2E");
+        
 
             entity.HasOne(d => d.EstadoReserva).WithMany(p => p.Reservas)
                 .HasForeignKey(d => d.EstadoReservaId)
@@ -271,10 +269,24 @@ public partial class RefugioVerdeContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Reserva__Habitac__73BA3083");
 
-            entity.HasOne(d => d.Servicio).WithMany(p => p.Reservas)
-                .HasForeignKey(d => d.ServicioId)
-                .HasConstraintName("FK__Reserva__Servici__75A278F5");
+         
         });
+        modelBuilder.Entity<Reserva>()
+           .HasMany(r => r.Comodidades)
+           .WithMany(c => c.Reservas)
+           .UsingEntity<Dictionary<string, object>>(
+               "ReservaComodidad",
+               r => r.HasOne<Comodidad>().WithMany().HasForeignKey("ComodidadId"),
+               c => c.HasOne<Reserva>().WithMany().HasForeignKey("ReservaId"));
+
+        modelBuilder.Entity<Reserva>()
+            .HasMany(r => r.Servicios)
+            .WithMany(s => s.Reservas)
+            .UsingEntity<Dictionary<string, object>>(
+                "ReservaServicio",
+                r => r.HasOne<Servicio>().WithMany().HasForeignKey("ServicioId"),
+                s => s.HasOne<Reserva>().WithMany().HasForeignKey("ReservaId"));
+
 
         modelBuilder.Entity<Role>(entity =>
         {

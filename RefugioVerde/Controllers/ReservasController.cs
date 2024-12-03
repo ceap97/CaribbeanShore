@@ -54,9 +54,9 @@ namespace RefugioVerde.Controllers
                     .Include(c => c.Reservas)
                         .ThenInclude(r => r.EstadoReserva)
                     .Include(c => c.Reservas)
-                        .ThenInclude(r => r.Servicio)
+                        .ThenInclude(r => r.Servicios)
                     .Include(c => c.Reservas)
-                        .ThenInclude(r => r.Comodidad)
+                        .ThenInclude(r => r.Comodidades)
                     .FirstOrDefaultAsync(c => c.UsuarioId == parsedUserId);
 
                 if (cliente == null)
@@ -72,11 +72,11 @@ namespace RefugioVerde.Controllers
                     FechaFin = r.FechaFin,
                     Habitacion = r.Habitacion?.NombreHabitacion,
                     EstadoReserva = r.EstadoReserva?.Nombre,
-                    Servicio = r.Servicio?.Nombre,
-                    Comodidad = r.Comodidad?.Nombre,
+                    Servicios = r.Servicios.Select(s => s.Nombre).ToList(),
+                    Comodidades = r.Comodidades.Select(c => c.Nombre).ToList(),
                     PrecioHabitacion = r.Habitacion?.Precio ?? 0,
-                    PrecioComodidad = r.Comodidad?.Precio ?? 0,
-                    PrecioServicio = r.Servicio?.Precio ?? 0
+                    PrecioComodidad = r.Comodidades.Sum(c => c.Precio),
+                    PrecioServicio = r.Servicios.Sum(s => s.Precio)
                 }).ToList();
 
                 return View(reservasViewModel);
@@ -90,8 +90,8 @@ namespace RefugioVerde.Controllers
                 .Include(r => r.Cliente)
                 .Include(r => r.Habitacion)
                 .Include(r => r.EstadoReserva)
-                .Include(r => r.Comodidad)
-                .Include(r => r.Servicio)
+                .Include(r => r.Comodidades)
+                .Include(r => r.Servicios)
                 .ToListAsync();
             return View(reservas);
         }
@@ -103,8 +103,8 @@ namespace RefugioVerde.Controllers
                 .Include(r => r.Cliente)
                 .Include(r => r.Habitacion)
                 .Include(r => r.EstadoReserva)
-                .Include(r => r.Comodidad)
-                .Include(r => r.Servicio)
+                .Include(r => r.Comodidades)
+                .Include(r => r.Servicios)
                 .ToListAsync();
             return Json(reservas);
         }
@@ -117,8 +117,8 @@ namespace RefugioVerde.Controllers
                 .Include(r => r.Cliente)
                 .Include(r => r.Habitacion)
                 .Include(r => r.EstadoReserva)
-                .Include(r => r.Comodidad)
-                .Include(r => r.Servicio)
+                .Include(r => r.Comodidades)
+                .Include(r => r.Servicios)
                 .FirstOrDefaultAsync(r => r.ReservaId == id);
             if (reserva == null)
             {
@@ -129,7 +129,7 @@ namespace RefugioVerde.Controllers
 
         // POST: /Reservas/Crear
         [HttpPost]
-        public async Task<IActionResult> Crear([FromForm] Reserva reserva)
+        public async Task<IActionResult> Crear([FromForm] Reserva reserva, [FromForm] List<int> comodidadIds, [FromForm] List<int> servicioIds)
         {
             if (reserva.FechaFin <= reserva.FechaInicio)
             {
@@ -138,6 +138,24 @@ namespace RefugioVerde.Controllers
 
             if (ModelState.IsValid)
             {
+                foreach (var comodidadId in comodidadIds)
+                {
+                    var comodidad = await _context.Comodidads.FindAsync(comodidadId);
+                    if (comodidad != null)
+                    {
+                        reserva.Comodidades.Add(comodidad);
+                    }
+                }
+
+                foreach (var servicioId in servicioIds)
+                {
+                    var servicio = await _context.Servicios.FindAsync(servicioId);
+                    if (servicio != null)
+                    {
+                        reserva.Servicios.Add(servicio);
+                    }
+                }
+
                 _context.Reservas.Add(reserva);
                 await _context.SaveChangesAsync();
                 return Ok();
@@ -147,7 +165,7 @@ namespace RefugioVerde.Controllers
 
         // POST: /Reservas/Editar
         [HttpPost]
-        public async Task<IActionResult> Editar([FromForm] Reserva reserva)
+        public async Task<IActionResult> Editar([FromForm] Reserva reserva, [FromForm] List<int> comodidadIds, [FromForm] List<int> servicioIds)
         {
             if (reserva.FechaFin <= reserva.FechaInicio)
             {
@@ -156,9 +174,44 @@ namespace RefugioVerde.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Reservas.Update(reserva);
-                await _context.SaveChangesAsync();
-                return Ok();
+                var existingReserva = await _context.Reservas
+                    .Include(r => r.Comodidades)
+                    .Include(r => r.Servicios)
+                    .FirstOrDefaultAsync(r => r.ReservaId == reserva.ReservaId);
+
+                if (existingReserva != null)
+                {
+                    existingReserva.FechaInicio = reserva.FechaInicio;
+                    existingReserva.FechaFin = reserva.FechaFin;
+                    existingReserva.ClienteId = reserva.ClienteId;
+                    existingReserva.HabitacionId = reserva.HabitacionId;
+                    existingReserva.EstadoReservaId = reserva.EstadoReservaId;
+
+                    existingReserva.Comodidades.Clear();
+                    foreach (var comodidadId in comodidadIds)
+                    {
+                        var comodidad = await _context.Comodidads.FindAsync(comodidadId);
+                        if (comodidad != null)
+                        {
+                            existingReserva.Comodidades.Add(comodidad);
+                        }
+                    }
+
+                    existingReserva.Servicios.Clear();
+                    foreach (var servicioId in servicioIds)
+                    {
+                        var servicio = await _context.Servicios.FindAsync(servicioId);
+                        if (servicio != null)
+                        {
+                            existingReserva.Servicios.Add(servicio);
+                        }
+                    }
+
+                    _context.Reservas.Update(existingReserva);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return NotFound();
             }
             return BadRequest(ModelState);
         }

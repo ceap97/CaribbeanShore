@@ -17,6 +17,9 @@ namespace RefugioVerde.Models
         public decimal PrecioServicio { get; set; }
         public decimal MontoTotal => (PrecioHabitacion + PrecioComodidad + PrecioServicio) * ((FechaFin - FechaInicio).Days == 0 ? 1 : (FechaFin - FechaInicio).Days);
 
+        public List<string> Servicios { get; internal set; }
+        public List<string> Comodidades { get; internal set; }
+
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {
             if (FechaFin <= FechaInicio)
