@@ -17,9 +17,7 @@ namespace RefugioVerde.Models
         [Required(ErrorMessage = "La descripción es obligatoria.")]
         [StringLength(200, ErrorMessage = "La descripción no puede tener más de 200 caracteres.")]
         public string Descripcion { get; set; } = null!;
-
-        //[Required(ErrorMessage = "La imagen es obligatoria.")]
-        public byte[] Imagen { get; set; } = null!;
+        public string Imagen { get; set; } = null!;
 
         [Required(ErrorMessage = "El precio es obligatorio.")]
         [Range(0.01, double.MaxValue, ErrorMessage = "El precio debe ser un valor positivo.")]

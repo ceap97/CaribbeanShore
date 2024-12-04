@@ -31,6 +31,9 @@ public partial class Habitacion
     [Url(ErrorMessage = "La imagen debe ser una URL válida.")]
     public string Imagen { get; set; }
 
+    [Range(1, 5, ErrorMessage = "La capacidad debe estar entre 1 y 5.")]
+    public int Capacidad { get; set; }
+
     [JsonIgnore]
     public virtual EstadoHabitacion EstadoHabitacion { get; set; } = null!;
 

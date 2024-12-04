@@ -11,6 +11,7 @@
                     <td>${habitacion.nombreHabitacion}</td>
                     <td>${habitacion.tipo}</td>
                     <td>${habitacion.precio}</td>
+                    <td>${habitacion.capacidad}</td>
                     <td>${habitacion.estadoHabitacionId}</td>
                     <td>
                         <div class="action-buttons">
@@ -54,6 +55,7 @@ function openEditModal(habitacionId) {
             $('#editNombreHabitacion').val(data.nombreHabitacion);
             $('#editTipo').val(data.tipo);
             $('#editPrecio').val(data.precio);
+            $('#editCapacidad').val(data.capacidad);
             $('#editEstadoHabitacionId').val(data.estadoHabitacionId);
             $('#editModal').modal('show');
             loadEstadosHabitacion(); // Carga estados de habitación en el modal de editar
@@ -97,6 +99,7 @@ function openDetailsModal(habitacionId) {
                        <p><strong>Nombre:</strong> ${data.nombreHabitacion}</p>
                        <p><strong>Tipo:</strong> ${data.tipo}</p>
                        <p><strong>Precio:</strong> ${data.precio}</p>
+                       <p><strong>Capacidad:</strong> ${data.capacidad}</p>
                        <p><strong>Estado:</strong> ${data.estadoHabitacionId}</p>`,
                 icon: 'info',
                 confirmButtonText: 'Cerrar'
@@ -176,7 +179,7 @@ function updateEstadoHabitacion(data) {
     // Listado de habitaciones: muestra el nombre del estado en lugar del ID
     let rows = document.querySelectorAll('#tbHabitaciones tbody tr');
     rows.forEach(row => {
-        let estadoIdCell = row.cells[5]; // Asumiendo que el estado está en la columna 5 (índice 4)
+        let estadoIdCell = row.cells[6]; // Asumiendo que el estado está en la columna 6 (índice 5)
         let estadoId = estadoIdCell.innerText.trim();
 
         let estado = data.find(e => e.estadoHabitacionId == estadoId);

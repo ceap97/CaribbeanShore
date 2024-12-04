@@ -17,7 +17,6 @@ public partial class Pago
     [StringLength(50, ErrorMessage = "El método de pago no puede tener más de 50 caracteres.")]
     public string MetodoPago { get; set; } = null!;
 
-    
     public string Comprobante { get; set; }
 
     [Required(ErrorMessage = "La reserva es obligatoria.")]
@@ -25,9 +24,22 @@ public partial class Pago
 
     public int? EstadoPagoId { get; set; }
 
+    [Required(ErrorMessage = "El tipo de pago es obligatorio.")]
+    [StringLength(10, ErrorMessage = "El tipo de pago no puede tener más de 10 caracteres.")]
+    public string Tipo { get; set; }
+
+    [Required(ErrorMessage = "La fecha de pago es obligatoria.")]
+    public DateTime FechaPago { get; set; }
+
+    [Required(ErrorMessage = "El ID del método de pago es obligatorio.")]
+    public int MetodoDePagoId { get; set; }
+
     [JsonIgnore]
     public virtual EstadoPago EstadoPago { get; set; }
 
     [JsonIgnore]
     public virtual Reserva Reserva { get; set; } = null!;
+
+    [JsonIgnore]
+    public virtual MetodoDePago MetodoDePago { get; set; }
 }

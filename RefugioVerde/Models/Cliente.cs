@@ -30,6 +30,9 @@ public partial class Cliente
     [Required]
     public int? UsuarioId { get; set; } = null!;
 
+    public string Direccion { get; set; }
+    public string Genero { get; set; }
+
     [JsonIgnore]
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
 

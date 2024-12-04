@@ -4,9 +4,9 @@
     @foreach (var servicio in Model)
     {
         <div class="service-card">
-            @if (servicio.Imagen != null)
+            @if (!string.IsNullOrEmpty(servicio.Imagen))
             {
-                <img src="data:image;base64,@Convert.ToBase64String(servicio.Imagen)" alt="Imagen de @servicio.Nombre" class="service-image" />
+                <img src="@servicio.Imagen" alt="Imagen de @servicio.Nombre" class="service-image" />
             }
             else
             {

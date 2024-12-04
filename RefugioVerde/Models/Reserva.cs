@@ -13,6 +13,8 @@ namespace RefugioVerde.Models
         public int? EstadoReservaId { get; set; } = 2;
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
+        public decimal MontoTotal { get; set; }
+        public string Confirmacion { get; set; }
 
         [JsonIgnore]
         public virtual Cliente Cliente { get; set; } = null!;

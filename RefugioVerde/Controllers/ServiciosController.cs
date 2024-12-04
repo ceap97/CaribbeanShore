@@ -51,7 +51,6 @@ namespace RefugioVerde.Controllers
         }
 
         // POST: /Servicios/Crear
-        [HttpPost]
         public async Task<IActionResult> Crear(IFormCollection form)
         {
             try
@@ -85,8 +84,8 @@ namespace RefugioVerde.Controllers
                     // Guardar la imagen en el sistema de archivos
                     await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
 
-                    // Guardar la imagen en la base de datos
-                    servicio.Imagen = imageBytes;
+                    // Guardar la ruta de la imagen en la base de datos
+                    servicio.Imagen = imagePath;
                 }
 
                 // Guardar el servicio en la base de datos
@@ -101,8 +100,6 @@ namespace RefugioVerde.Controllers
             }
         }
 
-        // POST: /Servicios/Editar
-        [HttpPost]
         public async Task<IActionResult> Editar(IFormCollection form)
         {
             try
@@ -138,8 +135,8 @@ namespace RefugioVerde.Controllers
                     // Guardar la imagen en el sistema de archivos
                     await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
 
-                    // Guardar la imagen en la base de datos
-                    servicio.Imagen = imageBytes;
+                    // Guardar la ruta de la imagen en la base de datos
+                    servicio.Imagen = imagePath;
                 }
 
                 _context.Servicios.Update(servicio);
@@ -152,6 +149,7 @@ namespace RefugioVerde.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
         // DELETE: /Servicios/Eliminar/{id}
         [HttpDelete]
