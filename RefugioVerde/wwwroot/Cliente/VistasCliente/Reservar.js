@@ -17,17 +17,29 @@
                                     <!-- Opciones de habitaciones se cargarán aquí -->
                                 </select>
                                 <input type="hidden" id="precioHabitacion" name="precioHabitacion">
+                                <div class="mt-2">
+                                    <label for="subtotalHabitacion" class="form-label">Subtotal Habitación</label>
+                                    <input type="text" class="form-control" id="subtotalHabitacion" name="subtotalHabitacion" readonly>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="comodidades" class="form-label">Comodidades</label>
                                 <div id="comodidades">
                                     <!-- Checkboxes de comodidades se cargarán aquí -->
                                 </div>
+                                <div class="mt-2">
+                                    <label for="subtotalComodidades" class="form-label">Subtotal Comodidades</label>
+                                    <input type="text" class="form-control" id="subtotalComodidades" name="subtotalComodidades" readonly>
+                                </div>
                             </div>
                             <div class="mb-3">
                                 <label for="servicios" class="form-label">Servicios</label>
                                 <div id="servicios">
                                     <!-- Checkboxes de servicios se cargarán aquí -->
+                                </div>
+                                <div class="mt-2">
+                                    <label for="subtotalServicios" class="form-label">Subtotal Servicios</label>
+                                    <input type="text" class="form-control" id="subtotalServicios" name="subtotalServicios" readonly>
                                 </div>
                             </div>
                             <div class="mb-3">
@@ -39,8 +51,8 @@
                                 <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
                             </div>
                             <div class="mb-3">
-                                <label for="total" class="form-label">Total</label>
-                                <input type="text" class="form-control" id="total" name="total" readonly>
+                                <label for="montoTotal" class="form-label">Monto Total</label>
+                                <input type="text" class="form-control" id="montoTotal" name="montoTotal" readonly>
                             </div>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary" id="guardarBtn">Guardar</button>
@@ -94,19 +106,27 @@
             formData.append('servicios', checkbox.value);
         });
 
+        // Agregar precios al formData
+        formData.append('precioHabitacion', document.getElementById('precioHabitacion').value);
+        formData.append('precioComodidad', document.getElementById('subtotalComodidades').value);
+        formData.append('precioServicio', document.getElementById('subtotalServicios').value);
+        formData.append('montoTotal', document.getElementById('montoTotal').value);
+
         fetch('/Reservas/Crear', {
             method: 'POST',
             body: formData
-        }).then(response => {
-            if (response.ok) {
-                $('#createModal').modal('hide');
-                location.reload();
-            } else {
-                Swal.fire('Error', 'Hubo un problema al crear la reserva.', 'error');
-            }
-        }).catch(error => {
-            Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
-        });
+        }).then(response => response.json())
+            .then(data => {
+                if (data.confirmacion) {
+                    $('#createModal').modal('hide');
+                    Swal.fire('Reserva Creada', `Su reserva ha sido creada con éxito. Confirmación: ${data.confirmacion}`, 'success')
+                        .then(() => location.reload());
+                } else {
+                    Swal.fire('Error', 'Hubo un problema al crear la reserva.', 'error');
+                }
+            }).catch(error => {
+                Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
+            });
     });
 
     // Agregar eventos para calcular el total y validar fechas
@@ -136,8 +156,16 @@ function calculateTotal() {
     const diffTime = Math.abs(fechaFin - fechaInicio);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 0; // +1 para incluir el día de inicio
 
-    const total = (precioHabitacion + precioComodidades + precioServicios) * diffDays;
-    document.getElementById('total').value = total.toFixed(2);
+    const subtotalHabitacion = precioHabitacion * diffDays;
+    const subtotalComodidades = precioComodidades * diffDays;
+    const subtotalServicios = precioServicios * diffDays;
+
+    const montoTotal = subtotalHabitacion + subtotalComodidades + subtotalServicios;
+
+    document.getElementById('subtotalHabitacion').value = subtotalHabitacion.toFixed(2);
+    document.getElementById('subtotalComodidades').value = subtotalComodidades.toFixed(2);
+    document.getElementById('subtotalServicios').value = subtotalServicios.toFixed(2);
+    document.getElementById('montoTotal').value = montoTotal.toFixed(2);
 }
 
 function validateDates() {

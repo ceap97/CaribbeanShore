@@ -1,4 +1,4 @@
-﻿   @model List<RefugioVerde.Models.ReservaViewModel>
+﻿@model List<RefugioVerde.Models.ReservaViewModel>
 
 @{
     ViewData["Title"] = "Reservas del Cliente";
@@ -22,6 +22,7 @@
             <th>Habitación</th>
             <th>Estado de Reserva</th>
             <th>Monto Total</th>
+            <th>Confirmación</th>
             <th>Acciones</th>
         </tr>
     </thead>
@@ -35,6 +36,7 @@
                 <td>@reserva.Habitacion</td>
                 <td id="estado-@reserva.ReservaId">@reserva.EstadoReserva</td>
                 <td>@reserva.MontoTotal.ToString("C")</td>
+                <td>@reserva.Confirmacion</td>
                 <td>
                     <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Editar</button>
                     <button class="btn btn-secondary" onclick="cancelarReserva(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Cancelar</button>

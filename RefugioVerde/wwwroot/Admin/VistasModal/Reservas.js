@@ -15,6 +15,8 @@
                     <td>${reserva.estadoReservaId}</td>
                     <td>${new Date(reserva.fechaInicio).toLocaleDateString()}</td>
                     <td>${new Date(reserva.fechaFin).toLocaleDateString()}</td>
+                    <td>${reserva.montoTotal.toFixed(2)}</td>
+                    <td>${reserva.confirmacion}</td>
                     <td>
                         <div class="action-buttons">
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${reserva.reservaId})">
@@ -38,6 +40,7 @@
             });
         });
 });
+
 function openCreateModal() {
     loadClientes('#clienteId');
     loadHabitaciones('#habitacionId');
@@ -60,6 +63,8 @@ function openEditModal(reservaId) {
             $('#editEstadoReservaId').val(data.estadoReservaId);
             $('#editFechaInicio').val(data.fechaInicio.split('T')[0]);
             $('#editFechaFin').val(data.fechaFin.split('T')[0]);
+            $('#editMontoTotal').val(data.montoTotal.toFixed(2));
+            $('#editConfirmacion').val(data.confirmacion);
             $('#editModal').modal('show');
             loadClientes(); // Cargar clientes
             loadHabitaciones(); // Cargar habitaciones
@@ -95,7 +100,6 @@ function openDeleteModal(reservaId) {
     });
 }
 
-
 function openDetailsModal(reservaId) {
     fetch(`/Reservas/Obtener/${reservaId}`)
         .then(response => response.json())
@@ -110,13 +114,14 @@ function openDetailsModal(reservaId) {
                        <p><strong>Servicio:</strong> ${data.servicioId}</p>
                        <p><strong>Estado:</strong> ${data.estadoReservaId}</p>
                        <p><strong>Fecha de Inicio:</strong> ${new Date(data.fechaInicio).toLocaleDateString()}</p>
-                       <p><strong>Fecha de Fin:</strong> ${new Date(data.fechaFin).toLocaleDateString()}</p>`,
+                       <p><strong>Fecha de Fin:</strong> ${new Date(data.fechaFin).toLocaleDateString()}</p>
+                       <p><strong>Monto Total:</strong> ${data.montoTotal.toFixed(2)}</p>
+                       <p><strong>Confirmación:</strong> ${data.confirmacion}</p>`,
                 icon: 'info',
                 confirmButtonText: 'Cerrar'
             });
         });
 }
-
 
 $('#createForm').submit(function (e) {
     e.preventDefault();
@@ -182,7 +187,6 @@ $('#editForm').submit(function (e) {
     });
 });
 
-
 $('#confirmDelete').click(function () {
     let reservaId = $(this).data('reservaId');
     fetch(`/Reservas/Eliminar/${reservaId}`, {
@@ -235,6 +239,7 @@ function loadEstadosReserva() {
             });
         });
 }
+
 function loadComodidades() {
     fetch('/Comodidades/Listar') // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
@@ -262,6 +267,3 @@ function loadServicios() {
             });
         });
 }
-
-
-

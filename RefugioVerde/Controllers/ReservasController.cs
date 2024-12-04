@@ -76,7 +76,9 @@ namespace RefugioVerde.Controllers
                     Comodidades = r.Comodidades.Select(c => c.Nombre).ToList(),
                     PrecioHabitacion = r.Habitacion?.Precio ?? 0,
                     PrecioComodidad = r.Comodidades.Sum(c => c.Precio),
-                    PrecioServicio = r.Servicios.Sum(s => s.Precio)
+                    PrecioServicio = r.Servicios.Sum(s => s.Precio),
+                    MontoTotal = r.MontoTotal,
+                    Confirmacion = r.Confirmacion
                 }).ToList();
 
                 return View(reservasViewModel);
@@ -127,7 +129,6 @@ namespace RefugioVerde.Controllers
             return Json(reserva);
         }
 
-        // POST: /Reservas/Crear
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Reserva reserva, [FromForm] List<int> comodidadIds, [FromForm] List<int> servicioIds)
         {
@@ -156,9 +157,22 @@ namespace RefugioVerde.Controllers
                     }
                 }
 
+                // Calcular el monto total
+                var precioHabitacion = (await _context.Habitacions.FindAsync(reserva.HabitacionId))?.Precio ?? 0;
+                var precioComodidades = reserva.Comodidades.Sum(c => c.Precio);
+                var precioServicios = reserva.Servicios.Sum(s => s.Precio);
+                var numeroDias = (reserva.FechaFin - reserva.FechaInicio).Days;
+
+                reserva.MontoTotal = (precioHabitacion + precioComodidades + precioServicios) * numeroDias;
+
                 _context.Reservas.Add(reserva);
                 await _context.SaveChangesAsync();
-                return Ok();
+
+                // Generar la confirmación
+                reserva.Confirmacion = $"{reserva.ReservaId}{reserva.FechaReserva:yyyyMMdd}";
+                await _context.SaveChangesAsync();
+
+                return Ok(new { confirmacion = reserva.Confirmacion });
             }
             return BadRequest(ModelState);
         }
@@ -206,6 +220,14 @@ namespace RefugioVerde.Controllers
                             existingReserva.Servicios.Add(servicio);
                         }
                     }
+
+                    // Recalcular el monto total
+                    var precioHabitacion = (await _context.Habitacions.FindAsync(existingReserva.HabitacionId))?.Precio ?? 0;
+                    var precioComodidades = existingReserva.Comodidades.Sum(c => c.Precio);
+                    var precioServicios = existingReserva.Servicios.Sum(s => s.Precio);
+                    var numeroDias = (existingReserva.FechaFin - existingReserva.FechaInicio).Days;
+
+                    existingReserva.MontoTotal = (precioHabitacion + precioComodidades + precioServicios) * numeroDias;
 
                     _context.Reservas.Update(existingReserva);
                     await _context.SaveChangesAsync();
