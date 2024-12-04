@@ -13,7 +13,6 @@
                     <td>${cliente.documentoIdentidad}</td>
                     <td>${cliente.telefono}</td>
                     <td>${cliente.correo}</td>
-                    <td>${cliente.municipioId}</td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="openEditModal(${cliente.clienteId})">
                             <img src="Admin/Fonts/pen-to-square-solid.svg" alt="Editar" style="width: 16px; height: 16px;" />
@@ -40,8 +39,8 @@
 
 // Abre el modal de creación
 function openCreateModal() {
-    // Cargar municipios y usuarios en los select
-    loadMunicipiosAndUsuarios('#municipioId', '#usuarioId');
+    // Cargar usuarios en el select
+    loadUsuarios('#usuarioId');
     $('#createModal').modal('show');
 }
 
@@ -57,7 +56,7 @@ function openEditModal(clienteId) {
             $('#editDocumentoIdentidad').val(cliente.documentoIdentidad);
             $('#editTelefono').val(cliente.telefono);
             $('#editCorreo').val(cliente.correo);
-            loadMunicipiosAndUsuarios('#editMunicipioId', '#editUsuarioId');
+            loadUsuarios('#editUsuarioId');
             $('#editModal').modal('show');
         });
 }
@@ -68,35 +67,33 @@ function openDetailsModal(clienteId) {
     fetch(`/Clientes/Obtener/${clienteId}`)
         .then(response => response.json())
         .then(cliente => {
-            // Obtener los nombres del municipio y usuario
-            Promise.all([
-                fetch(`/Municipios/Obtener/${cliente.municipioId}`).then(res => res.json()),
-                fetch(`/Usuarios/Obtener/${cliente.usuarioId}`).then(res => res.json())
-            ]).then(([municipio, usuario]) => {
-                // Mostrar los detalles en un SweetAlert2 modal
-                Swal.fire({
-                    title: 'Detalles del Cliente',
-                    html: `
-                        <div style="text-align: left;">
-                            <p><strong>ID:</strong> ${cliente.clienteId}</p>
-                            <p><strong>Nombre:</strong> ${cliente.nombre}</p>
-                            <p><strong>Apellido:</strong> ${cliente.apellido}</p>
-                            <p><strong>Documento:</strong> ${cliente.documentoIdentidad}</p>
-                            <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
-                            <p><strong>Correo:</strong> ${cliente.correo}</p>
-                            <p><strong>Municipio:</strong> ${municipio.nombre}</p>
-                            <p><strong>Usuario:</strong> ${usuario.nombreUsuario}</p>
-                        </div>
-                    `,
-                    icon: 'info'
+            // Obtener el nombre del usuario
+            fetch(`/Usuarios/Obtener/${cliente.usuarioId}`)
+                .then(res => res.json())
+                .then(usuario => {
+                    // Mostrar los detalles en un SweetAlert2 modal
+                    Swal.fire({
+                        title: 'Detalles del Cliente',
+                        html: `
+                            <div style="text-align: left;">
+                                <p><strong>ID:</strong> ${cliente.clienteId}</p>
+                                <p><strong>Nombre:</strong> ${cliente.nombre}</p>
+                                <p><strong>Apellido:</strong> ${cliente.apellido}</p>
+                                <p><strong>Documento:</strong> ${cliente.documentoIdentidad}</p>
+                                <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
+                                <p><strong>Correo:</strong> ${cliente.correo}</p>
+                                <p><strong>Usuario:</strong> ${usuario.nombreUsuario}</p>
+                            </div>
+                        `,
+                        icon: 'info'
+                    });
+                }).catch(error => {
+                    Swal.fire(
+                        'Error',
+                        'Hubo un problema al cargar el usuario.',
+                        'error'
+                    );
                 });
-            }).catch(error => {
-                Swal.fire(
-                    'Error',
-                    'Hubo un problema al cargar el municipio o el usuario.',
-                    'error'
-                );
-            });
         }).catch(error => {
             Swal.fire(
                 'Error',
@@ -105,9 +102,6 @@ function openDetailsModal(clienteId) {
             );
         });
 }
-
-
-
 
 // Abre el modal de eliminación con SweetAlert2
 function openDeleteModal(clienteId) {
@@ -150,21 +144,8 @@ function openDeleteModal(clienteId) {
     });
 }
 
-// Función para cargar los municipios y usuarios en los select
-function loadMunicipiosAndUsuarios(municipioSelectId, usuarioSelectId) {
-    fetch('/Municipios/Listar')
-        .then(response => response.json())
-        .then(data => {
-            let municipioSelect = document.querySelector(municipioSelectId);
-            municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-            data.forEach(municipio => {
-                let option = document.createElement('option');
-                option.value = municipio.municipioId;
-                option.textContent = municipio.nombre;
-                municipioSelect.appendChild(option);
-            });
-        });
-
+// Función para cargar los usuarios en el select
+function loadUsuarios(usuarioSelectId) {
     fetch('/Usuarios/Listar')
         .then(response => response.json())
         .then(data => {
@@ -288,5 +269,3 @@ function validateForm(form) {
     });
     return isValid;
 }
-
-

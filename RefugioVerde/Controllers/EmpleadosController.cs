@@ -19,14 +19,14 @@ namespace RefugioVerde.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var empleados = await _context.Empleados.Include(e => e.Municipio).Include(e => e.Rol).ToListAsync();
+            var empleados = await _context.Empleados.Include(e => e.Rol).ToListAsync();
             return View(empleados);
         }
 
         [HttpGet]
         public async Task<IActionResult> Listar()
         {
-            var empleados = await _context.Empleados.Include(e => e.Municipio).Include(e => e.Rol).ToListAsync();
+            var empleados = await _context.Empleados.Include(e => e.Rol).ToListAsync();
             return Json(empleados);
         }
 
@@ -34,7 +34,7 @@ namespace RefugioVerde.Controllers
         [HttpGet]
         public async Task<IActionResult> Obtener(int id)
         {
-            var empleado = await _context.Empleados.Include(e => e.Municipio).Include(e => e.Rol).FirstOrDefaultAsync(e => e.EmpleadoId == id);
+            var empleado = await _context.Empleados.Include(e => e.Rol).FirstOrDefaultAsync(e => e.EmpleadoId == id);
             if (empleado == null)
             {
                 return NotFound();
@@ -42,7 +42,6 @@ namespace RefugioVerde.Controllers
             return Json(empleado);
         }
 
-        // POST: /Empleados/Crear
         // POST: /Empleados/Crear
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Empleado empleado)

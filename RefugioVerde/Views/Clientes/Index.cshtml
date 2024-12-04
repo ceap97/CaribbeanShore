@@ -28,7 +28,6 @@
                             <th>Documento de Identidad</th>
                             <th>Teléfono</th>
                             <th>Correo</th>
-                            <th>Municipio</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -77,12 +76,6 @@
                         <label for="correo" class="form-label">Correo</label>
                         <input type="email" class="form-control" id="correo" name="correo" required title="Ingrese un correo electrónico válido.">
                         <div class="form-text">Debe ser un correo electrónico válido (ejemplo@dominio.com).</div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="municipioId" class="form-label">Municipio</label>
-                        <select class="form-select" id="municipioId" name="municipioId" required>
-                            <option value="">Seleccione un municipio</option>
-                        </select>
                     </div>
                     <div class="mb-3">
                         <label for="usuarioId" class="form-label">Usuario</label>
@@ -137,12 +130,6 @@
                         <div class="form-text">Debe ser un correo electrónico válido (ejemplo@dominio.com).</div>
                     </div>
                     <div class="mb-3">
-                        <label for="editMunicipioId" class="form-label">Municipio</label>
-                        <select class="form-select" id="editMunicipioId" name="municipioId">
-                            <option value="">Seleccione un municipio</option>
-                        </select>
-                        </div>
-                    <div class="mb-3">
                         <label for="editUsuarioId" class="form-label">Usuario</label> <select class="form-select" id="editUsuarioId" name="usuarioId" required>
                             <option value="">Seleccione un usuario</option> </select>
                     </div>
@@ -170,7 +157,6 @@
                 <p><strong>Documento de Identidad:</strong> <span id="detailsDocumentoIdentidad"></span></p>
                 <p><strong>Teléfono:</strong> <span id="detailsTelefono"></span></p>
                 <p><strong>Correo:</strong> <span id="detailsCorreo"></span></p>
-                <p><strong>Municipio:</strong> <span id="detailsMunicipio"></span></p>
                 <p><strong>Usuario:</strong> <span id="detailsUsuario"></span></p>
             </div>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

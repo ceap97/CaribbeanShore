@@ -40,7 +40,7 @@
 
 // Abre el modal de creación
 function openCreateModal() {
-    loadMunicipiosAndRoles('#municipioId', '#rolId'); // Cargar municipios y roles
+    loadRoles('#rolId'); // Cargar municipios y roles
     $('#createModal').modal('show');
 }
 
@@ -56,7 +56,7 @@ function openEditModal(empleadoId) {
             $('#editDocumentoIdentidad').val(empleado.documentoIdentidad);
             $('#editTelefono').val(empleado.telefono);
             $('#editCorreo').val(empleado.correo);
-            loadMunicipiosAndRoles('#editMunicipioId', '#editRolId'); // Cargar municipios y roles
+            loadRoles('#editRolId'); // Cargar municipios y roles
             $('#editModal').modal('show');
         });
 }
@@ -75,7 +75,6 @@ function openDetailsModal(empleadoId) {
                     <p><strong>Documento Identidad:</strong> ${empleado.documentoIdentidad}</p>
                     <p><strong>Teléfono:</strong> ${empleado.telefono}</p>
                     <p><strong>Correo:</strong> ${empleado.correo}</p>
-                    <p><strong>Municipio:</strong> ${empleado.municipioId}</p>
                     <p><strong>Rol:</strong> ${empleado.rolId}</p>
                 `,
                 icon: 'info',
@@ -126,20 +125,7 @@ function openDeleteModal(empleadoId) {
 }
 
 // Función para cargar los municipios y roles en los selects
-function loadMunicipiosAndRoles(municipioSelectId, rolSelectId) {
-    fetch('/Municipios/Listar')
-        .then(response => response.json())
-        .then(data => {
-            let municipioSelect = document.querySelector(municipioSelectId);
-            municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-            data.forEach(municipio => {
-                let option = document.createElement('option');
-                option.value = municipio.municipioId;
-                option.textContent = municipio.nombre;
-                municipioSelect.appendChild(option);
-            });
-        });
-
+function loadRoles(rolSelectId) {
     fetch('/Roles/Listar')
         .then(response => response.json())
         .then(data => {

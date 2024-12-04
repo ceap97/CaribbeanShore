@@ -23,10 +23,6 @@
                                 <input type="text" class="form-control" id="documentoIdentidad" name="documentoIdentidad" required>
                             </div>
                             <div class="mb-3">
-                                <label for="municipioId" class="form-label">Municipio</label>
-                                <select class="form-control" id="municipioId" name="municipioId" required></select>
-                            </div>
-                            <div class="mb-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
                                 <input type="tel" class="form-control" id="telefono" name="telefono" required>
                             </div>
@@ -44,20 +40,17 @@
     `;
 
     document.body.insertAdjacentHTML('beforeend', modalTemplate);
-    loadMunicipios().then(() => {
-        fetch(`/Clientes/Obtener/${clienteId}`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('clienteId').value = data.clienteId;
-                document.getElementById('nombre').value = data.nombre;
-                document.getElementById('apellido').value = data.apellido;
-                document.getElementById('documentoIdentidad').value = data.documentoIdentidad;
-                document.getElementById('municipioId').value = data.municipioId;
-                document.getElementById('telefono').value = data.telefono;
-                document.getElementById('correo').value = data.correo;
-                document.getElementById('usuarioId').value = data.usuarioId;
-            });
-    });
+    fetch(`/Clientes/Obtener/${clienteId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('clienteId').value = data.clienteId;
+            document.getElementById('nombre').value = data.nombre;
+            document.getElementById('apellido').value = data.apellido;
+            document.getElementById('documentoIdentidad').value = data.documentoIdentidad;
+            document.getElementById('telefono').value = data.telefono;
+            document.getElementById('correo').value = data.correo;
+            document.getElementById('usuarioId').value = data.usuarioId;
+        });
     $('#clientModal').modal('show');
 
     document.getElementById('clientForm').addEventListener('submit', function (e) {
@@ -125,15 +118,17 @@ function openEditReservaModal(reservaId) {
                                     </div>
                                     
                                     <div class="mb-3">
-                                        <label for="editComodidadId" class="form-label">Comodidad</label>
-                                        <select class="form-select" id="editComodidadId" name="comodidadId" required>
-                                        </select>
+                                        <label for="editComodidades" class="form-label">Comodidades</label>
+                                        <div id="editComodidades">
+                                            <!-- Checkboxes de comodidades se cargarán aquí -->
+                                        </div>
                                     </div>
                                     
                                     <div class="mb-3">
-                                        <label for="editServicioId" class="form-label">Servicio</label>
-                                        <select class="form-select" id="editServicioId" name="servicioId" required>
-                                        </select>
+                                        <label for="editServicios" class="form-label">Servicios</label>
+                                        <div id="editServicios">
+                                            <!-- Checkboxes de servicios se cargarán aquí -->
+                                        </div>
                                     </div>
                                     
                                     <div class="mb-3">
@@ -185,6 +180,16 @@ function openEditReservaModal(reservaId) {
                 e.preventDefault();
                 const formData = new FormData(this);
 
+                // Agregar comodidades seleccionadas al formData
+                document.querySelectorAll('#editComodidades input[type="checkbox"]:checked').forEach(checkbox => {
+                    formData.append('comodidades', checkbox.value);
+                });
+
+                // Agregar servicios seleccionados al formData
+                document.querySelectorAll('#editServicios input[type="checkbox"]:checked').forEach(checkbox => {
+                    formData.append('servicios', checkbox.value);
+                });
+
                 fetch('/Reservas/Editar', {
                     method: 'POST',
                     body: formData
@@ -209,16 +214,8 @@ function openEditReservaModal(reservaId) {
                 document.getElementById('editPrecioHabitacion').value = selectedOption.getAttribute('data-precio');
                 calculateEditTotal();
             });
-            document.getElementById('editComodidadId').addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                document.getElementById('editPrecioComodidad').value = selectedOption.getAttribute('data-precio');
-                calculateEditTotal();
-            });
-            document.getElementById('editServicioId').addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                document.getElementById('editPrecioServicio').value = selectedOption.getAttribute('data-precio');
-                calculateEditTotal();
-            });
+            document.getElementById('editComodidades').addEventListener('change', calculateEditTotal);
+            document.getElementById('editServicios').addEventListener('change', calculateEditTotal);
             document.getElementById('editFechaInicio').addEventListener('change', calculateEditTotal);
             document.getElementById('editFechaFin').addEventListener('change', calculateEditTotal);
         })
@@ -238,41 +235,25 @@ function calculateEditTotal() {
     const precioComodidad = parseFloat(document.getElementById('editPrecioComodidad').value) || 0;
     const precioServicio = parseFloat(document.getElementById('editPrecioServicio').value) || 0;
 
+    let precioComodidades = 0;
+    document.querySelectorAll('#editComodidades input[type="checkbox"]:checked').forEach(checkbox => {
+        precioComodidades += parseFloat(checkbox.getAttribute('data-precio')) || 0;
+    });
+
+    let precioServicios = 0;
+    document.querySelectorAll('#editServicios input[type="checkbox"]:checked').forEach(checkbox => {
+        precioServicios += parseFloat(checkbox.getAttribute('data-precio')) || 0;
+    });
+
     const fechaInicio = new Date(document.getElementById('editFechaInicio').value);
     const fechaFin = new Date(document.getElementById('editFechaFin').value);
 
     const diffTime = Math.abs(fechaFin - fechaInicio);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 0; // +1 para incluir el día de inicio
 
-    const total = (precioHabitacion + precioComodidad + precioServicio) * diffDays;
+    const total = (precioHabitacion + precioComodidad + precioServicio + precioComodidades + precioServicios) * diffDays;
     document.getElementById('editTotal').value = total.toFixed(2);
 }
-
-
-function loadMunicipios() {
-    return fetch('/Municipios/Listar')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al obtener la lista de municipios');
-            }
-            return response.json();
-        })
-        .then(data => {
-            let municipioSelect = document.querySelector('#municipioId');
-            municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-            data.forEach(municipio => {
-                let option = document.createElement('option');
-                option.value = municipio.municipioId;
-                option.textContent = municipio.nombre;
-                municipioSelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'Hubo un problema al cargar la lista de municipios.', 'error');
-        });
-}
-
 
 function loadHabitaciones(selectedHabitacionId) {
     return fetch('/Habitaciones/Listar')
@@ -324,6 +305,19 @@ function loadComodidades(selectedComodidadId) {
                     select.appendChild(option);
                 });
             });
+
+            let comodidadesDiv = document.getElementById('editComodidades');
+            comodidadesDiv.innerHTML = '';
+            data.forEach(comodidad => {
+                comodidadesDiv.innerHTML += `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${comodidad.comodidadId}" data-precio="${comodidad.precio}" id="editComodidad-${comodidad.comodidadId}">
+                        <label class="form-check-label" for="editComodidad-${comodidad.comodidadId}">
+                            ${comodidad.nombre} - ${comodidad.precio.toFixed(2)} €
+                        </label>
+                    </div>
+                `;
+            });
         });
 }
 
@@ -346,9 +340,21 @@ function loadServicios(selectedServicioId) {
                     select.appendChild(option);
                 });
             });
+
+            let serviciosDiv = document.getElementById('editServicios');
+            serviciosDiv.innerHTML = '';
+            data.forEach(servicio => {
+                serviciosDiv.innerHTML += `
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="${servicio.servicioId}" data-precio="${servicio.precio}" id="editServicio-${servicio.servicioId}">
+                        <label class="form-check-label" for="editServicio-${servicio.servicioId}">
+                            ${servicio.nombre} - ${servicio.precio.toFixed(2)} €
+                        </label>
+                    </div>
+                `;
+            });
         });
 }
-
 
 function loadClientes() {
     return fetch('/Clientes/Listar') // Asegúrate de que la ruta sea correcta
@@ -377,3 +383,4 @@ function loadEstadosReserva() {
             });
         });
 }
+

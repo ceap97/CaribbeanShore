@@ -21,8 +21,6 @@
             <th>Fecha de Fin</th>
             <th>Habitación</th>
             <th>Estado de Reserva</th>
-            <th>Servicio</th>
-            <th>Comodidad</th>
             <th>Monto Total</th>
             <th>Acciones</th>
         </tr>
@@ -36,8 +34,6 @@
                 <td>@reserva.FechaFin.ToString("dd/MM/yyyy")</td>
                 <td>@reserva.Habitacion</td>
                 <td id="estado-@reserva.ReservaId">@reserva.EstadoReserva</td>
-                <td>@reserva.Servicio</td>
-                <td>@reserva.Comodidad</td>
                 <td>@reserva.MontoTotal.ToString("C")</td>
                 <td>
                     <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Editar</button>

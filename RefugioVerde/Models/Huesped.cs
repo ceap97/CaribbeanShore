@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models;
@@ -24,8 +22,6 @@ public partial class Huesped
     [RegularExpression(@"^\d{9,10}$", ErrorMessage = "El documento de identidad debe contener solo números y tener entre 9 y 10 dígitos.")]
     public string DocumentoIdentidad { get; set; } = null!;
 
-    public int? MunicipioId { get; set; }
-
     [Required(ErrorMessage = "El teléfono es obligatorio.")]
     [Phone(ErrorMessage = "El teléfono no tiene un formato válido.")]
     public string Telefono { get; set; }
@@ -33,9 +29,6 @@ public partial class Huesped
     [Required(ErrorMessage = "El correo es obligatorio.")]
     [EmailAddress(ErrorMessage = "El correo no tiene un formato válido.")]
     public string Email { get; set; }
-
-    [JsonIgnore]
-    public virtual Municipio Municipio { get; set; }
 
     [JsonIgnore]
     public virtual Reserva Reserva { get; set; }

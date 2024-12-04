@@ -19,14 +19,14 @@ namespace RefugioVerde.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var Huespeds = await _context.Huespeds.Include(h => h.Municipio).Include(h => h.Reserva).ToListAsync();
+            var Huespeds = await _context.Huespeds.Include(h => h.Reserva).ToListAsync();
             return View(Huespeds);
         }
 
         [HttpGet]
         public async Task<IActionResult> Listar()
         {
-            var Huespeds = await _context.Huespeds.Include(h => h.Municipio).Include(h => h.Reserva).ToListAsync();
+            var Huespeds = await _context.Huespeds.Include(h => h.Reserva).ToListAsync();
             return Json(Huespeds);
         }
 
@@ -34,7 +34,7 @@ namespace RefugioVerde.Controllers
         [HttpGet]
         public async Task<IActionResult> Obtener(int id)
         {
-            var huesped = await _context.Huespeds.Include(h => h.Municipio).Include(h => h.Reserva).FirstOrDefaultAsync(h => h.HuespedId == id);
+            var huesped = await _context.Huespeds.Include(h => h.Reserva).FirstOrDefaultAsync(h => h.HuespedId == id);
             if (huesped == null)
             {
                 return NotFound();

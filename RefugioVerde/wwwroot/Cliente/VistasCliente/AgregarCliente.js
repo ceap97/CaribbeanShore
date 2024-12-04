@@ -22,10 +22,6 @@
                                 <input type="text" class="form-control" id="documentoIdentidad" name="documentoIdentidad" required>
                             </div>
                             <div class="mb-3">
-                                <label for="municipioId" class="form-label">Municipio</label>
-                                <select class="form-control" id="municipioId" name="municipioId" required></select>
-                            </div>
-                            <div class="mb-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
                                 <input type="tel" class="form-control" id="telefono" name="telefono" required>
                             </div>
@@ -43,14 +39,12 @@
     `;
 
     document.body.insertAdjacentHTML('beforeend', modalTemplate);
-    loadMunicipios().then(() => {
-        // Establecer el usuario por defecto como el usuario asociado al usuario que inició sesión
-        fetch('/Usuarios/ObtenerUsuarioActual')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('usuarioId').value = data.usuarioId;
-            });
-    });
+    // Establecer el usuario por defecto como el usuario asociado al usuario que inició sesión
+    fetch('/Usuarios/ObtenerUsuarioActual')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('usuarioId').value = data.usuarioId;
+        });
     $('#addClientModal').modal('show');
 
     document.getElementById('addClientForm').addEventListener('submit', function (e) {
@@ -71,28 +65,4 @@
             Swal.fire('Error', 'Hubo un problema en la solicitud.', 'error');
         });
     });
-}
-
-function loadMunicipios() {
-    return fetch('/Municipios/Listar')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error al obtener la lista de municipios');
-            }
-            return response.json();
-        })
-        .then(data => {
-            let municipioSelect = document.querySelector('#municipioId');
-            municipioSelect.innerHTML = '<option value="">Seleccione un municipio</option>';
-            data.forEach(municipio => {
-                let option = document.createElement('option');
-                option.value = municipio.municipioId;
-                option.textContent = municipio.nombre;
-                municipioSelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire('Error', 'Hubo un problema al cargar la lista de municipios.', 'error');
-        });
 }

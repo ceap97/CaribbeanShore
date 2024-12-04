@@ -10,7 +10,6 @@ using RefugioVerde.Models;
 
 namespace RefugioVerde.Controllers
 {
-   
     public class ClientesController : Controller
     {
         private readonly RefugioVerdeContext _context;
@@ -19,7 +18,6 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
-       
 
         [HttpGet]
         public async Task<IActionResult> ObtenerClienteActual()
@@ -45,7 +43,7 @@ namespace RefugioVerde.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (int.TryParse(userId, out int parsedUserId))
             {
-                var cliente = _context.Clientes.Include(c => c.Usuario).Include(m => m.Municipio).FirstOrDefault(c => c.UsuarioId == parsedUserId);
+                var cliente = _context.Clientes.Include(c => c.Usuario).FirstOrDefault(c => c.UsuarioId == parsedUserId);
                 ViewBag.Cliente = cliente;
                 return View(cliente);
             }
@@ -54,7 +52,6 @@ namespace RefugioVerde.Controllers
 
         public IActionResult Create()
         {
-            ViewBag.MunicipioId = new SelectList(_context.Municipios, "Id", "Nombre");
             ViewBag.UsuarioId = new SelectList(_context.Usuarios, "Id", "NombreUsuario");
             return PartialView("_Create");
         }
@@ -62,8 +59,7 @@ namespace RefugioVerde.Controllers
         // POST: Clientes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-       
-        public async Task<IActionResult> Create([Bind("Nombre,Apellido,DocumentoIdentidad,MunicipioId,Telefono,Correo,UsuarioId")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("Nombre,Apellido,DocumentoIdentidad,Telefono,Correo,UsuarioId")] Cliente cliente)
         {
             if (ModelState.IsValid)
             {
@@ -71,20 +67,20 @@ namespace RefugioVerde.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.MunicipioId = new SelectList(_context.Municipios, "Id", "Nombre", cliente.MunicipioId);
             ViewBag.UsuarioId = new SelectList(_context.Usuarios, "Id", "NombreUsuario", cliente.UsuarioId);
             return PartialView("_Create", cliente);
         }
+
         public async Task<IActionResult> Index()
         {
-            var clientes = await _context.Clientes.Include(c => c.Municipio).ToListAsync();
+            var clientes = await _context.Clientes.ToListAsync();
             return View(clientes);
         }
 
         [HttpGet]
         public async Task<IActionResult> Listar()
         {
-            var clientes = await _context.Clientes.Include(c => c.Municipio).ToListAsync();
+            var clientes = await _context.Clientes.ToListAsync();
             return Json(clientes);
         }
 
@@ -92,7 +88,7 @@ namespace RefugioVerde.Controllers
         [HttpGet]
         public async Task<IActionResult> Obtener(int id)
         {
-            var cliente = await _context.Clientes.Include(c => c.Municipio).FirstOrDefaultAsync(c => c.ClienteId == id);
+            var cliente = await _context.Clientes.FirstOrDefaultAsync(c => c.ClienteId == id);
             if (cliente == null)
             {
                 return NotFound();

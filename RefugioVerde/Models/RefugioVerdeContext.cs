@@ -84,10 +84,6 @@ public partial class RefugioVerdeContext : DbContext
             entity.Property(e => e.Nombre).HasMaxLength(100);
             entity.Property(e => e.Telefono).HasMaxLength(20);
 
-            entity.HasOne(d => d.Municipio).WithMany(p => p.Clientes)
-                .HasForeignKey(d => d.MunicipioId)
-                .HasConstraintName("FK__Cliente__Municip__6FE99F9F");
-
             entity.HasOne(d => d.Usuario).WithMany(p => p.Clientes)
                 .HasForeignKey(d => d.UsuarioId)
                 .HasConstraintName("FK__Cliente__Usuario__6EF57B66");
@@ -124,10 +120,6 @@ public partial class RefugioVerdeContext : DbContext
             entity.Property(e => e.DocumentoIdentidad).HasMaxLength(50);
             entity.Property(e => e.Nombre).HasMaxLength(100);
             entity.Property(e => e.Telefono).HasMaxLength(20);
-
-            entity.HasOne(d => d.Municipio).WithMany(p => p.Empleados)
-                .HasForeignKey(d => d.MunicipioId)
-                .HasConstraintName("FK__Empleado__Munici__68487DD7");
 
             entity.HasOne(d => d.Rol).WithMany(p => p.Empleados)
                 .HasForeignKey(d => d.RolId)
@@ -189,10 +181,6 @@ public partial class RefugioVerdeContext : DbContext
             entity.Property(e => e.Email).HasMaxLength(100);
             entity.Property(e => e.Nombre).HasMaxLength(100);
             entity.Property(e => e.Telefono).HasMaxLength(20);
-
-            entity.HasOne(d => d.Municipio).WithMany(p => p.Huespeds)
-                .HasForeignKey(d => d.MunicipioId)
-                .HasConstraintName("FK__Huesped__Municip__7E37BEF6");
 
             entity.HasOne(d => d.Reserva).WithMany(p => p.Huespeds)
                 .HasForeignKey(d => d.ReservaId)

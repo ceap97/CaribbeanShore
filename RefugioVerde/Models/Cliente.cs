@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models;
@@ -21,8 +19,6 @@ public partial class Cliente
     [StringLength(18, MinimumLength = 8, ErrorMessage = "El documento de identidad debe tener entre 8 y 18 caracteres.")]
     public string DocumentoIdentidad { get; set; } = null!;
 
-    public int? MunicipioId { get; set; }
-
     [Required(ErrorMessage = "El teléfono es obligatorio.")]
     [Phone(ErrorMessage = "El teléfono no tiene un formato válido.")]
     public string Telefono { get; set; }
@@ -30,11 +26,9 @@ public partial class Cliente
     [Required(ErrorMessage = "El correo es obligatorio.")]
     [EmailAddress(ErrorMessage = "El correo no tiene un formato válido.")]
     public string Correo { get; set; }
+
     [Required]
     public int? UsuarioId { get; set; } = null!;
-
-    [JsonIgnore]
-    public virtual Municipio Municipio { get; set; }
 
     [JsonIgnore]
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();

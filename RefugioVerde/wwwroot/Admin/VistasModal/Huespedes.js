@@ -13,7 +13,6 @@
                     <td>${huesped.documentoIdentidad}</td>
                     <td>${huesped.telefono}</td>
                     <td>${huesped.email}</td>
-                    <td>${huesped.municipioId}</td>
                     <td>
                         <div class="action-buttons">
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${huesped.huespedId})">
@@ -41,7 +40,6 @@
 });
 
 function openCreateModal() {
-    loadMunicipios('#municipioId');
     loadReservas('#reservaId');
     $('#createModal').modal('show');
 }
@@ -57,7 +55,6 @@ function openEditModal(huespedId) {
             $('#editDocumentoIdentidad').val(huesped.documentoIdentidad);
             $('#editTelefono').val(huesped.telefono);
             $('#editEmail').val(huesped.email);
-            loadMunicipios('#editMunicipioId'); // Cargar municipios
             loadReservas('#editReservaId'); // Cargar reservas y seleccionar la actual
             $('#editModal').modal('show');
         });
@@ -76,7 +73,6 @@ function openDetailsModal(huespedId) {
                     <p><strong>Documento de Identidad:</strong> ${huesped.documentoIdentidad}</p>
                     <p><strong>Teléfono:</strong> ${huesped.telefono}</p>
                     <p><strong>Email:</strong> ${huesped.email}</p>
-                    <p><strong>Municipio:</strong> ${huesped.municipioId}</p>
                 `,
                 icon: 'info',
                 confirmButtonText: 'Cerrar'
@@ -188,34 +184,17 @@ $('#editForm').submit(function (e) {
     });
 });
 
-function loadMunicipios(selectId) {
-    fetch('/Municipios/Listar')
-        .then(response => response.json())
-        .then(data => {
-            let municipioSelect = document.querySelector(selectId);
-            municipioSelect.innerHTML = '<option value="">Seleccione un Municipio</option>';
-            data.forEach(municipio => {
-                let option = document.createElement('option');
-                option.value = municipio.municipioId;
-                option.textContent = municipio.nombre;
-                municipioSelect.appendChild(option);
-            });
-        });
-}
-
-function loadReservas() {
+function loadReservas(selectId) {
     fetch('/Reservas/Listar')  // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
-            // Para los selects de estado (Crear y Editar)
-            let reservaSelects = document.querySelectorAll('#reservaId, #editreservaId');
-            reservaSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione una reserva</option>`;
-                data.forEach(reserva => {
-                    let option = `<option value="${reserva.reservaId}" ${reserva.reservaId}>${reserva.reservaId}</option>`;
-                    select.innerHTML += option;
-                });
+            let reservaSelect = document.querySelector(selectId);
+            reservaSelect.innerHTML = '<option value="">Seleccione una reserva</option>';
+            data.forEach(reserva => {
+                let option = document.createElement('option');
+                option.value = reserva.reservaId;
+                option.textContent = reserva.reservaId;
+                reservaSelect.appendChild(option);
             });
-            updateReservas(data);
         });
 }
