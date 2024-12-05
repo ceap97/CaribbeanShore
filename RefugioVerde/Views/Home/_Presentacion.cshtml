@@ -1,54 +1,60 @@
-﻿ <section class="hero-area">
-        <div class="hero-slides owl-carousel">
+﻿@{
+    var bg1Url = Url.Content("~/Home/img/bg-img/bg-1.jpg");
+    var bg2Url = Url.Content("~/Home/img/bg-img/bg-2.jpg");
+    var bg3Url = Url.Content("~/Home/img/bg-img/bg-3.jpg");
+}
 
-            <!-- Single Hero Slide -->
-            <div class="single-hero-slide d-flex align-items-center justify-content-center">
-                <!-- Slide Img -->
-            <div class="slide-img bg-img" style="background-image: url(Home/img/bg-img/bg-1.jpg);"></div>
+<section class="hero-area">
+    <div class="hero-slides owl-carousel">
 
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-lg-9">
-                            <!-- Slide Content -->
-                            <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
-                                <div class="line" data-animation="fadeInUp" data-delay="300ms"></div>
-                                <h2 data-animation="fadeInUp" data-delay="500ms">Caribbean Shore</h2>
+        <!-- Single Hero Slide -->
+        <div class="single-hero-slide d-flex align-items-center justify-content-center">
+            <!-- Slide Img -->
+            <div class="slide-img bg-img" style="background-image: url('@bg1Url');"></div>
+
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-9">
+                        <!-- Slide Content -->
+                        <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
+                            <div class="line" data-animation="fadeInUp" data-delay="300ms"></div>
+                            <h2 data-animation="fadeInUp" data-delay="500ms">Caribbean Shore</h2>
                             <p data-animation="fadeInUp" data-delay="700ms">Imagina despertar con la suave brisa acariciando tu rostro y el canto de los pájaros como melodía de fondo. En nuestro hotel, cada amanecer es una invitación a vivir una experiencia única. Sumérgete en un oasis de tranquilidad, donde el lujo y la comodidad se fusionan para ofrecerte una estancia inolvidable.</p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Single Hero Slide -->
-            <div class="single-hero-slide d-flex align-items-center justify-content-center">
-                <!-- Slide Img -->
-            <div class="slide-img bg-img" style="background-image: url(Home/img/bg-img/bg-2.jpg);"></div>
+        <!-- Single Hero Slide -->
+        <div class="single-hero-slide d-flex align-items-center justify-content-center">
+            <!-- Slide Img -->
+            <div class="slide-img bg-img" style="background-image: url('@bg2Url');"></div>
 
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-lg-9">
-                            <!-- Slide Content -->
-                            <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
-                                <div class="line" data-animation="fadeInUp" data-delay="300ms"></div>
-                                <h2 data-animation="fadeInUp" data-delay="500ms">Una experiencia </h2>
-                            <p data-animation="fadeInUp" data-delay="700ms">Relájate en nuestras piscinas infinitas con vistas panorámicas, déjate mimar en nuestro spa de última generación o saborea los sabores más exquisitos de nuestra cocina internacional. Cada rincón de nuestro hotel ha sido diseñado para brindarte el máximo confort y bienestar.</p>                            </div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-9">
+                        <!-- Slide Content -->
+                        <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
+                            <div class="line" data-animation="fadeInUp" data-delay="300ms"></div>
+                            <h2 data-animation="fadeInUp" data-delay="500ms">Una experiencia </h2>
+                            <p data-animation="fadeInUp" data-delay="700ms">Relájate en nuestras piscinas infinitas con vistas panorámicas, déjate mimar en nuestro spa de última generación o saborea los sabores más exquisitos de nuestra cocina internacional. Cada rincón de nuestro hotel ha sido diseñado para brindarte el máximo confort y bienestar.</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Single Hero Slide -->
-            <div class="single-hero-slide d-flex align-items-center justify-content-center">
-                <!-- Slide Img -->
-            <div class="slide-img bg-img" style="background-image: url(Home/img/bg-img/bg-3.jpg);"></div>
-                <div class="container">
-                    <div class="row justify-content-center">
-                        <div class="col-12 col-lg-9">
-                        
-                            <!-- Slide Content -->
-                            <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
-                                <div class="line" data-animation="fadeInUp" data-delay="300ms"></div>
+        <!-- Single Hero Slide -->
+        <div class="single-hero-slide d-flex align-items-center justify-content-center">
+            <!-- Slide Img -->
+            <div class="slide-img bg-img" style="background-image: url('@bg3Url');"></div>
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-lg-9">
+                        <!-- Slide Content -->
+                        <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
+                            <div class="line" data-animation="fadeInUp" data-delay="300ms"></div>
                             <h2 data-animation="fadeInUp" data-delay="500ms">¿Qué nos hace especial?</h2>
                             <p data-animation="fadeInUp" data-delay="700ms">
                                 * Atención personalizada: Nuestro equipo está comprometido en hacer de tu estancia una experiencia única y memorable.
@@ -56,11 +62,11 @@
                                 * Servicios exclusivos: Disfruta de una amplia gama de servicios, desde nuestro gimnasio completamente equipado hasta nuestro servicio de conserjería 24 horas.
                                 * Ambiente acogedor: Nuestro hotel te ofrece un ambiente cálido y acogedor, donde podrás desconectar de la rutina y disfrutar de momentos inolvidables.
                             </p>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
-    </section>
+
+    </div>
+</section>

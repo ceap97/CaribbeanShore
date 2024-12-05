@@ -19,6 +19,26 @@ namespace RefugioVerde.Controllers
             _context = context;
             _logger = logger;
         }
+        [HttpPost]
+        public async Task<IActionResult> FiltrarHabitaciones(DateTime checkIn, DateTime checkOut, int adults, int children)
+        {
+            int totalCapacity = adults + children;
+            var habitaciones = await _context.Habitacions
+                .Include(h => h.EstadoHabitacion)
+                .Where(h => h.EstadoHabitacion.Nombre == "Disponible" && h.Capacidad >= totalCapacity)
+                .ToListAsync();
+
+            var servicios = await _context.Servicios.ToListAsync();
+            var comodidades = await _context.Comodidads.ToListAsync();
+            var viewModel = new HomeViewModel
+            {
+                Habitaciones = habitaciones,
+                Servicios = servicios,
+                Comodidades = comodidades
+            };
+
+            return View("Cliente", viewModel);
+        }
 
         public IActionResult Contact()
         {

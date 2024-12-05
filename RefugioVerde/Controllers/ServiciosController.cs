@@ -13,6 +13,7 @@ namespace RefugioVerde.Controllers
     public class ServiciosController : Controller
     {
         private readonly RefugioVerdeContext _context;
+        private readonly string _uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "servicios");
 
         public ServiciosController(RefugioVerdeContext context)
         {
@@ -51,48 +52,39 @@ namespace RefugioVerde.Controllers
         }
 
         // POST: /Servicios/Crear
-        public async Task<IActionResult> Crear(IFormCollection form)
+        [HttpPost]
+        public async Task<IActionResult> Crear([FromForm] Servicio servicio, [FromForm] IFormFile imagen)
         {
             try
             {
-                // Recibir datos del formulario
-                string nombre = form["nombre"];
-                string descripcion = form["descripcion"];
-                decimal precio = Convert.ToDecimal(form["precio"]);
-                string imagenBase64 = form["imagen"];
-
-                // Crear una nueva instancia de Servicio
-                var servicio = new Servicio
+                if (ModelState.IsValid)
                 {
-                    Nombre = nombre,
-                    Descripcion = descripcion,
-                    Precio = precio
-                };
+                    // Si se proporciona una imagen, se guarda en el servidor
+                    if (imagen != null && imagen.Length > 0)
+                    {
+                        var fileName = $"{servicio.Nombre.Replace(" ", "_")}.jpeg";  // Usar el nombre del servicio como nombre del archivo
+                        var filePath = Path.Combine(_uploadPath, fileName);
 
-                // Guardar la imagen en la carpeta images/servicios
-                if (!string.IsNullOrEmpty(imagenBase64))
-                {
-                    // Limpiar la cadena base64 para eliminar el encabezado de los datos de imagen
-                    string imageData = imagenBase64.Split(',').Last();
-                    byte[] imageBytes = Convert.FromBase64String(imageData);
+                        // Crear el directorio si no existe
+                        if (!Directory.Exists(_uploadPath))
+                        {
+                            Directory.CreateDirectory(_uploadPath);
+                        }
 
-                    // Generar un nombre de archivo basado en el nombre del servicio
-                    string sanitizedNombre = nombre.Replace(" ", "_").Replace("/", "_"); // Reemplazar espacios y barras por guiones bajos
-                    string imageName = sanitizedNombre + ".jpg";
-                    string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/servicios", imageName);
+                        // Guardar la imagen en el servidor
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imagen.CopyToAsync(stream);
+                        }
 
-                    // Guardar la imagen en el sistema de archivos
-                    await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+                        servicio.Imagen = $"/images/servicios/{fileName}";  // Guardar la ruta relativa en la base de datos
+                    }
 
-                    // Guardar la ruta de la imagen en la base de datos
-                    servicio.Imagen = imagePath;
+                    _context.Servicios.Add(servicio);
+                    await _context.SaveChangesAsync();
+                    return Ok();
                 }
-
-                // Guardar el servicio en la base de datos
-                _context.Servicios.Add(servicio);
-                await _context.SaveChangesAsync();
-
-                return Ok(); // Devuelve una respuesta exitosa
+                return BadRequest(ModelState);
             }
             catch (Exception ex)
             {
@@ -100,56 +92,55 @@ namespace RefugioVerde.Controllers
             }
         }
 
-        public async Task<IActionResult> Editar(IFormCollection form)
+        // POST: /Servicios/Editar
+        [HttpPost]
+        public async Task<IActionResult> Editar([FromForm] Servicio servicio, [FromForm] IFormFile imagen)
         {
             try
             {
-                // Recibir los datos del formulario
-                int servicioId = Convert.ToInt32(form["servicioId"]);
-                string nombre = form["nombre"];
-                string descripcion = form["descripcion"];
-                decimal precio = Convert.ToDecimal(form["precio"]);
-                string imagenBase64 = form["imagen"];
-
-                // Obtener el servicio existente
-                var servicio = await _context.Servicios.FindAsync(servicioId);
-                if (servicio == null) return NotFound();
-
-                // Actualizar los campos del servicio
-                servicio.Nombre = nombre;
-                servicio.Descripcion = descripcion;
-                servicio.Precio = precio;
-
-                // Si se ha recibido una imagen nueva, se reemplaza la imagen anterior
-                if (!string.IsNullOrEmpty(imagenBase64))
+                if (ModelState.IsValid)
                 {
-                    // Limpiar la cadena base64 para eliminar el encabezado de los datos de imagen
-                    string imageData = imagenBase64.Split(',').Last();
-                    byte[] imageBytes = Convert.FromBase64String(imageData);
+                    // Si se proporciona una nueva imagen, se guarda en el servidor
+                    if (imagen != null && imagen.Length > 0)
+                    {
+                        var fileName = $"{servicio.Nombre.Replace(" ", "_")}.jpeg";  // Usar el nombre del servicio como nombre del archivo
+                        var filePath = Path.Combine(_uploadPath, fileName);
 
-                    // Generar un nombre de archivo basado en el nombre del servicio
-                    string sanitizedNombre = nombre.Replace(" ", "_").Replace("/", "_"); // Reemplazar espacios y barras por guiones bajos
-                    string imageName = sanitizedNombre + ".jpg";
-                    string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/servicios", imageName);
+                        // Crear el directorio si no existe
+                        if (!Directory.Exists(_uploadPath))
+                        {
+                            Directory.CreateDirectory(_uploadPath);
+                        }
 
-                    // Guardar la imagen en el sistema de archivos
-                    await System.IO.File.WriteAllBytesAsync(imagePath, imageBytes);
+                        // Guardar la nueva imagen
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imagen.CopyToAsync(stream);
+                        }
 
-                    // Guardar la ruta de la imagen en la base de datos
-                    servicio.Imagen = imagePath;
+                        servicio.Imagen = $"/images/servicios/{fileName}";  // Guardar la ruta relativa en la base de datos
+                    }
+                    else
+                    {
+                        // Si no se proporciona una nueva imagen, mantener la imagen existente
+                        var existingServicio = await _context.Servicios.AsNoTracking().FirstOrDefaultAsync(s => s.ServicioId == servicio.ServicioId);
+                        if (existingServicio != null)
+                        {
+                            servicio.Imagen = existingServicio.Imagen;
+                        }
+                    }
+
+                    _context.Servicios.Update(servicio);
+                    await _context.SaveChangesAsync();
+                    return Ok();
                 }
-
-                _context.Servicios.Update(servicio);
-                await _context.SaveChangesAsync();
-
-                return Ok(); // Respuesta exitosa
+                return BadRequest(ModelState);
             }
             catch (Exception ex)
             {
                 return BadRequest(new { message = ex.Message });
             }
         }
-
 
         // DELETE: /Servicios/Eliminar/{id}
         [HttpDelete]
@@ -160,10 +151,20 @@ namespace RefugioVerde.Controllers
             {
                 return NotFound();
             }
+
+            // Eliminar la imagen del servidor si existe
+            if (!string.IsNullOrEmpty(servicio.Imagen))
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", servicio.Imagen.TrimStart('/'));
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);  // Eliminar archivo
+                }
+            }
+
             _context.Servicios.Remove(servicio);
             await _context.SaveChangesAsync();
             return Ok();
         }
     }
 }
-
