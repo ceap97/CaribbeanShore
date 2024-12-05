@@ -119,5 +119,20 @@ namespace RefugioVerde.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet]
+        public async Task<IActionResult> ListarMetodosDePago()
+        {
+            var metodosDePago = await _context.MetodoDePago.ToListAsync();
+            return Json(metodosDePago);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ListarEstadosPago()
+        {
+            var estadosPago = await _context.EstadoPagos.ToListAsync();
+            return Json(estadosPago);
+        }
     }
 }
+

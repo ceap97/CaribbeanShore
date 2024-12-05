@@ -10,25 +10,27 @@
                     <div class="modal-body">
                         <form id="pagoForm" enctype="multipart/form-data">
                             <div class="mb-3">
-                                <label for="monto" class="form-label">Monto</label>
-                                <input type="number" class="form-control" id="monto" name="Monto" required>
+                                <label for="tipo" class="form-label">Tipo</label>
+                                <select class="form-control" id="tipo" name="Tipo" required>
+                                    <option value="completo">Completo</option>
+                                    <option value="abono">Abono</option>
+                                </select>
                             </div>
                             <div class="mb-3">
-                                <label for="metodoPago" class="form-label">Método de Pago</label>
-                                <input type="text" class="form-control" id="metodoPago" name="MetodoPago" required>
+                                <label for="metodoDePagoId" class="form-label">Método de Pago</label>
+                                <select class="form-control" id="metodoDePagoId" name="MetodoDePagoId" required>
+                                    <option value="">Seleccione un método de pago</option>
+                                </select>
                             </div>
                             <div class="mb-3">
                                 <label for="comprobante" class="form-label">Comprobante</label>
                                 <input type="file" class="form-control" id="comprobante" name="Comprobante" required>
                             </div>
                             <div class="mb-3">
-                                <label for="tipo" class="form-label">Tipo</label>
-                                <input type="text" class="form-control" id="tipo" name="Tipo" required>
+                                <label for="monto" class="form-label">Monto</label>
+                                <input type="number" class="form-control" id="monto" name="Monto" required readonly>
                             </div>
-                            <div class="mb-3">
-                                <label for="fechaPago" class="form-label">Fecha de Pago</label>
-                                <input type="date" class="form-control" id="fechaPago" name="FechaPago" required>
-                            </div>
+                            <input type="hidden" id="fechaPago" name="FechaPago">
                             <input type="hidden" id="reservaId" name="ReservaId">
                             <input type="hidden" id="estadoPagoId" name="EstadoPagoId" value="2">
                             <button type="submit" class="btn btn-primary">Pagar</button>
@@ -41,7 +43,14 @@
 
     document.body.insertAdjacentHTML('beforeend', modalTemplate);
     document.getElementById('reservaId').value = reservaId;
+    document.getElementById('fechaPago').value = new Date().toISOString().split('T')[0]; // Establecer la fecha de pago al día actual
+    loadMetodosDePago('#metodoDePagoId');
+    loadMontoTotal(reservaId);
     $('#pagoModal').modal('show');
+
+    document.getElementById('tipo').addEventListener('change', function () {
+        adjustMonto();
+    });
 
     document.getElementById('pagoForm').addEventListener('submit', function (event) {
         event.preventDefault();
@@ -71,3 +80,38 @@
         });
     });
 }
+
+function loadMetodosDePago(selector) {
+    fetch('/MetodoDePagos/Listar')
+        .then(response => response.json())
+        .then(data => {
+            let select = document.querySelector(selector);
+            select.innerHTML = `<option value="">Seleccione un método de pago</option>`;
+            data.forEach(metodoDePago => {
+                let option = document.createElement('option');
+                option.value = metodoDePago.metodoDePagoId;
+                option.text = metodoDePago.nombre;
+                select.appendChild(option);
+            });
+        });
+}
+
+function loadMontoTotal(reservaId) {
+    fetch(`/Reservas/Obtener/${reservaId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('monto').value = data.montoTotal;
+            adjustMonto();
+        });
+}
+
+function adjustMonto() {
+    const tipo = document.getElementById('tipo').value;
+    const montoTotal = parseFloat(document.getElementById('monto').value);
+    if (tipo === 'abono') {
+        document.getElementById('monto').value = (montoTotal / 2).toFixed(2);
+    } else {
+        document.getElementById('monto').value = montoTotal.toFixed(2);
+    }
+}
+

@@ -35,6 +35,7 @@
 function openCreateModal() {
     loadReservas('#createReservaId');
     loadEstadosPago('#createEstadoPagoId');
+    loadMetodosDePago('#createMetodoDePagoId');
     $('#createModal').modal('show');
 }
 
@@ -50,6 +51,7 @@ function openEditModal(idPago) {
             $('#editFechaPago').val(new Date(data.fechaPago).toISOString().split('T')[0]);
             loadReservas('#editReservaId', data.reservaId); // Cargar reservas y seleccionar la actual
             loadEstadosPago('#editEstadoPagoId', data.estadoPagoId); // Cargar estados de pago y seleccionar el actual
+            loadMetodosDePago('#editMetodoDePagoId', data.metodoDePagoId); // Cargar métodos de pago y seleccionar el actual
             $('#editModal').modal('show');
         });
 }
@@ -221,3 +223,22 @@ function loadEstadosPago(selector, selectedEstadoPagoId = null) {
             });
         });
 }
+
+function loadMetodosDePago(selector, selectedMetodoDePagoId = null) {
+    fetch('/MetodoDePagos/Listar') // Asegúrate de que la ruta sea correcta
+        .then(response => response.json())
+        .then(data => {
+            let select = document.querySelector(selector);
+            select.innerHTML = `<option value="">Seleccione un Método de Pago</option>`;
+            data.forEach(metodoDePago => {
+                let option = document.createElement('option');
+                option.value = metodoDePago.metodoDePagoId;
+                option.text = metodoDePago.nombre;
+                if (metodoDePago.metodoDePagoId === selectedMetodoDePagoId) {
+                    option.selected = true; // Seleccionar el método de pago actual
+                }
+                select.appendChild(option);
+            });
+        });
+}
+
