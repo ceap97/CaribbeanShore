@@ -21,6 +21,14 @@
                                 <label for="comprobante" class="form-label">Comprobante</label>
                                 <input type="file" class="form-control" id="comprobante" name="Comprobante" required>
                             </div>
+                            <div class="mb-3">
+                                <label for="tipo" class="form-label">Tipo</label>
+                                <input type="text" class="form-control" id="tipo" name="Tipo" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fechaPago" class="form-label">Fecha de Pago</label>
+                                <input type="date" class="form-control" id="fechaPago" name="FechaPago" required>
+                            </div>
                             <input type="hidden" id="reservaId" name="ReservaId">
                             <input type="hidden" id="estadoPagoId" name="EstadoPagoId" value="2">
                             <button type="submit" class="btn btn-primary">Pagar</button>

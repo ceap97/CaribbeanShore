@@ -12,6 +12,8 @@
                     <td>${pago.comprobante}</td>
                     <td>${pago.reservaId}</td>
                     <td>${pago.estadoPago}</td>
+                    <td>${pago.tipo}</td>
+                    <td>${new Date(pago.fechaPago).toLocaleDateString()}</td>
                     <td>
                         <div class="action-buttons">
                             <button class="btn btn-warning btn-sm" onclick="openEditModal(${pago.idPago})"><img src="Admin/Fonts/pen-to-square-solid.svg" alt="Editar" style="width: 16px; height: 16px; margin-right: 5px;" /></button>
@@ -44,6 +46,8 @@ function openEditModal(idPago) {
             $('#editMonto').val(data.monto);
             $('#editMetodoPago').val(data.metodoPago);
             $('#editComprobante').val(data.comprobante);
+            $('#editTipo').val(data.tipo);
+            $('#editFechaPago').val(new Date(data.fechaPago).toISOString().split('T')[0]);
             loadReservas('#editReservaId', data.reservaId); // Cargar reservas y seleccionar la actual
             loadEstadosPago('#editEstadoPagoId', data.estadoPagoId); // Cargar estados de pago y seleccionar el actual
             $('#editModal').modal('show');
@@ -98,6 +102,8 @@ function openDetailsModal(idPago) {
                     <p><strong>Comprobante:</strong> ${data.comprobante}</p>
                     <p><strong>Reserva ID:</strong> ${data.reservaId}</p>
                     <p><strong>Estado de Pago:</strong> ${data.estadoPago}</p>
+                    <p><strong>Tipo:</strong> ${data.tipo}</p>
+                    <p><strong>Fecha de Pago:</strong> ${new Date(data.fechaPago).toLocaleDateString()}</p>
                 `,
                 icon: 'info',
                 confirmButtonText: 'Cerrar'
@@ -169,7 +175,6 @@ $('#editForm').submit(function (e) {
     });
 });
 
-
 $('#confirmDelete').click(function () {
     let idPago = $(this).data('idPago');
     fetch(`/Pagos/Eliminar/${idPago}`, {
@@ -198,17 +203,21 @@ function loadReservas(selector, selectedReservaId = null) {
             });
         });
 }
-function loadEstadosPago() {
+
+function loadEstadosPago(selector, selectedEstadoPagoId = null) {
     fetch('/EstadoPago/Listar') // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
-            let estadosPagoSelects = document.querySelectorAll('#estadoPagoId, #editEstadoPagoId');
-            estadosPagoSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione un Estado de Reserva</option>`;
-                data.forEach(estadosPago => {
-                    select.innerHTML += `<option value="${estadosPago.estadosPagoId}">${estadosPago.nombre}</option>`;
-                });
+            let select = document.querySelector(selector);
+            select.innerHTML = `<option value="">Seleccione un Estado de Pago</option>`;
+            data.forEach(estadoPago => {
+                let option = document.createElement('option');
+                option.value = estadoPago.estadoPagoId;
+                option.text = estadoPago.nombre;
+                if (estadoPago.estadoPagoId === selectedEstadoPagoId) {
+                    option.selected = true; // Seleccionar el estado de pago actual
+                }
+                select.appendChild(option);
             });
         });
 }
-

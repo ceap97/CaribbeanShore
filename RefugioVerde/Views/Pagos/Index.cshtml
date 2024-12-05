@@ -28,6 +28,8 @@
                             <th>Comprobante</th>
                             <th>ReservaId</th>
                             <th>Estado de Pago</th>
+                            <th>Tipo</th>
+                            <th>Fecha de Pago</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -63,13 +65,21 @@
                     </div>
                     <div class="mb-3">
                         <label for="createReservaId" class="form-label">Reserva</label>
-                        <select class="form-select" id="createReservaId" name="reservaId" >
+                        <select class="form-select" id="createReservaId" name="reservaId" required>
                         </select>
                     </div>
                     <div class="mb-3">
                         <label for="createEstadoPagoId" class="form-label">Estado de Pago</label>
-                        <select class="form-select" id="createEstadoPagoId" name="estadoPagoId" >
+                        <select class="form-select" id="createEstadoPagoId" name="estadoPagoId" required>
                         </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createTipo" class="form-label">Tipo</label>
+                        <input type="text" class="form-control" id="createTipo" name="tipo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="createFechaPago" class="form-label">Fecha de Pago</label>
+                        <input type="date" class="form-control" id="createFechaPago" name="fechaPago" required>
                     </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -112,6 +122,14 @@
                         <select class="form-select" id="editEstadoPagoId" name="estadoPagoId" required>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="editTipo" class="form-label">Tipo</label>
+                        <input type="text" class="form-control" id="editTipo" name="tipo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editFechaPago" class="form-label">Fecha de Pago</label>
+                        <input type="date" class="form-control" id="editFechaPago" name="fechaPago" required>
+                    </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
@@ -119,8 +137,6 @@
         </div>
     </div>
 </div>
-
-
 
 <!-- Modal para Detalles -->
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
@@ -137,6 +153,8 @@
                 <p><strong>Comprobante:</strong> <span id="detailsComprobante"></span></p>
                 <p><strong>ReservaId:</strong> <span id="detailsReservaId"></span></p>
                 <p><strong>Estado de Pago:</strong> <span id="detailsEstadoPago"></span></p>
+                <p><strong>Tipo:</strong> <span id="detailsTipo"></span></p>
+                <p><strong>Fecha de Pago:</strong> <span id="detailsFechaPago"></span></p>
             </div>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
         </div>

@@ -18,6 +18,7 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
         [HttpGet]
         public async Task<IActionResult> Historial(int clienteId)
         {
@@ -29,6 +30,7 @@ namespace RefugioVerde.Controllers
 
             return View(pagos);
         }
+
         public async Task<IActionResult> Index()
         {
             var pagos = await _context.Pagos.Include(p => p.EstadoPago).Include(p => p.Reserva).ToListAsync();
@@ -52,6 +54,7 @@ namespace RefugioVerde.Controllers
             }
             return Json(pago);
         }
+
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
         {
