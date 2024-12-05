@@ -130,7 +130,7 @@ namespace RefugioVerde.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Crear([FromForm] Reserva reserva, [FromForm] List<int> comodidadIds, [FromForm] List<int> servicioIds)
+        public async Task<IActionResult> Crear([FromForm] Reserva reserva)
         {
             if (reserva.FechaFin <= reserva.FechaInicio)
             {
@@ -139,7 +139,8 @@ namespace RefugioVerde.Controllers
 
             if (ModelState.IsValid)
             {
-                foreach (var comodidadId in comodidadIds)
+                reserva.Comodidades = new List<Comodidad>();
+                foreach (var comodidadId in reserva.ComodidadesSeleccionadas)
                 {
                     var comodidad = await _context.Comodidads.FindAsync(comodidadId);
                     if (comodidad != null)
@@ -148,7 +149,8 @@ namespace RefugioVerde.Controllers
                     }
                 }
 
-                foreach (var servicioId in servicioIds)
+                reserva.Servicios = new List<Servicio>();
+                foreach (var servicioId in reserva.ServiciosSeleccionados)
                 {
                     var servicio = await _context.Servicios.FindAsync(servicioId);
                     if (servicio != null)
@@ -179,7 +181,7 @@ namespace RefugioVerde.Controllers
 
         // POST: /Reservas/Editar
         [HttpPost]
-        public async Task<IActionResult> Editar([FromForm] Reserva reserva, [FromForm] List<int> comodidadIds, [FromForm] List<int> servicioIds)
+        public async Task<IActionResult> Editar([FromForm] Reserva reserva)
         {
             if (reserva.FechaFin <= reserva.FechaInicio)
             {
@@ -202,7 +204,7 @@ namespace RefugioVerde.Controllers
                     existingReserva.EstadoReservaId = reserva.EstadoReservaId;
 
                     existingReserva.Comodidades.Clear();
-                    foreach (var comodidadId in comodidadIds)
+                    foreach (var comodidadId in reserva.ComodidadesSeleccionadas)
                     {
                         var comodidad = await _context.Comodidads.FindAsync(comodidadId);
                         if (comodidad != null)
@@ -212,7 +214,7 @@ namespace RefugioVerde.Controllers
                     }
 
                     existingReserva.Servicios.Clear();
-                    foreach (var servicioId in servicioIds)
+                    foreach (var servicioId in reserva.ServiciosSeleccionados)
                     {
                         var servicio = await _context.Servicios.FindAsync(servicioId);
                         if (servicio != null)
@@ -242,14 +244,23 @@ namespace RefugioVerde.Controllers
         [HttpDelete]
         public async Task<IActionResult> Eliminar(int id)
         {
-            var reserva = await _context.Reservas.FindAsync(id);
+            var reserva = await _context.Reservas
+                .Include(r => r.Comodidades)
+                .Include(r => r.Servicios)
+                .FirstOrDefaultAsync(r => r.ReservaId == id);
             if (reserva == null)
             {
                 return NotFound();
             }
+
+            // Eliminar las relaciones con comodidades y servicios
+            reserva.Comodidades.Clear();
+            reserva.Servicios.Clear();
+
             _context.Reservas.Remove(reserva);
             await _context.SaveChangesAsync();
             return Ok();
         }
     }
 }
+

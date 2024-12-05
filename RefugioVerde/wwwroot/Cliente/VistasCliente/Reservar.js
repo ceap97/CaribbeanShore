@@ -98,12 +98,12 @@
 
         // Agregar comodidades seleccionadas al formData
         document.querySelectorAll('#comodidades input[type="checkbox"]:checked').forEach(checkbox => {
-            formData.append('comodidades', checkbox.value);
+            formData.append('ComodidadesSeleccionadas', checkbox.value);
         });
 
         // Agregar servicios seleccionados al formData
         document.querySelectorAll('#servicios input[type="checkbox"]:checked').forEach(checkbox => {
-            formData.append('servicios', checkbox.value);
+            formData.append('ServiciosSeleccionados', checkbox.value);
         });
 
         // Agregar precios al formData
@@ -213,7 +213,7 @@ function loadComodidades() {
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="${comodidad.comodidadId}" data-precio="${comodidad.precio}" id="comodidad-${comodidad.comodidadId}">
                         <label class="form-check-label" for="comodidad-${comodidad.comodidadId}">
-                            ${comodidad.nombre} - ${comodidad.precio.toFixed(2)} €
+                            ${comodidad.nombre} - ${comodidad.precio.toFixed(2)} $
                         </label>
                     </div>
                 `;
@@ -232,7 +232,7 @@ function loadServicios() {
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="${servicio.servicioId}" data-precio="${servicio.precio}" id="servicio-${servicio.servicioId}">
                         <label class="form-check-label" for="servicio-${servicio.servicioId}">
-                            ${servicio.nombre} - ${servicio.precio.toFixed(2)} €
+                            ${servicio.nombre} - ${servicio.precio.toFixed(2)} $
                         </label>
                     </div>
                 `;
@@ -267,3 +267,4 @@ function loadEstadosReserva() {
             });
         });
 }
+

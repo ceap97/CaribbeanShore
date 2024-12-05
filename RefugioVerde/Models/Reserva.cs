@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models
@@ -30,5 +31,11 @@ namespace RefugioVerde.Models
         public virtual ICollection<Comodidad> Comodidades { get; set; } = new List<Comodidad>();
         [JsonIgnore]
         public virtual ICollection<Servicio> Servicios { get; set; } = new List<Servicio>();
+
+        [NotMapped]
+        public List<int> ComodidadesSeleccionadas { get; set; } = new List<int>();
+
+        [NotMapped]
+        public List<int> ServiciosSeleccionados { get; set; } = new List<int>();
     }
 }
