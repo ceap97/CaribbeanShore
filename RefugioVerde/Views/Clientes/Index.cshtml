@@ -1,12 +1,11 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Clientes";
     Layout = "_Admin";
 }
 @section Estilos {
     <link href="~/admin/assets/css/buttons.datatables.css" rel="stylesheet" />
     <link href="~/admin/assets/css/datatables.datatables.min.css" rel="stylesheet" />
-        <link href="~/admin/VistasModal/Invalid.css" rel="stylesheet" />
+    <link href="~/admin/VistasModal/Invalid.css" rel="stylesheet" />
 }
 
 <div class="row">
@@ -28,6 +27,8 @@
                             <th>Documento de Identidad</th>
                             <th>Teléfono</th>
                             <th>Correo</th>
+                            <th>Dirección</th>
+                            <th>Género</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -78,6 +79,19 @@
                         <div class="form-text">Debe ser un correo electrónico válido (ejemplo@dominio.com).</div>
                     </div>
                     <div class="mb-3">
+                        <label for="direccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="direccion" name="direccion">
+                    </div>
+                    <div class="mb-3">
+                        <label for="genero" class="form-label">Género</label>
+                        <select class="form-select" id="genero" name="genero">
+                            <option value="">Seleccione un género</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="usuarioId" class="form-label">Usuario</label>
                         <select class="form-select" id="usuarioId" name="usuarioId" required>
                             <option value="">Seleccione un usuario</option>
@@ -86,12 +100,10 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </form>
-
             </div>
         </div>
     </div>
 </div>
-
 
 <!-- Modal Editar -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -130,8 +142,23 @@
                         <div class="form-text">Debe ser un correo electrónico válido (ejemplo@dominio.com).</div>
                     </div>
                     <div class="mb-3">
-                        <label for="editUsuarioId" class="form-label">Usuario</label> <select class="form-select" id="editUsuarioId" name="usuarioId" required>
-                            <option value="">Seleccione un usuario</option> </select>
+                        <label for="editDireccion" class="form-label">Dirección</label>
+                        <input type="text" class="form-control" id="editDireccion" name="direccion">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editGenero" class="form-label">Género</label>
+                        <select class="form-select" id="editGenero" name="genero">
+                            <option value="">Seleccione un género</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUsuarioId" class="form-label">Usuario</label>
+                        <select class="form-select" id="editUsuarioId" name="usuarioId" required>
+                            <option value="">Seleccione un usuario</option>
+                        </select>
                     </div>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -140,7 +167,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal para Detalles -->
 <div class="modal fade" id="detailsModal" tabindex="-1" aria-labelledby="detailsModalLabel" aria-hidden="true">
@@ -157,6 +183,8 @@
                 <p><strong>Documento de Identidad:</strong> <span id="detailsDocumentoIdentidad"></span></p>
                 <p><strong>Teléfono:</strong> <span id="detailsTelefono"></span></p>
                 <p><strong>Correo:</strong> <span id="detailsCorreo"></span></p>
+                <p><strong>Dirección:</strong> <span id="detailsDireccion"></span></p>
+                <p><strong>Género:</strong> <span id="detailsGenero"></span></p>
                 <p><strong>Usuario:</strong> <span id="detailsUsuario"></span></p>
             </div>
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -185,3 +213,4 @@
     <script src="~/admin/assets/js/datatables.min.js"></script>
     <script src="~/admin/vistasmodal/clientes.js"></script>
 }
+

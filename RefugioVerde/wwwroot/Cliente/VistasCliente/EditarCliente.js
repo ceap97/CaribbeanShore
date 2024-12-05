@@ -12,23 +12,36 @@
                             <input type="hidden" id="clienteId" name="clienteId">
                             <div class="mb-3">
                                 <label for="nombre" class="form-label">Nombre</label>
-                                <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                <input type="text" class="form-control" id="nombre" name="nombre" required minlength="2" maxlength="20" pattern="^[a-zA-Z\s]+$" title="Por favor, ingrese un nombre entre 2 y 20 caracteres que solo contenga letras.">
                             </div>
                             <div class="mb-3">
                                 <label for="apellido" class="form-label">Apellido</label>
-                                <input type="text" class="form-control" id="apellido" name="apellido" required>
+                                <input type="text" class="form-control" id="apellido" name="apellido" required minlength="2" maxlength="20" pattern="^[a-zA-Z\s]+$" title="Por favor, ingrese un apellido entre 2 y 20 caracteres que solo contenga letras.">
                             </div>
                             <div class="mb-3">
                                 <label for="documentoIdentidad" class="form-label">Documento de Identidad</label>
-                                <input type="text" class="form-control" id="documentoIdentidad" name="documentoIdentidad" required>
+                                <input type="text" class="form-control" id="documentoIdentidad" name="documentoIdentidad" required minlength="8" maxlength="18" title="Ingrese un documento de identidad válido entre 8 y 18 caracteres.">
                             </div>
                             <div class="mb-3">
                                 <label for="telefono" class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" id="telefono" name="telefono" required>
+                                <input type="tel" class="form-control" id="telefono" name="telefono" required pattern="\\d{10}" title="El teléfono debe contener exactamente 10 dígitos numéricos.">
                             </div>
                             <div class="mb-3">
                                 <label for="correo" class="form-label">Correo</label>
-                                <input type="email" class="form-control" id="correo" name="correo" required>
+                                <input type="email" class="form-control" id="correo" name="correo" required title="Ingrese un correo electrónico válido.">
+                            </div>
+                            <div class="mb-3">
+                                <label for="direccion" class="form-label">Dirección</label>
+                                <input type="text" class="form-control" id="direccion" name="direccion">
+                            </div>
+                            <div class="mb-3">
+                                <label for="genero" class="form-label">Género</label>
+                                <select class="form-select" id="genero" name="genero">
+                                    <option value="">Seleccione un género</option>
+                                    <option value="Masculino">Masculino</option>
+                                    <option value="Femenino">Femenino</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
                             </div>
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary">Guardar</button>
@@ -49,6 +62,8 @@
             document.getElementById('documentoIdentidad').value = data.documentoIdentidad;
             document.getElementById('telefono').value = data.telefono;
             document.getElementById('correo').value = data.correo;
+            document.getElementById('direccion').value = data.direccion;
+            document.getElementById('genero').value = data.genero;
             document.getElementById('usuarioId').value = data.usuarioId;
         });
     $('#clientModal').modal('show');
@@ -72,6 +87,8 @@
         });
     });
 }
+
+
 
 function openEditReservaModal(reservaId) {
     // Remove any existing modals first

@@ -52,14 +52,14 @@ namespace RefugioVerde.Controllers
 
         public IActionResult Create()
         {
-            ViewBag.UsuarioId = new SelectList(_context.Usuarios, "Id", "NombreUsuario");
+            ViewBag.UsuarioId = new SelectList(_context.Usuarios, "UsuarioId", "NombreUsuario");
             return PartialView("_Create");
         }
 
         // POST: Clientes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Nombre,Apellido,DocumentoIdentidad,Telefono,Correo,UsuarioId")] Cliente cliente)
+        public async Task<IActionResult> Create([Bind("Nombre,Apellido,DocumentoIdentidad,Telefono,Correo,UsuarioId,Direccion,Genero")] Cliente cliente)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +67,7 @@ namespace RefugioVerde.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewBag.UsuarioId = new SelectList(_context.Usuarios, "Id", "NombreUsuario", cliente.UsuarioId);
+            ViewBag.UsuarioId = new SelectList(_context.Usuarios, "UsuarioId", "NombreUsuario", cliente.UsuarioId);
             return PartialView("_Create", cliente);
         }
 
@@ -137,3 +137,4 @@ namespace RefugioVerde.Controllers
         }
     }
 }
+

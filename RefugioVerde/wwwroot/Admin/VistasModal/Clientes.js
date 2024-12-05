@@ -13,6 +13,8 @@
                     <td>${cliente.documentoIdentidad}</td>
                     <td>${cliente.telefono}</td>
                     <td>${cliente.correo}</td>
+                    <td>${cliente.direccion}</td>
+                    <td>${cliente.genero}</td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="openEditModal(${cliente.clienteId})">
                             <img src="Admin/Fonts/pen-to-square-solid.svg" alt="Editar" style="width: 16px; height: 16px;" />
@@ -56,6 +58,8 @@ function openEditModal(clienteId) {
             $('#editDocumentoIdentidad').val(cliente.documentoIdentidad);
             $('#editTelefono').val(cliente.telefono);
             $('#editCorreo').val(cliente.correo);
+            $('#editDireccion').val(cliente.direccion);
+            $('#editGenero').val(cliente.genero);
             loadUsuarios('#editUsuarioId');
             $('#editModal').modal('show');
         });
@@ -82,6 +86,8 @@ function openDetailsModal(clienteId) {
                                 <p><strong>Documento:</strong> ${cliente.documentoIdentidad}</p>
                                 <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
                                 <p><strong>Correo:</strong> ${cliente.correo}</p>
+                                <p><strong>Dirección:</strong> ${cliente.direccion}</p>
+                                <p><strong>Género:</strong> ${cliente.genero}</p>
                                 <p><strong>Usuario:</strong> ${usuario.nombreUsuario}</p>
                             </div>
                         `,
@@ -269,3 +275,4 @@ function validateForm(form) {
     });
     return isValid;
 }
+
