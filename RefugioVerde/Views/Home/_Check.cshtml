@@ -1,4 +1,5 @@
-﻿
+﻿@model IEnumerable<RefugioVerde.Models.Habitacion>
+
 <div class="book-now-area">
     <div class="container">
         <div class="row justify-content-center">
@@ -66,83 +67,32 @@
         </div>
     </div>
 </div>
-<!-- ##### Book Now Area End ##### -->
-<!-- ##### About Us Area Start ##### -->
-<section class="about-us-area">
-    <div class="container">
-        <div class="row align-items-center">
+<section class="rooms-area section-padding-100-0">
+    <div class="container-fluid">
 
-            <div class="col-12 col-lg-6">
-                <div class="about-text text-center mb-100">
-                    <div class="section-heading text-center">
-                        <div class="line-"></div>
-                        <h2>A place to remember</h2>
-                    </div>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus.</p>
-                    <div class="about-key-text">
-                        <h6><span class="fa fa-check"></span> Donec malesuada lorem maximus mauris sceleri</h6>
-                        <h6><span class="fa fa-check"></span> Malesuada lorem maximus mauris sceleri</h6>
-                    </div>
-                    <a href="#" class="btn palatin-btn mt-50">Read More</a>
-                </div>
-            </div>
-
-            <div class="col-12 col-lg-6">
-                <div class="about-thumbnail homepage mb-100">
-                    <!-- First Img -->
-                    <div class="first-img wow fadeInUp" data-wow-delay="100ms">
-                        <img src="~/Home/img/bg-img/5.jpg" alt="">
-                    </div>
-                    <!-- Second Img -->
-                    <div class="second-img wow fadeInUp" data-wow-delay="300ms">
-                        <img src="~/Home/img/bg-img/6.jpg" alt="">
-                    </div>
-                    <!-- Third Img-->
-                    <div class="third-img wow fadeInUp" data-wow-delay="500ms">
-                        <img src="~/Home/img/bg-img/7.jpg" alt="">
+        <div class="row justify-content-center">
+            @foreach (var habitacion in Model)
+            {
+                <!-- Single Rooms Area -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="single-rooms-area wow fadeInUp" data-wow-delay="100ms">
+                        <!-- Thumbnail -->
+                        <img src="@habitacion.Imagen" alt="Imagen de @habitacion.NombreHabitacion" class="bg-thumbnail bg-img" style="background-image: src(@habitacion.Imagen)" />
+                        <!-- Price -->
+                        <p class="price-from">Precio: $@habitacion.Precio</p>
+                        <!-- Rooms Text -->
+                        <div class="rooms-text">
+                            <p> @habitacion.EstadoHabitacion.Nombre</p>
+                            <div class="line"></div>
+                            <h4>@habitacion.NombreHabitacion</h4>
+                            <p>Descripcion: @habitacion.Tipo</p>
+                            <p>Capacidad: @habitacion.Capacidad personas</p> <!-- Nuevo campo para Capacidad -->
+                        </div>
+                        <!-- Book Room -->
+                        <a href="#" class="book-room-btn btn palatin-btn" onclick="openCreateModal()">Reservar</a>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- ##### About Us Area End ##### -->
-<!-- ##### Pool Area Start ##### -->
-<section class="pool-area section-padding-100 bg-img bg-fixed" style="background-image: url(Home/img/bg-img/4.png);">
-    <div class="container">
-        <div class="row justify-content-end">
-            <div class="col-12 col-lg-7">
-                <div class="pool-content text-center wow fadeInUp" data-wow-delay="300ms">
-                    <div class="section-heading text-center white">
-                        <div class="line-"></div>
-                        <h2>Infinity Pool</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum. Ut ac ligula sapien. Suspendisse cursus faucibus finibus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec malesuada lorem maximus mauris sceleri sque, at rutrum nulla dictum.</p>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 col-sm-4">
-                            <div class="pool-feature">
-                                <i class="icon-cocktail-1"></i>
-                                <p>Pool Beachbar</p>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                            <div class="pool-feature">
-                                <i class="icon-swimming-pool"></i>
-                                <p>Infinity Pool</p>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-4">
-                            <div class="pool-feature">
-                                <i class="icon-beach"></i>
-                                <p>Sunbeds</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Button -->
-                    <a href="#" class="btn palatin-btn mt-50">Read More</a>
-                </div>
-            </div>
+            }
         </div>
     </div>
 </section>

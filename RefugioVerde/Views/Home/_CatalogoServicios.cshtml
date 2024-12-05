@@ -1,41 +1,42 @@
 ﻿@model IEnumerable<RefugioVerde.Models.Servicio>
+@using System.Security.Claims
 
-<div class="service-catalog">
-    @foreach (var servicio in Model)
-    {
-        <div class="service-card">
-            @if (!string.IsNullOrEmpty(servicio.Imagen))
-            {
-                <img src="@servicio.Imagen" alt="Imagen de @servicio.Nombre" class="service-image" />
-            }
-            else
-            {
-                <img src="~/images/default-service.png" alt="Imagen no disponible" class="service-image" />
-            }
-            <h2>@servicio.Nombre</h2>
-            <p>@servicio.Descripcion</p>
-            <p>Precio: $@servicio.Precio</p>
-            <a asp-controller="Clientes" asp-action="Reservar" class="btn palatin-btn">Reservar</a>
+<section class="rooms-area section-padding-100-0">
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-6">
+                <div class="section-heading text-center">
+                    <div class="line-"></div>
+                    <h2>Otros servicios</h2>
+                </div>
+            </div>
         </div>
-    }
-</div>
 
-<style>
-    .service-catalog {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
+        <div class="row justify-content-center">
+            @foreach (var servicio in Model)
+            {
+                <!-- Single Rooms Area -->
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="single-rooms-area wow fadeInUp" data-wow-delay="100ms">
+                        <!-- Thumbnail -->
+                        <img src="@servicio.Imagen" alt="Imagen de @servicio.Nombre" class="bg-thumbnail bg-img" style="background-image: src(@servicio.Imagen)" />
+                        <!-- Price -->
+                        <p class="price-from">Precio: $@servicio.Precio</p>
+                        <!-- Rooms Text -->
+                        <div class="rooms-text">
+                            <div class="line"></div>
+                            <h4>@servicio.Nombre</h4>
+                            <p>Descripcion: @servicio.Descripcion</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
 
-    .service-card {
-        border: 1px solid #ddd;
-        padding: 15px;
-        width: 200px;
-        text-align: center;
-    }
 
-    .service-image {
-        max-width: 100%;
-        height: auto;
-    }
-</style>
+<!-- Scripts necesarios -->
+@section Scripts {
+    <script src="~/admin/assets/js/datatables.min.js"></script>
+}
