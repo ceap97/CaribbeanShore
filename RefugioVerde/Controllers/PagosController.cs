@@ -33,14 +33,14 @@ namespace RefugioVerde.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var pagos = await _context.Pagos.Include(p => p.EstadoPago).Include(p => p.Reserva).ToListAsync();
+            var pagos = await _context.Pagos.Include(p => p.EstadoPago).Include(p => p.Reserva).Include(m => m.MetodoDePago).ToListAsync();
             return View(pagos);
         }
 
         [HttpGet]
         public async Task<IActionResult> Listar()
         {
-            var pagos = await _context.Pagos.Include(p => p.EstadoPago).Include(p => p.Reserva).ToListAsync();
+            var pagos = await _context.Pagos.Include(p => p.EstadoPago).Include(p => p.Reserva).Include(m => m.MetodoDePago).ToListAsync();
             return Json(pagos);
         }
 
@@ -58,41 +58,60 @@ namespace RefugioVerde.Controllers
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
         {
+            // Validar archivo
+            if (comprobante == null || comprobante.Length == 0)
+            {
+                ModelState.AddModelError("Comprobante", "El comprobante es requerido");
+                return BadRequest(new { errors = new[] { "El comprobante es requerido" } });
+            }
+
+            // Validar tipo de archivo
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+            var extension = Path.GetExtension(comprobante.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("Comprobante", "Solo se permiten archivos JPG, JPEG o PNG");
+                return BadRequest(new { errors = new[] { "Formato de archivo no válido" } });
+            }
+
             if (ModelState.IsValid)
             {
-                if (comprobante != null && comprobante.Length > 0)
+                try
                 {
-                    var fileName = $"{Guid.NewGuid()}.jpeg";  // Usar un GUID como nombre del archivo para evitar colisiones
+                    var fileName = $"{Guid.NewGuid()}{extension}";
                     var filePath = Path.Combine(_uploadPath, fileName);
 
-                    // Crear el directorio si no existe
                     if (!Directory.Exists(_uploadPath))
                     {
                         Directory.CreateDirectory(_uploadPath);
                     }
 
-                    // Guardar la imagen en el servidor
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await comprobante.CopyToAsync(stream);
                     }
 
-                    pago.Comprobante = filePath;  // Guardar la ruta del archivo en la base de datos
+                    pago.Comprobante = fileName;
+                    _context.Pagos.Add(pago);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "Pago creado exitosamente" });
                 }
-
-                _context.Pagos.Add(pago);
-                await _context.SaveChangesAsync();
-                return Ok();
+                catch (DbUpdateException ex)
+                {
+                    // Log the error (uncomment ex variable name and write a log.)
+                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.InnerException?.Message } });
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.Message } });
+                }
             }
 
-            // Registrar los errores de validación
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            foreach (var error in errors)
-            {
-                Console.WriteLine(error);
-            }
-
-            return BadRequest(ModelState);
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            return BadRequest(new { errors });
         }
 
         [HttpPost]
@@ -123,7 +142,7 @@ namespace RefugioVerde.Controllers
         [HttpGet]
         public async Task<IActionResult> ListarMetodosDePago()
         {
-            var metodosDePago = await _context.MetodoDePago.ToListAsync();
+            var metodosDePago = await _context.MetodoDePagos.ToListAsync();
             return Json(metodosDePago);
         }
 

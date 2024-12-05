@@ -21,7 +21,7 @@ namespace RefugioVerde.Controllers
         // GET: MetodoDePagos
         public async Task<IActionResult> Index()
         {
-            return View(await _context.MetodoDePago.ToListAsync());
+            return View(await _context.MetodoDePagos.ToListAsync());
         }
 
         // GET: MetodoDePagos/Details/5
@@ -32,7 +32,7 @@ namespace RefugioVerde.Controllers
                 return NotFound();
             }
 
-            var metodoDePago = await _context.MetodoDePago
+            var metodoDePago = await _context.MetodoDePagos
                 .FirstOrDefaultAsync(m => m.MetodoDePagoId == id);
             if (metodoDePago == null)
             {
@@ -50,7 +50,6 @@ namespace RefugioVerde.Controllers
 
         // POST: MetodoDePagos/Create
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("MetodoDePagoId,Nombre")] MetodoDePago metodoDePago)
         {
             if (ModelState.IsValid)
@@ -70,7 +69,7 @@ namespace RefugioVerde.Controllers
                 return NotFound();
             }
 
-            var metodoDePago = await _context.MetodoDePago.FindAsync(id);
+            var metodoDePago = await _context.MetodoDePagos.FindAsync(id);
             if (metodoDePago == null)
             {
                 return NotFound();
@@ -119,7 +118,7 @@ namespace RefugioVerde.Controllers
                 return NotFound();
             }
 
-            var metodoDePago = await _context.MetodoDePago
+            var metodoDePago = await _context.MetodoDePagos
                 .FirstOrDefaultAsync(m => m.MetodoDePagoId == id);
             if (metodoDePago == null)
             {
@@ -134,10 +133,10 @@ namespace RefugioVerde.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var metodoDePago = await _context.MetodoDePago.FindAsync(id);
+            var metodoDePago = await _context.MetodoDePagos.FindAsync(id);
             if (metodoDePago != null)
             {
-                _context.MetodoDePago.Remove(metodoDePago);
+                _context.MetodoDePagos.Remove(metodoDePago);
             }
 
             await _context.SaveChangesAsync();
@@ -146,14 +145,14 @@ namespace RefugioVerde.Controllers
 
         private bool MetodoDePagoExists(int id)
         {
-            return _context.MetodoDePago.Any(e => e.MetodoDePagoId == id);
+            return _context.MetodoDePagos.Any(e => e.MetodoDePagoId == id);
         }
 
         // GET: MetodoDePagos/Listar
         [HttpGet]
         public async Task<IActionResult> Listar()
         {
-            var metodoDePagos = await _context.MetodoDePago.ToListAsync();
+            var metodoDePagos = await _context.MetodoDePagos.ToListAsync();
             return Json(metodoDePagos);
         }
 
@@ -161,7 +160,7 @@ namespace RefugioVerde.Controllers
         [HttpGet]
         public async Task<IActionResult> Obtener(int id)
         {
-            var metodoDePago = await _context.MetodoDePago.FindAsync(id);
+            var metodoDePago = await _context.MetodoDePagos.FindAsync(id);
             if (metodoDePago == null)
             {
                 return NotFound();
@@ -175,7 +174,7 @@ namespace RefugioVerde.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.MetodoDePago.Add(metodoDePago);
+                _context.MetodoDePagos.Add(metodoDePago);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
@@ -188,7 +187,7 @@ namespace RefugioVerde.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.MetodoDePago.Update(metodoDePago);
+                _context.MetodoDePagos.Update(metodoDePago);
                 await _context.SaveChangesAsync();
                 return Ok();
             }
@@ -199,12 +198,12 @@ namespace RefugioVerde.Controllers
         [HttpDelete]
         public async Task<IActionResult> EliminarModal(int id)
         {
-            var metodoDePago = await _context.MetodoDePago.FindAsync(id);
+            var metodoDePago = await _context.MetodoDePagos.FindAsync(id);
             if (metodoDePago == null)
             {
                 return NotFound();
             }
-            _context.MetodoDePago.Remove(metodoDePago);
+            _context.MetodoDePagos.Remove(metodoDePago);
             await _context.SaveChangesAsync();
             return Ok();
         }

@@ -54,35 +54,39 @@
 
     document.getElementById('pagoForm').addEventListener('submit', function (event) {
         event.preventDefault();
+
+        // Validar método de pago
+        const metodoDePagoId = document.getElementById('metodoDePagoId').value;
+        if (!metodoDePagoId) {
+            Swal.fire('Error', 'El método de pago es obligatorio', 'error');
+            return;
+        }
+
         var formData = new FormData(this);
-        $.ajax({
-            url: '/Pagos/Crear',
-            type: 'POST',
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function () {
-                $('#pagoModal').modal('hide');
-                Swal.fire('Éxito', 'Pago realizado con éxito.', 'success');
-            },
-            error: function (xhr) {
-                var errors = xhr.responseJSON;
-                var errorMessage = 'No se pudo realizar el pago.';
-                if (errors) {
-                    errorMessage += '<ul>';
-                    $.each(errors, function (key, value) {
-                        errorMessage += '<li>' + value[0] + '</li>';
+        fetch('/Pagos/Crear', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(data => {
+                        throw new Error(data.errors ? data.errors.join('<br>') : 'Error al procesar el pago');
                     });
-                    errorMessage += '</ul>';
                 }
-                Swal.fire('Error', errorMessage, 'error');
-            }
-        });
+                return response.json();
+            })
+            .then(() => {
+                $('#pagoModal').modal('hide');
+                Swal.fire('Éxito', 'Pago realizado con éxito', 'success');
+            })
+            .catch(error => {
+                Swal.fire('Error', error.message, 'error');
+            });
     });
 }
 
 function loadMetodosDePago(selector) {
-    fetch('/MetodoDePagos/Listar')
+    fetch('/Pagos/ListarMetodosDePago')
         .then(response => response.json())
         .then(data => {
             let select = document.querySelector(selector);
@@ -114,4 +118,3 @@ function adjustMonto() {
         document.getElementById('monto').value = montoTotal.toFixed(2);
     }
 }
-

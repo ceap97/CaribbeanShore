@@ -13,9 +13,8 @@ public partial class Pago
     [Range(0.01, double.MaxValue, ErrorMessage = "El monto debe ser un valor positivo.")]
     public decimal Monto { get; set; }
 
-    [Required(ErrorMessage = "El método de pago es obligatorio.")]
-    [StringLength(50, ErrorMessage = "El método de pago no puede tener más de 50 caracteres.")]
-    public string MetodoPago { get; set; } = null!;
+    [Required(ErrorMessage = "El método de pago es obligatorio")]
+    public int? MetodoDePagoId { get; set; }
 
     public string Comprobante { get; set; }
 
@@ -31,15 +30,13 @@ public partial class Pago
     [Required(ErrorMessage = "La fecha de pago es obligatoria.")]
     public DateTime FechaPago { get; set; }
 
-    [Required(ErrorMessage = "El ID del método de pago es obligatorio.")]
-    public int MetodoDePagoId { get; set; }
-
     [JsonIgnore]
     public virtual EstadoPago EstadoPago { get; set; }
 
     [JsonIgnore]
-    public virtual Reserva Reserva { get; set; } = null!;
+    public virtual MetodoDePago MetodoDePago { get; set; }
+
     [JsonIgnore]
-    public virtual ICollection<MetodoDePago> MetodoDePago { get; set; } = new List<MetodoDePago>();
+    public virtual Reserva Reserva { get; set; }
 }
 

@@ -34,8 +34,7 @@ public partial class RefugioVerdeContext : DbContext
     public virtual DbSet<Habitacion> Habitacions { get; set; }
 
     public virtual DbSet<Huesped> Huespeds { get; set; }
-
-    public virtual DbSet<Municipio> Municipios { get; set; }
+    public virtual DbSet<MetodoDePago> MetodoDePagos { get; set; }
 
     public virtual DbSet<Pago> Pagos { get; set; }
 
@@ -46,6 +45,7 @@ public partial class RefugioVerdeContext : DbContext
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<Servicio> Servicios { get; set; }
+
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
@@ -188,19 +188,23 @@ public partial class RefugioVerdeContext : DbContext
                 .HasConstraintName("FK__Huesped__Reserva__7D439ABD");
         });
 
-        modelBuilder.Entity<Municipio>(entity =>
+        modelBuilder.Entity<MetodoDePago>(entity =>
         {
-            entity.HasKey(e => e.MunicipioId).HasName("PK__Municipi__1EEFE54EB56F0B47");
+            entity.HasKey(e => e.MetodoDePagoId).HasName("PK__MetodoDePago__123456789");
 
-            entity.ToTable("Municipio");
+            entity.ToTable("MetodoDePago");
 
-            entity.Property(e => e.Nombre).HasMaxLength(100);
+            entity.Property(e => e.Nombre)
+                .IsRequired()
+                .HasMaxLength(50);
 
-            entity.HasOne(d => d.Departamento).WithMany(p => p.Municipios)
-                .HasForeignKey(d => d.DepartamentoId)
+            entity.HasMany(e => e.Pagos)
+                .WithOne(p => p.MetodoDePago)
+                .HasForeignKey(p => p.MetodoDePagoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Municipio__Depar__4BAC3F29");
+                .HasConstraintName("FK__Pago__MetodoDePago__123456789");
         });
+       
 
         modelBuilder.Entity<Pago>(entity =>
         {
@@ -208,9 +212,11 @@ public partial class RefugioVerdeContext : DbContext
 
             entity.ToTable("Pago");
 
-            entity.Property(e => e.MetodoPago).HasMaxLength(50);
             entity.Property(e => e.Monto).HasColumnType("decimal(10, 2)");
 
+            entity.HasOne(d => d.MetodoDePago).WithMany(p => p.Pagos)
+                .HasForeignKey(d => d.MetodoDePagoId)
+                .HasConstraintName("FK__Pago__MetodoDePa__7B5B524B");
             entity.HasOne(d => d.EstadoPago).WithMany(p => p.Pagos)
                 .HasForeignKey(d => d.EstadoPagoId)
                 .HasConstraintName("FK__Pago__EstadoPago__7A672E12");
@@ -220,6 +226,7 @@ public partial class RefugioVerdeContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Pago__ReservaId__797309D9");
         });
+
 
         modelBuilder.Entity<Permiso>(entity =>
         {
@@ -327,5 +334,5 @@ public partial class RefugioVerdeContext : DbContext
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 
-public DbSet<RefugioVerde.Models.MetodoDePago> MetodoDePago { get; set; }
+//public DbSet<RefugioVerde.Models.MetodoDePago> MetodoDePago { get; set; }
 }

@@ -18,14 +18,6 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerMunicipios()
-        {
-            var municipios = await _context.Municipios.ToListAsync();
-            return Json(municipios);
-        }
-
         public async Task<IActionResult> Catalogo()
         {
             var habitaciones = await _context.Habitacions.Include(h => h.EstadoHabitacion).ToListAsync();
