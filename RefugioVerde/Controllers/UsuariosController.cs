@@ -30,6 +30,7 @@ namespace RefugioVerde.Controllers
             _logger = logger;
             _emailService = emailService;
         }
+
         [HttpGet]
         public async Task<IActionResult> ObtenerUsuarioActual()
         {
@@ -53,15 +54,6 @@ namespace RefugioVerde.Controllers
             ViewBag.TotalClientes = _context.Clientes.Count();
             ViewBag.TotalReservas = _context.Reservas.Count();
             ViewBag.TotalPagos = _context.Pagos.Count();
-
-            // Datos para el gráfico de clientes registrados por mes
-            //var clientesPorMes = _context.Clientes
-            //    .GroupBy(c => new { c.FechaRegistro.Year, c.FechaRegistro.Month })
-            //    .Select(g => new { Mes = g.Key.Month, Año = g.Key.Year, Total = g.Count() })
-            //    .OrderBy(g => g.Año).ThenBy(g => g.Mes)
-            //    .ToList();
-            //ViewBag.ClientesPorMesLabels = clientesPorMes.Select(c => $"{c.Mes}/{c.Año}").ToList();
-            //ViewBag.ClientesPorMesData = clientesPorMes.Select(c => c.Total).ToList();
 
             // Datos para el gráfico de reservas por mes
             var reservasPorMes = _context.Reservas
@@ -126,6 +118,57 @@ namespace RefugioVerde.Controllers
             }
             return Json(usuario);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Crear([FromForm] Usuario usuario, [FromForm] IFormFile imagen)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    var usuarioExistente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Correo == usuario.Correo);
+                    if (usuarioExistente != null)
+                    {
+                        return BadRequest(new { message = "El correo ya está registrado. Intente con otro." });
+                    }
+
+                    if (imagen != null && imagen.Length > 0)
+                    {
+                        var fileName = $"{usuario.NombreUsuario}.jpeg";
+                        var filePath = Path.Combine(_uploadPath, fileName);
+
+                        if (!Directory.Exists(_uploadPath))
+                        {
+                            Directory.CreateDirectory(_uploadPath);
+                        }
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imagen.CopyToAsync(stream);
+                        }
+
+                        usuario.Imagen = $"/images/usuarios/{fileName}";
+                    }
+                    else
+                    {
+                        // Asignar imagen por defecto
+                        usuario.Imagen = "/images/usuarios/default.jpeg";
+                    }
+
+                    usuario.Clave = Utilidades.EncriptarClave(usuario.Clave);
+                    _context.Usuarios.Add(usuario);
+                    await _context.SaveChangesAsync();
+                    return Ok();
+                }
+                return BadRequest(ModelState);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocurrió un error al crear el usuario.");
+                return StatusCode(500, "Ocurrió un error en el servidor.");
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> Editar([FromForm] Usuario usuario, [FromForm] IFormFile imagen)
         {
@@ -169,6 +212,11 @@ namespace RefugioVerde.Controllers
                         }
 
                         usuarioDb.Imagen = $"/images/usuarios/{fileName}";
+                    }
+                    else if (string.IsNullOrEmpty(usuarioDb.Imagen))
+                    {
+                        // Asignar imagen por defecto si no tiene una
+                        usuarioDb.Imagen = "/images/usuarios/default.jpeg";
                     }
 
                     _context.Usuarios.Update(usuarioDb);

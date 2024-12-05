@@ -181,8 +181,8 @@ function openEditReservaModal(reservaId) {
             // Initialize dropdowns
             Promise.all([
                 loadHabitaciones(data.habitacionId),
-                loadComodidades(data.comodidadId),
-                loadServicios(data.servicioId),
+                loadComodidades(data.comodidades ? data.comodidades.map(c => c.comodidadId) : []),
+                loadServicios(data.servicios ? data.servicios.map(s => s.servicioId) : []),
                 loadEstadosReserva(data.estadoReservaId)
             ]).then(() => {
                 const modal = new bootstrap.Modal(document.getElementById('editModal'));
@@ -199,12 +199,12 @@ function openEditReservaModal(reservaId) {
 
                 // Agregar comodidades seleccionadas al formData
                 document.querySelectorAll('#editComodidades input[type="checkbox"]:checked').forEach(checkbox => {
-                    formData.append('comodidades', checkbox.value);
+                    formData.append('ComodidadesSeleccionadas', checkbox.value);
                 });
 
                 // Agregar servicios seleccionados al formData
                 document.querySelectorAll('#editServicios input[type="checkbox"]:checked').forEach(checkbox => {
-                    formData.append('servicios', checkbox.value);
+                    formData.append('ServiciosSeleccionados', checkbox.value);
                 });
 
                 fetch('/Reservas/Editar', {
@@ -271,7 +271,6 @@ function calculateEditTotal() {
     const total = (precioHabitacion + precioComodidad + precioServicio + precioComodidades + precioServicios) * diffDays;
     document.getElementById('editTotal').value = total.toFixed(2);
 }
-
 function loadHabitaciones(selectedHabitacionId) {
     return fetch('/Habitaciones/Listar')
         .then(response => {
@@ -303,32 +302,17 @@ function loadHabitaciones(selectedHabitacionId) {
         });
 }
 
-function loadComodidades(selectedComodidadId) {
-    return fetch('/Comodidades/Listar') // Asegúrate de que la ruta sea correcta
+function loadComodidades(selectedComodidadIds) {
+    return fetch('/Comodidades/Listar')
         .then(response => response.json())
         .then(data => {
-            let comodidadSelects = document.querySelectorAll('#comodidadId, #editComodidadId');
-            comodidadSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione una Comodidad</option>`;
-                data.forEach(comodidad => {
-                    let option = document.createElement('option');
-                    option.value = comodidad.comodidadId;
-                    option.textContent = comodidad.nombre;
-                    option.setAttribute('data-precio', comodidad.precio);
-                    if (comodidad.comodidadId === selectedComodidadId) {
-                        option.selected = true;
-                        document.getElementById('editPrecioComodidad').value = comodidad.precio;
-                    }
-                    select.appendChild(option);
-                });
-            });
-
             let comodidadesDiv = document.getElementById('editComodidades');
             comodidadesDiv.innerHTML = '';
             data.forEach(comodidad => {
+                const isChecked = selectedComodidadIds.includes(comodidad.comodidadId);
                 comodidadesDiv.innerHTML += `
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="${comodidad.comodidadId}" data-precio="${comodidad.precio}" id="editComodidad-${comodidad.comodidadId}">
+                        <input class="form-check-input" type="checkbox" value="${comodidad.comodidadId}" data-precio="${comodidad.precio}" id="editComodidad-${comodidad.comodidadId}" ${isChecked ? 'checked' : ''}>
                         <label class="form-check-label" for="editComodidad-${comodidad.comodidadId}">
                             ${comodidad.nombre} - ${comodidad.precio.toFixed(2)} €
                         </label>
@@ -338,32 +322,17 @@ function loadComodidades(selectedComodidadId) {
         });
 }
 
-function loadServicios(selectedServicioId) {
-    return fetch('/Servicios/Listar') // Asegúrate de que la ruta sea correcta
+function loadServicios(selectedServicioIds) {
+    return fetch('/Servicios/Listar')
         .then(response => response.json())
         .then(data => {
-            let servicioSelects = document.querySelectorAll('#servicioId, #editServicioId');
-            servicioSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione un Servicio</option>`;
-                data.forEach(servicio => {
-                    let option = document.createElement('option');
-                    option.value = servicio.servicioId;
-                    option.textContent = servicio.nombre;
-                    option.setAttribute('data-precio', servicio.precio);
-                    if (servicio.servicioId === selectedServicioId) {
-                        option.selected = true;
-                        document.getElementById('editPrecioServicio').value = servicio.precio;
-                    }
-                    select.appendChild(option);
-                });
-            });
-
             let serviciosDiv = document.getElementById('editServicios');
             serviciosDiv.innerHTML = '';
             data.forEach(servicio => {
+                const isChecked = selectedServicioIds.includes(servicio.servicioId);
                 serviciosDiv.innerHTML += `
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="${servicio.servicioId}" data-precio="${servicio.precio}" id="editServicio-${servicio.servicioId}">
+                        <input class="form-check-input" type="checkbox" value="${servicio.servicioId}" data-precio="${servicio.precio}" id="editServicio-${servicio.servicioId}" ${isChecked ? 'checked' : ''}>
                         <label class="form-check-label" for="editServicio-${servicio.servicioId}">
                             ${servicio.nombre} - ${servicio.precio.toFixed(2)} €
                         </label>
@@ -387,15 +356,21 @@ function loadClientes() {
         });
 }
 
-function loadEstadosReserva() {
-    return fetch('/EstadoReservas/Listar') // Asegúrate de que la ruta sea correcta
+function loadEstadosReserva(selectedEstadoReservaId) {
+    return fetch('/EstadoReservas/Listar')
         .then(response => response.json())
         .then(data => {
             let estadoReservaSelects = document.querySelectorAll('#estadoReservaId, #editEstadoReservaId');
             estadoReservaSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione un Estado de Reserva</option>`;
+                select.innerHTML = '<option value="">Seleccione un Estado de Reserva</option>';
                 data.forEach(estadoReserva => {
-                    select.innerHTML += `<option value="${estadoReserva.estadoReservaId}">${estadoReserva.nombre}</option>`;
+                    let option = document.createElement('option');
+                    option.value = estadoReserva.estadoReservaId;
+                    option.textContent = estadoReserva.nombre;
+                    if (estadoReserva.estadoReservaId === selectedEstadoReservaId) {
+                        option.selected = true;
+                    }
+                    select.appendChild(option);
                 });
             });
         });
