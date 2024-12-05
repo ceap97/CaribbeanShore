@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using RefugioVerde.Models;
 
 namespace RefugioVerde.Models;
 
@@ -325,4 +326,6 @@ public partial class RefugioVerdeContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
+
+public DbSet<RefugioVerde.Models.MetodoDePago> MetodoDePago { get; set; }
 }

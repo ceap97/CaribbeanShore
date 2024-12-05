@@ -39,7 +39,8 @@ public partial class Pago
 
     [JsonIgnore]
     public virtual Reserva Reserva { get; set; } = null!;
-
     [JsonIgnore]
-    public virtual MetodoDePago MetodoDePago { get; set; }
+    public virtual ICollection<MetodoDePago> MetodoDePago { get; set; } = new List<MetodoDePago>();
+
+    
 }
