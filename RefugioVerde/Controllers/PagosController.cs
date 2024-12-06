@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -152,6 +153,57 @@ namespace RefugioVerde.Controllers
             var estadosPago = await _context.EstadoPagos.ToListAsync();
             return Json(estadosPago);
         }
+        [HttpGet]
+        public async Task<IActionResult> ListarPagosClientes()
+        {
+            try
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (int.TryParse(userId, out int parsedUserId))
+                {
+                    var cliente = await _context.Clientes
+                        .Include(c => c.Reservas)
+                            .ThenInclude(r => r.Pagos)
+                                .ThenInclude(p => p.EstadoPago)
+                        .Include(c => c.Reservas)
+                            .ThenInclude(r => r.Pagos)
+                                .ThenInclude(p => p.MetodoDePago)
+                        .FirstOrDefaultAsync(c => c.UsuarioId == parsedUserId);
+
+                    if (cliente == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var pagosViewModel = cliente.Reservas
+                        .SelectMany(r => r.Pagos)
+                        .Select(p => new PagosViewModel
+                        {
+                            IdPago = p.IdPago,
+                            Monto = p.Monto,
+                            MetodoDePagoId = p.MetodoDePagoId,
+                            Comprobante = p.Comprobante,
+                            ReservaId = p.ReservaId,
+                            EstadoPagoId = p.EstadoPagoId,
+                            Tipo = p.Tipo,
+                            FechaPago = p.FechaPago,
+                            EstadoPagoNombre = p.EstadoPago?.Nombre,
+                            MetodoDePagoNombre = p.MetodoDePago?.Nombre,
+                            ReservaConfirmacion = p.Reserva?.Confirmacion
+                        }).ToList();
+
+                    return View(pagosViewModel);
+                }
+                return BadRequest("Invalid user ID");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (you can use a logging framework like Serilog, NLog, etc.)
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
     }
 }
 
