@@ -9,7 +9,6 @@
                 tr.innerHTML = `
                     <td>${comodidad.comodidadId}</td>
                     <td>${comodidad.nombre}</td>
-                    <td>${comodidad.descripcion}</td>
                     <td>${comodidad.precio}</td>
                     <td>
                         <div class="action-buttons">

@@ -20,6 +20,8 @@
             <th>Fecha de Inicio</th>
             <th>Fecha de Fin</th>
             <th>Habitación</th>
+            <th>Comodidades</th>
+            <th>Servicios</th>
             <th>Estado de Reserva</th>
             <th>Monto Total</th>
             <th>Confirmación</th>
@@ -34,9 +36,40 @@
                 <td>@reserva.FechaInicio.ToString("dd/MM/yyyy")</td>
                 <td>@reserva.FechaFin.ToString("dd/MM/yyyy")</td>
                 <td>@reserva.Habitacion</td>
+                <td>
+                    @if (reserva.Comodidades != null && reserva.Comodidades.Any())
+                    {
+                        <ul>
+                            @foreach (var comodidad in reserva.Comodidades)
+                            {
+                                <li>@comodidad</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>No seleccionadas</span>
+                    }
+                </td>
+                <td>
+                    @if (reserva.Servicios != null && reserva.Servicios.Any())
+                    {
+                        <ul>
+                            @foreach (var servicio in reserva.Servicios)
+                            {
+                                <li>@servicio</li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <span>No seleccionados</span>
+                    }
+                </td>
                 <td id="estado-@reserva.ReservaId">@reserva.EstadoReserva</td>
                 <td>@reserva.MontoTotal.ToString("C")</td>
                 <td>@reserva.Confirmacion</td>
+               
                 <td>
                     <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Editar</button>
                     <button class="btn btn-secondary" onclick="cancelarReserva(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Cancelar</button>
