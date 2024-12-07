@@ -10,9 +10,6 @@
                     <td>${empleado.empleadoId}</td>
                     <td>${empleado.nombre}</td>
                     <td>${empleado.apellido}</td>
-                    <td>${empleado.documentoIdentidad}</td>
-                    <td>${empleado.telefono}</td>
-                    <td>${empleado.correo}</td>
                     <td>${empleado.rolId}</td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="openEditModal(${empleado.empleadoId})">

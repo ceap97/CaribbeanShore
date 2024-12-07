@@ -10,10 +10,7 @@
                     <td>${cliente.clienteId}</td>
                     <td>${cliente.nombre}</td>
                     <td>${cliente.apellido}</td>
-                    <td>${cliente.documentoIdentidad}</td>
-                    <td>${cliente.telefono}</td>
                     <td>${cliente.correo}</td>
-                    <td>${cliente.direccion}</td>
                     <td>${cliente.genero}</td>
                     <td>
                         <button class="btn btn-warning btn-sm" onclick="openEditModal(${cliente.clienteId})">
