@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using RefugioVerde.Models;
+using RefugioVerde.Servicios;
 using RefugioVerde.Servicios.Contrato;
 
 
@@ -14,6 +15,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<RefugioVerdeContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("conexion")));
 builder.Services.AddScoped<IUsuarioServices, UsuariosSevices>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<IClienteServices, ClienteServices>();
 builder.Services.AddScoped<IPermisoService, PermisoService>();
 builder.Services.AddScoped<IUsuarioServices, UsuariosSevices>();
 builder.Services.AddAuthentication(options =>

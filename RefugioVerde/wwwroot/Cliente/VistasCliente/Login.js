@@ -72,21 +72,59 @@ function mostrarModalRegistrarse() {
     Swal.fire({
         title: 'Registrarse',
         html: `
+        <div class="card-body p-4">
                 <form id="registerForm">
-                    <div class="form-group mb-3">
+                <div class="row mb-3">
+                    <div class="col-md-6">
                         <label for="nombreUsuario">Nombre de Usuario</label>
                         <input class="form-control" type="text" placeholder="Nombre de Usuario" required name="nombreUsuario" id="nombreUsuario" />
                     </div>
-                    <div class="form-group mb-3">
-                        <label for="correo">Correo</label>
+                   <div class="col-md-6">
+                    <label for="correo">Correo</label>
                         <input class="form-control" type="email" placeholder="Correo" required name="correo" id="correo" />
+                       
+                    </div>
+                    <div class="col-md-6">
+                     <label for="nombre">Nombre</label>
+                        <input class="form-control" type="text" placeholder="Nombre" required name="nombre" id="nombre" />
+                       
+                    </div>
+                    <div class="col-md-6">
+                     <label for="apellido">Apellido</label>
+                        <input class="form-control" type="text" placeholder="Apellido" required name="apellido" id="apellido" />
+                       
+                    </div>
+                     <div class="col-md-6">
+                        <label for="documentoIdentidad">Documento</label>
+                        <input class="form-control" type="text" placeholder="Documento de Identidad" required name="documentoIdentidad" id="documentoIdentidad" />
+                    </div>
+                   
+                    <div class="col-md-6">
+                     <label for="genero">Género</label>
+                        <select class="form-control" required name="genero" id="genero">
+                            <option value="">Seleccione su género</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Femenino">Femenino</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                       
+                    </div>
+                    <div class="col-md-6">
+                           <label for="direccion">Dirección</label>
+                        <input class="form-control" type="text" placeholder="Dirección" required name="direccion" id="direccion" />
+                    </div>
+                    <div class="col-md-6">
+                        <label for="telefono">Teléfono</label>
+                        <input class="form-control" type="text" placeholder="Teléfono" required name="telefono" id="telefono" />
                     </div>
                     <div class="form-group mb-3">
-                        <label for="clave">Contraseña</label>
+                    <label for="clave">Contraseña</label>
                         <input class="form-control" type="password" placeholder="Contraseña" required name="clave" id="clave" />
                     </div>
                     <button type="submit" class="btn btn-primary">Registrarse</button>
+                    </div>
                 </form>
+                </div>
             `,
         showConfirmButton: false
     });
@@ -139,6 +177,9 @@ function mostrarModalRegistrarse() {
             });
     });
 }
+
+
+
 
 function iniciarSesionAutomatico(correo, clave) {
     var formData = new FormData();

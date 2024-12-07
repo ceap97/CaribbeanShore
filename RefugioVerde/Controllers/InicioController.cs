@@ -12,11 +12,13 @@ namespace RefugioVerde.Controllers
     public class InicioController : Controller
     {
         private readonly IUsuarioServices _usuariosServicio;
+        private readonly IClienteServices _clienteServicio;
         private readonly ILogger<InicioController> _logger;
 
-        public InicioController(IUsuarioServices usuariosServicio, ILogger<InicioController> logger)
+        public InicioController(IUsuarioServices usuariosServicio, IClienteServices clienteServicio, ILogger<InicioController> logger)
         {
             _usuariosServicio = usuariosServicio;
+            _clienteServicio = clienteServicio;
             _logger = logger;
         }
         public IActionResult GoogleLogin()
@@ -90,7 +92,7 @@ namespace RefugioVerde.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Registrarse(Usuario modelo)
+        public async Task<IActionResult> Registrarse(Usuario modelo, Cliente clienteModelo)
         {
             try
             {
@@ -105,7 +107,19 @@ namespace RefugioVerde.Controllers
                 Usuario usuario_creado = await _usuariosServicio.SaveUsuario(modelo);
                 if (usuario_creado.UsuarioId > 0)
                 {
-                    return Json(new { success = true });
+                    // Crear el cliente asociado al usuario
+                    clienteModelo.UsuarioId = usuario_creado.UsuarioId;
+                    clienteModelo.Correo = modelo.Correo;
+                    Cliente cliente_creado = await _clienteServicio.SaveCliente(clienteModelo);
+
+                    if (cliente_creado.ClienteId > 0)
+                    {
+                        return Json(new { success = true });
+                    }
+                    else
+                    {
+                        return Json(new { success = false, message = "No se pudo crear el cliente" });
+                    }
                 }
 
                 return Json(new { success = false, message = "No se pudo crear el usuario" });
@@ -116,10 +130,6 @@ namespace RefugioVerde.Controllers
                 _logger.LogError(ex, "Ocurrió un error al registrar el usuario.");
                 return StatusCode(500, "Ocurrió un error en el servidor.");
             }
-        }
-        public IActionResult IniciarSesion()
-        {
-            return View();
         }
 
         [HttpPost]
