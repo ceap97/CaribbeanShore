@@ -39,6 +39,21 @@ namespace RefugioVerde.Controllers
                 pago.EstadoPagoId = request.EstadoPagoId;
                 await _context.SaveChangesAsync();
 
+                // Si el estado del pago es "Aprobado", cambiar el estado de la reserva a "Confirmado"
+                if (estadoPago.Nombre == "Aprobado")
+                {
+                    var reserva = await _context.Reservas.FindAsync(pago.ReservaId);
+                    if (reserva != null)
+                    {
+                        var estadoConfirmado = await _context.EstadoReservas.FirstOrDefaultAsync(e => e.Nombre == "Confirmado");
+                        if (estadoConfirmado != null)
+                        {
+                            reserva.EstadoReservaId = estadoConfirmado.EstadoReservaId;
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                }
+
                 return Ok(new { message = "Estado del pago actualizado exitosamente" });
             }
             catch (Exception ex)
@@ -49,11 +64,6 @@ namespace RefugioVerde.Controllers
             }
         }
 
-        public class CambioEstadoPagoRequest
-        {
-            public int IdPago { get; set; }
-            public int EstadoPagoId { get; set; }
-        }
 
 
 
