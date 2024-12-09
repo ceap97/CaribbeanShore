@@ -43,64 +43,74 @@ namespace RefugioVerde.Controllers
             return Json(pago);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
+       [HttpPost]
+public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
+{
+    // Validar archivo
+    if (comprobante == null || comprobante.Length == 0)
+    {
+        ModelState.AddModelError("Comprobante", "El comprobante es requerido");
+        return BadRequest(new { errors = new[] { "El comprobante es requerido" } });
+    }
+
+    // Validar tipo de archivo
+    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+    var extension = Path.GetExtension(comprobante.FileName).ToLowerInvariant();
+    if (!allowedExtensions.Contains(extension))
+    {
+        ModelState.AddModelError("Comprobante", "Solo se permiten archivos JPG, JPEG o PNG");
+        return BadRequest(new { errors = new[] { "Formato de archivo no válido" } });
+    }
+
+    if (ModelState.IsValid)
+    {
+        try
         {
-            // Validar archivo
-            if (comprobante == null || comprobante.Length == 0)
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var filePath = Path.Combine(_uploadPath, fileName);
+
+            if (!Directory.Exists(_uploadPath))
             {
-                ModelState.AddModelError("Comprobante", "El comprobante es requerido");
-                return BadRequest(new { errors = new[] { "El comprobante es requerido" } });
+                Directory.CreateDirectory(_uploadPath);
             }
 
-            // Validar tipo de archivo
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-            var extension = Path.GetExtension(comprobante.FileName).ToLowerInvariant();
-            if (!allowedExtensions.Contains(extension))
+            using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                ModelState.AddModelError("Comprobante", "Solo se permiten archivos JPG, JPEG o PNG");
-                return BadRequest(new { errors = new[] { "Formato de archivo no válido" } });
+                await comprobante.CopyToAsync(stream);
             }
 
-            if (ModelState.IsValid)
+            pago.Comprobante = fileName;
+
+            // Establecer el estado de pago a "En revisión"
+            var estadoEnRevision = await _context.EstadoPagos.FirstOrDefaultAsync(e => e.Nombre == "En revisión");
+            if (estadoEnRevision == null)
             {
-                try
-                {
-                    var fileName = $"{Guid.NewGuid()}{extension}";
-                    var filePath = Path.Combine(_uploadPath, fileName);
-
-                    if (!Directory.Exists(_uploadPath))
-                    {
-                        Directory.CreateDirectory(_uploadPath);
-                    }
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await comprobante.CopyToAsync(stream);
-                    }
-
-                    pago.Comprobante = fileName;
-                    _context.Pagos.Add(pago);
-                    await _context.SaveChangesAsync();
-                    return Ok(new { message = "Pago creado exitosamente" });
-                }
-                catch (DbUpdateException ex)
-                {
-                    // Log the error (uncomment ex variable name and write a log.)
-                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.InnerException?.Message } });
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.Message } });
-                }
+                return BadRequest(new { errors = new[] { "Estado de pago 'En revisión' no encontrado" } });
             }
+            pago.EstadoPagoId = estadoEnRevision.EstadoPagoId;
 
-            var errors = ModelState.Values
-                .SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
-            return BadRequest(new { errors });
+            _context.Pagos.Add(pago);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Pago creado exitosamente" });
         }
+        catch (DbUpdateException ex)
+        {
+            // Log the error (uncomment ex variable name and write a log.)
+            return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.InnerException?.Message } });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.Message } });
+        }
+    }
+
+    var errors = ModelState.Values
+        .SelectMany(v => v.Errors)
+        .Select(e => e.ErrorMessage)
+        .ToList();
+    return BadRequest(new { errors });
+}
+
 
         [HttpPost]
         public async Task<IActionResult> Editar([FromForm] Pago pago)
