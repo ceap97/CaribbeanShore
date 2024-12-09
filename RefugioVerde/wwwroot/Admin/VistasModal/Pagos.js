@@ -11,7 +11,13 @@
                     <td>${pago.metodoPago}</td>
                     <td>${pago.comprobante}</td>
                     <td>${pago.reservaId}</td>
-                    <td>${pago.estadoPago}</td>
+                    <td>
+                        <select class="form-select" onchange="changeEstadoPago(${pago.idPago}, this.value)">
+                            <option value="10" ${pago.estadoPagoId == 10 ? 'selected' : ''}>En revisión</option>
+                            <option value="11" ${pago.estadoPagoId == 11 ? 'selected' : ''}>Aprobado</option>
+                            <option value=12" ${pago.estadoPagoId == 12 ? 'selected' : ''}>Rechazado</option>
+                        </select>
+                    </td>
                     <td>${pago.tipo}</td>
                     <td>${new Date(pago.fechaPago).toLocaleDateString()}</td>
                     <td>
@@ -45,8 +51,9 @@ function openEditModal(idPago) {
         .then(data => {
             $('#editIdPago').val(data.idPago);
             $('#editMonto').val(data.monto);
-            $('#editMetodoPago').val(data.metodoPago);
-            $('#editComprobante').val(data.comprobante);
+            $('#editMetodoPago').val(data.metodoPagoId); // Asegúrate de que el valor del método de pago se establezca correctamente
+            // No establecer el valor del campo de archivo
+            // $('#editComprobante').val(data.comprobante);
             $('#editTipo').val(data.tipo);
             $('#editFechaPago').val(new Date(data.fechaPago).toISOString().split('T')[0]);
             loadReservas('#editReservaId', data.reservaId); // Cargar reservas y seleccionar la actual
@@ -207,7 +214,7 @@ function loadReservas(selector, selectedReservaId = null) {
 }
 
 function loadEstadosPago(selector, selectedEstadoPagoId = null) {
-    fetch('/EstadoPago/Listar') // Asegúrate de que la ruta sea correcta
+    fetch('/EstadoPagos/Listar') // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
             let select = document.querySelector(selector);
@@ -241,4 +248,38 @@ function loadMetodosDePago(selector, selectedMetodoDePagoId = null) {
             });
         });
 }
+
+function changeEstadoPago(idPago, estadoPagoId) {
+    console.log(`Cambiando estado del pago ${idPago} a ${estadoPagoId}`);
+    fetch(`/Pagos/CambiarEstado`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ idPago, estadoPagoId })
+    }).then(response => {
+        if (response.ok) {
+            Swal.fire(
+                'Actualizado!',
+                'El estado del pago ha sido actualizado correctamente.',
+                'success'
+            );
+        } else {
+            response.json().then(data => {
+                Swal.fire(
+                    'Error',
+                    data.message || 'Hubo un problema al actualizar el estado del pago.',
+                    'error'
+                );
+            });
+        }
+    }).catch(error => {
+        Swal.fire(
+            'Error',
+            'Hubo un problema con la solicitud.',
+            'error'
+        );
+    });
+}
+
 

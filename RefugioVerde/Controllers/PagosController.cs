@@ -19,6 +19,44 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+        [HttpPost]
+        public async Task<IActionResult> CambiarEstado([FromBody] CambioEstadoPagoRequest request)
+        {
+            try
+            {
+                var pago = await _context.Pagos.FindAsync(request.IdPago);
+                if (pago == null)
+                {
+                    return NotFound(new { message = "Pago no encontrado" });
+                }
+
+                var estadoPago = await _context.EstadoPagos.FindAsync(request.EstadoPagoId);
+                if (estadoPago == null)
+                {
+                    return NotFound(new { message = "Estado de pago no encontrado" });
+                }
+
+                pago.EstadoPagoId = request.EstadoPagoId;
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Estado del pago actualizado exitosamente" });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (you can use a logging framework like Serilog, NLog, etc.)
+                Console.WriteLine(ex.Message);
+                return StatusCode(500, new { message = "Error interno del servidor", details = ex.Message });
+            }
+        }
+
+        public class CambioEstadoPagoRequest
+        {
+            public int IdPago { get; set; }
+            public int EstadoPagoId { get; set; }
+        }
+
+
+
         public async Task<IActionResult> Index()
         {
             var pagos = await _context.Pagos.Include(p => p.EstadoPago).Include(p => p.Reserva).Include(m => m.MetodoDePago).ToListAsync();
@@ -113,16 +151,60 @@ public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFil
 
 
         [HttpPost]
-        public async Task<IActionResult> Editar([FromForm] Pago pago)
+        public async Task<IActionResult> Editar([FromForm] Pago pago, [FromForm] IFormFile comprobante)
         {
             if (ModelState.IsValid)
             {
-                _context.Pagos.Update(pago);
-                await _context.SaveChangesAsync();
-                return Ok();
+                try
+                {
+                    if (comprobante != null && comprobante.Length > 0)
+                    {
+                        // Validar tipo de archivo
+                        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+                        var extension = Path.GetExtension(comprobante.FileName).ToLowerInvariant();
+                        if (!allowedExtensions.Contains(extension))
+                        {
+                            ModelState.AddModelError("Comprobante", "Solo se permiten archivos JPG, JPEG o PNG");
+                            return BadRequest(new { errors = new[] { "Formato de archivo no válido" } });
+                        }
+
+                        var fileName = $"{Guid.NewGuid()}{extension}";
+                        var filePath = Path.Combine(_uploadPath, fileName);
+
+                        if (!Directory.Exists(_uploadPath))
+                        {
+                            Directory.CreateDirectory(_uploadPath);
+                        }
+
+                        using (var stream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await comprobante.CopyToAsync(stream);
+                        }
+
+                        pago.Comprobante = fileName;
+                    }
+
+                    _context.Pagos.Update(pago);
+                    await _context.SaveChangesAsync();
+                    return Ok(new { message = "Pago editado exitosamente" });
+                }
+                catch (DbUpdateException ex)
+                {
+                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.InnerException?.Message } });
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.Message } });
+                }
             }
-            return BadRequest(ModelState);
+
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            return BadRequest(new { errors });
         }
+
 
         [HttpDelete]
         public async Task<IActionResult> Eliminar(int id)
