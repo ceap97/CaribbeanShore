@@ -69,7 +69,7 @@
                 <td id="estado-@reserva.ReservaId">@reserva.EstadoReserva</td>
                 <td>@reserva.MontoTotal.ToString("C")</td>
                 <td>@reserva.Confirmacion</td>
-               
+
                 <td>
                     <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Editar</button>
                     <button class="btn btn-secondary" onclick="cancelarReserva(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Cancelar</button>

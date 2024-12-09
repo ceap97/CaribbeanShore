@@ -17,6 +17,31 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+        [HttpPost]
+        public async Task<IActionResult> VerificarReservasNoPagadas()
+        {
+            var reservasNoPagadas = await _context.Reservas
+                .Include(r => r.EstadoReserva)
+                .Where(r => r.EstadoReserva.Nombre == "Pendiente" && r.FechaReserva.AddHours(1) <= DateTime.Now)
+                .ToListAsync();
+
+            var estadoCancelada = await _context.EstadoReservas
+                .FirstOrDefaultAsync(e => e.Nombre == "Cancelada");
+
+            if (estadoCancelada == null)
+            {
+                return NotFound("Estado 'Cancelada' no encontrado");
+            }
+
+            foreach (var reserva in reservasNoPagadas)
+            {
+                reserva.EstadoReserva = estadoCancelada;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
 
         [HttpPost]
         public IActionResult CancelarReserva(int id)

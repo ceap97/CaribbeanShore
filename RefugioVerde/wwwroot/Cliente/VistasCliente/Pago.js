@@ -1,4 +1,43 @@
-﻿function openPagoModal(reservaId) {
+﻿function startPaymentTimer(reservaId) {
+    const timerElement = document.getElementById('payment-timer');
+    const timerSpan = document.getElementById('timer');
+    const endTime = new Date().getTime() + 3600000; // 1 hora en milisegundos
+
+    timerElement.style.display = 'block';
+
+    const interval = setInterval(function () {
+        const now = new Date().getTime();
+        const distance = endTime - now;
+
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        timerSpan.innerHTML = `${hours}h ${minutes}m ${seconds}s`;
+
+        if (distance < 0) {
+            clearInterval(interval);
+            timerElement.style.display = 'none';
+            fetch(`/Reservas/VerificarReservasNoPagadas`, {
+                method: 'POST'
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error al verificar reservas no pagadas');
+                    }
+                    return response.json();
+                })
+                .then(() => {
+                    location.reload(); // Recargar la página para actualizar el estado de la reserva
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
+    }, 1000);
+}
+
+function openPagoModal(reservaId) {
     const modalTemplate = `
         <div class="modal fade" id="pagoModal" tabindex="-1" aria-labelledby="pagoModalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -83,8 +122,9 @@
                 Swal.fire('Error', error.message, 'error');
             });
     });
-}
 
+    startPaymentTimer(reservaId); // Iniciar el temporizador
+}
 function loadMetodosDePago(selector) {
     fetch('/Pagos/ListarMetodosDePago')
         .then(response => response.json())

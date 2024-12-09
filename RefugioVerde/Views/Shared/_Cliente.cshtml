@@ -68,6 +68,7 @@ else
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#miPerfilModal">Mi perfil</a></li>
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#misReservasModal">Mis Reservas</a></li>
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#historialPagosModal">Historial de Pagos</a></li>
+                                                <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#pagosPendientesModal">Pagos Pendientes</a></li>
                                             </ul>
                                         </li>
                                         <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#encuestaModalLabel">Cuentanos tu experiencia</a></li>
@@ -75,6 +76,10 @@ else
                                     </ul>
                                     <div class="menu-btn">
                                         <a asp-controller="Home" asp-action="CerrarSesion" class="btn palatin-btn">Cerrar Sesion</a>
+                                    </div>
+                                    <!-- Contenedor para el cronómetro -->
+                                    <div id="payment-timer" class="alert alert-warning text-center" style="display: none;">
+                                        Tiempo restante para realizar el pago: <span id="timer"></span>
                                     </div>
                                 </div>
                                 <!-- Nav End -->
@@ -225,6 +230,21 @@ else
                     </div>
                     <div class="modal-body">
                         <iframe src="@Url.Action("ListarPagosClientes", "Pagos")" width="100%" height="700px" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Pagos Pendientes -->
+        <div class="modal fade" id="pagosPendientesModal" tabindex="-1" aria-labelledby="pagosPendientesModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="pagosPendientesModalLabel">Pagos Pendientes</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe src="@Url.Action("PagosPendientes", "Pagos")" width="100%" height="700px" frameborder="0"></iframe>
                     </div>
                 </div>
             </div>
