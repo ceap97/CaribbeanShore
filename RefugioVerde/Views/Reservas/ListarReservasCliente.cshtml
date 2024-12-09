@@ -71,9 +71,12 @@
                 <td>@reserva.Confirmacion</td>
 
                 <td>
-                    <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Editar</button>
-                    <button class="btn btn-secondary" onclick="cancelarReserva(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Cancelar</button>
-                    <button class="btn btn-success" onclick="openPagoModal(@reserva.ReservaId)" @(reserva.EstadoReserva == "Cancelada" ? "disabled" : "")>Pagar</button>
+                    @if (reserva.EstadoReserva != "Confirmada" && reserva.EstadoReserva != "Cancelada")
+                    {
+                        <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)">Editar</button>
+                        <button class="btn btn-secondary" onclick="cancelarReserva(@reserva.ReservaId)">Cancelar</button>
+                        <button class="btn btn-success" onclick="openPagoModal(@reserva.ReservaId)">Pagar</button>
+                    }
                 </td>
             </tr>
         }
