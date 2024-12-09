@@ -18,6 +18,23 @@ namespace RefugioVerde.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> VerificarDisponibilidad(int habitacionId, DateTime fechaInicio, DateTime fechaFin)
+        {
+            var reservasExistentes = await _context.Reservas
+                .Where(r => r.HabitacionId == habitacionId &&
+                            ((fechaInicio >= r.FechaInicio && fechaInicio < r.FechaFin) ||
+                             (fechaFin > r.FechaInicio && fechaFin <= r.FechaFin) ||
+                             (fechaInicio <= r.FechaInicio && fechaFin >= r.FechaFin)))
+                .ToListAsync();
+
+            if (reservasExistentes.Any())
+            {
+                return Json(new { disponible = false });
+            }
+
+            return Json(new { disponible = true });
+        }
 
         [HttpPost]
         public async Task<IActionResult> CambiarEstadoReserva(int reservaId, string nuevoEstado)
@@ -185,6 +202,19 @@ namespace RefugioVerde.Controllers
                 ModelState.AddModelError("FechaFin", "La fecha de fin debe ser mayor que la fecha de inicio.");
             }
 
+            // Verificar disponibilidad de la habitación
+            var reservasExistentes = await _context.Reservas
+                .Where(r => r.HabitacionId == reserva.HabitacionId &&
+                            ((reserva.FechaInicio >= r.FechaInicio && reserva.FechaInicio < r.FechaFin) ||
+                             (reserva.FechaFin > r.FechaInicio && reserva.FechaFin <= r.FechaFin) ||
+                             (reserva.FechaInicio <= r.FechaInicio && reserva.FechaFin >= r.FechaFin)))
+                .ToListAsync();
+
+            if (reservasExistentes.Any())
+            {
+                ModelState.AddModelError("FechaInicio", "La habitación no está disponible en las fechas seleccionadas.");
+            }
+
             if (ModelState.IsValid)
             {
                 reserva.Comodidades = new List<Comodidad>();
@@ -226,6 +256,7 @@ namespace RefugioVerde.Controllers
             }
             return BadRequest(ModelState);
         }
+
 
         // POST: /Reservas/Editar
         [HttpPost]

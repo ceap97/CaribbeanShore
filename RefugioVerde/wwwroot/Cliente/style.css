@@ -92,6 +92,9 @@ img {
   height: auto;
   max-width: 100%; }
 
+
+
+
 /* :: 3.1.0 Spacing */
 .mt-15 {
   margin-top: 15px !important; }
@@ -1554,6 +1557,10 @@ img {
   .palatin-tabs-content .tab-content h6 {
     font-size: 18px; }
 
+.occupied-date {
+    background-color: red !important;
+    color: white !important;
+}
 /* ====== The End ====== */
 
 /*# sourceMappingURL=style.css.map */

@@ -16,6 +16,7 @@ else
     <html lang="en">
 
     <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <meta charset="UTF-8">
         <meta name="description" content="">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -60,15 +61,11 @@ else
                                     <ul id="nav-links">
                                         <li><a href="/Cliente">Inicio</a></li>
                                         <li>
-                                            <a href="#">Reservar</a>
-                                        </li>
-                                        <li>
                                             <a href="#">Perfil</a>
                                             <ul class="dropdown">
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#miPerfilModal">Mi perfil</a></li>
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#misReservasModal">Mis Reservas</a></li>
                                                 <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#historialPagosModal">Historial de Pagos</a></li>
-                                                <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#pagosPendientesModal">Pagos Pendientes</a></li>
                                             </ul>
                                         </li>
                                         <li> <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#encuestaModalLabel">Cuentanos tu experiencia</a></li>
@@ -175,6 +172,8 @@ else
         <script src="~/Home/js/active.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
         <script src="~/Cliente/VistasCliente/Reservar.js"></script>
         @await RenderSectionAsync("Scripts", required: false)
 

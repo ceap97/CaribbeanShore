@@ -4,28 +4,30 @@
     <div class="container-fluid">
 
         <div class="row justify-content-center">
-            @foreach (var habitacion in Model)
-            {
-                <!-- Single Rooms Area -->
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="single-rooms-area wow fadeInUp" data-wow-delay="100ms">
-                        <!-- Thumbnail -->
-                        <img src="@habitacion.Imagen" alt="Imagen de @habitacion.NombreHabitacion" class="bg-thumbnail bg-img" style="background-image: src(@habitacion.Imagen)" />
-                        <!-- Price -->
-                        <p class="price-from">Precio: $@habitacion.Precio</p>
-                        <!-- Rooms Text -->
-                        <div class="rooms-text">
-                            <p> @habitacion.EstadoHabitacion.Nombre</p>
-                            <div class="line"></div>
-                            <h4>@habitacion.NombreHabitacion</h4>
-                            <p>Descripcion: @habitacion.Tipo</p>
-                            <p>Capacidad: @habitacion.Capacidad personas</p> <!-- Nuevo campo para Capacidad -->
+            <div class="services-container" style="overflow-x: auto; white-space: nowrap;">
+                @foreach (var habitacion in Model)
+                {
+                    <!-- Single Rooms Area -->
+                    <div class="col-12 col-md-6 col-lg-4 d-inline-block" style="float: none;">
+                        <div class="single-rooms-area wow fadeInUp" data-wow-delay="100ms">
+                            <!-- Thumbnail -->
+                            <img src="@habitacion.Imagen" alt="Imagen de @habitacion.NombreHabitacion" class="bg-thumbnail bg-img" style="background-image: src(@habitacion.Imagen)" />
+                            <!-- Price -->
+                            <p class="price-from">Precio: $@habitacion.Precio</p>
+                            <!-- Rooms Text -->
+                            <div class="rooms-text">
+                                <p> @habitacion.EstadoHabitacion.Nombre</p>
+                                <div class="line"></div>
+                                <h4>@habitacion.NombreHabitacion</h4>
+                                <p>Descripcion: @habitacion.Tipo</p>
+                                <p>Capacidad: @habitacion.Capacidad personas</p> <!-- Nuevo campo para Capacidad -->
+                            </div>
+                            <!-- Book Room -->
+                            <a href="#" class="book-room-btn btn palatin-btn" onclick="openCreateModal()">Reservar</a>
                         </div>
-                        <!-- Book Room -->
-                        <a href="#" class="book-room-btn btn palatin-btn" onclick="openCreateModal()">Reservar</a>
                     </div>
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
 </section>

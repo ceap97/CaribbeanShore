@@ -44,11 +44,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                                <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                                <input type="text" class="form-control" id="fechaInicio" name="fechaInicio" required>
                             </div>
                             <div class="mb-3">
                                 <label for="fechaFin" class="form-label">Fecha Fin</label>
-                                <input type="date" class="form-control" id="fechaFin" name="fechaFin" required>
+                                <input type="text" class="form-control" id="fechaFin" name="fechaFin" required>
                             </div>
                             <div class="mb-3">
                                 <label for="montoTotal" class="form-label">Monto Total</label>
@@ -69,9 +69,20 @@
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('fechaReserva').value = today;
 
-    // Establecer el valor mínimo para las fechas de inicio y fin
-    document.getElementById('fechaInicio').setAttribute('min', today);
-    document.getElementById('fechaFin').setAttribute('min', today);
+    // Inicializar flatpickr para los campos de fecha
+    flatpickr("#fechaInicio", {
+        minDate: today,
+        onOpen: function (selectedDates, dateStr, instance) {
+            markUnavailableDates(document.getElementById('habitacionId').value, instance);
+        }
+    });
+
+    flatpickr("#fechaFin", {
+        minDate: today,
+        onOpen: function (selectedDates, dateStr, instance) {
+            markUnavailableDates(document.getElementById('habitacionId').value, instance);
+        }
+    });
 
     // Cargar datos y establecer valores por defecto
     loadClientes().then(() => {
@@ -130,7 +141,7 @@
     });
 
     // Agregar eventos para calcular el total y validar fechas
-    document.getElementById('habitacionId').addEventListener('change', calculateTotal);
+    document.getElementById('habitacionId').addEventListener('change', validateDates);
     document.getElementById('comodidades').addEventListener('change', calculateTotal);
     document.getElementById('servicios').addEventListener('change', calculateTotal);
     document.getElementById('fechaInicio').addEventListener('change', validateDates);
@@ -171,15 +182,54 @@ function calculateTotal() {
 function validateDates() {
     const fechaInicio = new Date(document.getElementById('fechaInicio').value);
     const fechaFin = new Date(document.getElementById('fechaFin').value);
+    const habitacionId = document.getElementById('habitacionId').value;
     const guardarBtn = document.getElementById('guardarBtn');
 
     if (fechaFin <= fechaInicio) {
         Swal.fire('Error', 'La fecha de fin debe ser mayor que la fecha de inicio.', 'error');
         guardarBtn.disabled = true;
+        return;
+    }
+
+    if (habitacionId) {
+        fetch(`/Reservas/VerificarDisponibilidad?habitacionId=${habitacionId}&fechaInicio=${fechaInicio.toISOString()}&fechaFin=${fechaFin.toISOString()}`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.disponible) {
+                    Swal.fire('Error', 'La habitación no está disponible en las fechas seleccionadas.', 'error');
+                    document.getElementById('fechaInicio').classList.add('is-invalid');
+                    document.getElementById('fechaFin').classList.add('is-invalid');
+                    guardarBtn.disabled = true;
+                } else {
+                    document.getElementById('fechaInicio').classList.remove('is-invalid');
+                    document.getElementById('fechaFin').classList.remove('is-invalid');
+                    guardarBtn.disabled = false;
+                    calculateTotal();
+                }
+            });
     } else {
         guardarBtn.disabled = false;
         calculateTotal();
     }
+}
+
+function markUnavailableDates(habitacionId, instance) {
+    fetch(`/Reservas/ObtenerFechasOcupadas?habitacionId=${habitacionId}`)
+        .then(response => response.json())
+        .then(data => {
+            const fechasOcupadas = data.fechasOcupadas.map(fecha => new Date(fecha));
+
+            instance.set('disable', fechasOcupadas);
+
+            // Marcar las fechas ocupadas en rojo
+            instance.redraw();
+            instance.calendarContainer.querySelectorAll('.flatpickr-day').forEach(dayElem => {
+                const date = dayElem.dateObj;
+                if (fechasOcupadas.some(fecha => fecha.toDateString() === date.toDateString())) {
+                    dayElem.classList.add('occupied-date');
+                }
+            });
+        });
 }
 
 function loadHabitaciones() {
@@ -197,7 +247,9 @@ function loadHabitaciones() {
             document.getElementById('habitacionId').addEventListener('change', function () {
                 const selectedOption = this.options[this.selectedIndex];
                 document.getElementById('precioHabitacion').value = selectedOption.getAttribute('data-precio');
-                calculateTotal();
+                validateDates();
+                markUnavailableDates(this.value, flatpickr("#fechaInicio"));
+                markUnavailableDates(this.value, flatpickr("#fechaFin"));
             });
         });
 }
@@ -267,4 +319,3 @@ function loadEstadosReserva() {
             });
         });
 }
-
