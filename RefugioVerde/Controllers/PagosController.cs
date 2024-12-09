@@ -19,6 +19,7 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
         [HttpPost]
         public async Task<IActionResult> CambiarEstado([FromBody] CambioEstadoPagoRequest request)
         {
@@ -39,16 +40,16 @@ namespace RefugioVerde.Controllers
                 pago.EstadoPagoId = request.EstadoPagoId;
                 await _context.SaveChangesAsync();
 
-                // Si el estado del pago es "Aprobado", cambiar el estado de la reserva a "Confirmado"
+                // Si el estado del pago es "Aprobado", cambiar el estado de la reserva a "Confirmada"
                 if (estadoPago.Nombre == "Aprobado")
                 {
                     var reserva = await _context.Reservas.FindAsync(pago.ReservaId);
                     if (reserva != null)
                     {
-                        var estadoConfirmado = await _context.EstadoReservas.FirstOrDefaultAsync(e => e.Nombre == "Confirmado");
-                        if (estadoConfirmado != null)
+                        var estadoConfirmada = await _context.EstadoReservas.FirstOrDefaultAsync(e => e.Nombre == "Confirmada");
+                        if (estadoConfirmada != null)
                         {
-                            reserva.EstadoReservaId = estadoConfirmado.EstadoReservaId;
+                            reserva.EstadoReservaId = estadoConfirmada.EstadoReservaId;
                             await _context.SaveChangesAsync();
                         }
                     }
@@ -64,8 +65,89 @@ namespace RefugioVerde.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
+        {
+            // Validar archivo
+            if (comprobante == null || comprobante.Length == 0)
+            {
+                ModelState.AddModelError("Comprobante", "El comprobante es requerido");
+                return BadRequest(new { errors = new[] { "El comprobante es requerido" } });
+            }
 
+            // Validar tipo de archivo
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+            var extension = Path.GetExtension(comprobante.FileName).ToLowerInvariant();
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("Comprobante", "Solo se permiten archivos JPG, JPEG o PNG");
+                return BadRequest(new { errors = new[] { "Formato de archivo no válido" } });
+            }
 
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    var fileName = $"{Guid.NewGuid()}{extension}";
+                    var filePath = Path.Combine(_uploadPath, fileName);
+
+                    if (!Directory.Exists(_uploadPath))
+                    {
+                        Directory.CreateDirectory(_uploadPath);
+                    }
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await comprobante.CopyToAsync(stream);
+                    }
+
+                    pago.Comprobante = fileName;
+
+                    // Establecer el estado de pago a "En revisión"
+                    var estadoEnRevision = await _context.EstadoPagos.FirstOrDefaultAsync(e => e.Nombre == "En revisión");
+                    if (estadoEnRevision == null)
+                    {
+                        return BadRequest(new { errors = new[] { "Estado de pago 'En revisión' no encontrado" } });
+                    }
+                    pago.EstadoPagoId = estadoEnRevision.EstadoPagoId;
+
+                    _context.Pagos.Add(pago);
+                    await _context.SaveChangesAsync();
+
+                    // Si el estado del pago es "Aprobado", cambiar el estado de la reserva a "Confirmada"
+                    if (estadoEnRevision.Nombre == "Aprobado")
+                    {
+                        var reserva = await _context.Reservas.FindAsync(pago.ReservaId);
+                        if (reserva != null)
+                        {
+                            var estadoConfirmada = await _context.EstadoReservas.FirstOrDefaultAsync(e => e.Nombre == "Confirmada");
+                            if (estadoConfirmada != null)
+                            {
+                                reserva.EstadoReservaId = estadoConfirmada.EstadoReservaId;
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+
+                    return Ok(new { message = "Pago creado exitosamente" });
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Log the error (uncomment ex variable name and write a log.)
+                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.InnerException?.Message } });
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.Message } });
+                }
+            }
+
+            var errors = ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            return BadRequest(new { errors });
+        }
 
         public async Task<IActionResult> Index()
         {
@@ -90,75 +172,6 @@ namespace RefugioVerde.Controllers
             }
             return Json(pago);
         }
-
-       [HttpPost]
-public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFile comprobante)
-{
-    // Validar archivo
-    if (comprobante == null || comprobante.Length == 0)
-    {
-        ModelState.AddModelError("Comprobante", "El comprobante es requerido");
-        return BadRequest(new { errors = new[] { "El comprobante es requerido" } });
-    }
-
-    // Validar tipo de archivo
-    var allowedExtensions = new[] { ".jpg", ".jpeg", ".png" };
-    var extension = Path.GetExtension(comprobante.FileName).ToLowerInvariant();
-    if (!allowedExtensions.Contains(extension))
-    {
-        ModelState.AddModelError("Comprobante", "Solo se permiten archivos JPG, JPEG o PNG");
-        return BadRequest(new { errors = new[] { "Formato de archivo no válido" } });
-    }
-
-    if (ModelState.IsValid)
-    {
-        try
-        {
-            var fileName = $"{Guid.NewGuid()}{extension}";
-            var filePath = Path.Combine(_uploadPath, fileName);
-
-            if (!Directory.Exists(_uploadPath))
-            {
-                Directory.CreateDirectory(_uploadPath);
-            }
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await comprobante.CopyToAsync(stream);
-            }
-
-            pago.Comprobante = fileName;
-
-            // Establecer el estado de pago a "En revisión"
-            var estadoEnRevision = await _context.EstadoPagos.FirstOrDefaultAsync(e => e.Nombre == "En revisión");
-            if (estadoEnRevision == null)
-            {
-                return BadRequest(new { errors = new[] { "Estado de pago 'En revisión' no encontrado" } });
-            }
-            pago.EstadoPagoId = estadoEnRevision.EstadoPagoId;
-
-            _context.Pagos.Add(pago);
-            await _context.SaveChangesAsync();
-            return Ok(new { message = "Pago creado exitosamente" });
-        }
-        catch (DbUpdateException ex)
-        {
-            // Log the error (uncomment ex variable name and write a log.)
-            return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.InnerException?.Message } });
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { errors = new[] { "Error al procesar el pago: " + ex.Message } });
-        }
-    }
-
-    var errors = ModelState.Values
-        .SelectMany(v => v.Errors)
-        .Select(e => e.ErrorMessage)
-        .ToList();
-    return BadRequest(new { errors });
-}
-
 
         [HttpPost]
         public async Task<IActionResult> Editar([FromForm] Pago pago, [FromForm] IFormFile comprobante)
@@ -196,6 +209,23 @@ public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFil
 
                     _context.Pagos.Update(pago);
                     await _context.SaveChangesAsync();
+
+                    // Si el estado del pago es "Aprobado", cambiar el estado de la reserva a "Confirmada"
+                    var estadoPago = await _context.EstadoPagos.FindAsync(pago.EstadoPagoId);
+                    if (estadoPago != null && estadoPago.Nombre == "Aprobado")
+                    {
+                        var reserva = await _context.Reservas.FindAsync(pago.ReservaId);
+                        if (reserva != null)
+                        {
+                            var estadoConfirmada = await _context.EstadoReservas.FirstOrDefaultAsync(e => e.Nombre == "Confirmada");
+                            if (estadoConfirmada != null)
+                            {
+                                reserva.EstadoReservaId = estadoConfirmada.EstadoReservaId;
+                                await _context.SaveChangesAsync();
+                            }
+                        }
+                    }
+
                     return Ok(new { message = "Pago editado exitosamente" });
                 }
                 catch (DbUpdateException ex)
@@ -214,7 +244,6 @@ public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFil
                 .ToList();
             return BadRequest(new { errors });
         }
-
 
         [HttpDelete]
         public async Task<IActionResult> Eliminar(int id)
@@ -242,6 +271,7 @@ public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFil
             var estadosPago = await _context.EstadoPagos.ToListAsync();
             return Json(estadosPago);
         }
+
         [HttpGet]
         public async Task<IActionResult> ListarPagosClientes()
         {
@@ -292,7 +322,5 @@ public async Task<IActionResult> Crear([FromForm] Pago pago, [FromForm] IFormFil
                 return StatusCode(500, "Internal server error");
             }
         }
-
     }
 }
-

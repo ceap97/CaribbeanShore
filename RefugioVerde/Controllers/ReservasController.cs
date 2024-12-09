@@ -17,6 +17,29 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> CambiarEstadoReserva(int reservaId, string nuevoEstado)
+        {
+            var reserva = await _context.Reservas.FindAsync(reservaId);
+            if (reserva == null)
+            {
+                return NotFound(new { message = "Reserva no encontrada" });
+            }
+
+            var estadoReserva = await _context.EstadoReservas.FirstOrDefaultAsync(e => e.Nombre == nuevoEstado);
+            if (estadoReserva == null)
+            {
+                return NotFound(new { message = "Estado de reserva no encontrado" });
+            }
+
+            reserva.EstadoReservaId = estadoReserva.EstadoReservaId;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Estado de la reserva actualizado exitosamente" });
+        }
+    
         [HttpPost]
         public async Task<IActionResult> VerificarReservasNoPagadas()
         {
