@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
@@ -129,7 +130,7 @@ namespace RefugioVerde.Controllers
                         }
                     }
 
-                    return Ok(new { message = "Pago creado exitosamente" });
+                    return Ok(new { message = "Pago creado exitosamente", montoFormateado = pago.MontoFormateado });
                 }
                 catch (DbUpdateException ex)
                 {
@@ -226,7 +227,7 @@ namespace RefugioVerde.Controllers
                         }
                     }
 
-                    return Ok(new { message = "Pago editado exitosamente" });
+                    return Ok(new { message = "Pago editado exitosamente", montoFormateado = pago.MontoFormateado });
                 }
                 catch (DbUpdateException ex)
                 {

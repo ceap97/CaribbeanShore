@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RefugioVerde.Models;
+using System.Globalization;
 
 namespace RefugioVerde.Controllers
 {
@@ -176,22 +177,33 @@ namespace RefugioVerde.Controllers
             return Json(reservas);
         }
 
-        // GET: /Reservas/Obtener/{id}
-        [HttpGet]
+         [HttpGet]
         public async Task<IActionResult> Obtener(int id)
         {
             var reserva = await _context.Reservas
                 .Include(r => r.Cliente)
                 .Include(r => r.Habitacion)
                 .Include(r => r.EstadoReserva)
-                .Include(r => r.Comodidades)
-                .Include(r => r.Servicios)
                 .FirstOrDefaultAsync(r => r.ReservaId == id);
+
             if (reserva == null)
             {
                 return NotFound();
             }
-            return Json(reserva);
+
+            return Json(new
+            {
+                reserva.ReservaId,
+                reserva.FechaReserva,
+                reserva.ClienteId,
+                reserva.HabitacionId,
+                reserva.EstadoReservaId,
+                reserva.FechaInicio,
+                reserva.FechaFin,
+                reserva.MontoTotal,
+                MontoTotalFormateado = reserva.MontoTotalFormateado,
+                reserva.Confirmacion
+            });
         }
 
         [HttpPost]

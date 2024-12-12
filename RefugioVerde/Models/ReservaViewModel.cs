@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace RefugioVerde.Models
 {
@@ -24,6 +25,16 @@ namespace RefugioVerde.Models
 
         public List<string> Servicios { get; internal set; }
         public List<string> Comodidades { get; internal set; }
+
+        
+        public string MontoTotalFormateado => MontoTotal.ToString("N0", new CultureInfo("es-ES"));
+
+        public string PrecioHabitacionFormateado => PrecioHabitacion.ToString("N0", new CultureInfo("es-ES"));
+
+        public string PrecioComodidadFormateado => PrecioComodidad.ToString("N0", new CultureInfo("es-ES"));
+
+        
+        public string PrecioServicioFormateado => PrecioServicio.ToString("N0", new CultureInfo("es-ES"));
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

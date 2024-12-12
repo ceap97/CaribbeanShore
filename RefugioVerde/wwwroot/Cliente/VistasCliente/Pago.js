@@ -151,10 +151,10 @@ function loadMontoTotal(reservaId) {
 
 function adjustMonto() {
     const tipo = document.getElementById('tipo').value;
-    const montoTotal = parseFloat(document.getElementById('monto').value);
+    const montoTotalFormateado = parseFloat(document.getElementById('monto').value);
     if (tipo === 'abono') {
-        document.getElementById('monto').value = (montoTotal / 2).toFixed(2);
+        document.getElementById('monto').value = (montoTotalFormateado / 2).toString("N0", new cultureInfo("es-ES"));
     } else {
-        document.getElementById('monto').value = montoTotal.toFixed(2);
+        document.getElementById('monto').value = montoTotalFormateado.toString("N0", new CultureInfo("es-ES"));
     }
 }

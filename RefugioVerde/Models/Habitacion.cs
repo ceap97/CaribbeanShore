@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models;
@@ -40,4 +41,6 @@ public partial class Habitacion
     [JsonIgnore]
     public virtual ICollection<Reserva> Reservas { get; set; } = new List<Reserva>();
     public virtual ICollection<EncuestaSatisfaccion> EncuestasSatisfaccion { get; set; }
+    [JsonIgnore]
+    public string PrecioFormateado => Precio.ToString("N0", new CultureInfo("es-ES"));
 }

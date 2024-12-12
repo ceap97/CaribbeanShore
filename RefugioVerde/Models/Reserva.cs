@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models
@@ -37,5 +38,17 @@ namespace RefugioVerde.Models
 
         [NotMapped]
         public List<int> ServiciosSeleccionados { get; set; } = new List<int>();
+
+        [JsonIgnore]
+        public string MontoTotalFormateado => MontoTotal.ToString("N0", new CultureInfo("es-ES"));
+
+        [JsonIgnore]
+        public string PrecioHabitacionFormateado => (Habitacion?.Precio ?? 0).ToString("N0", new CultureInfo("es-ES"));
+
+        [JsonIgnore]
+        public string PrecioComodidadFormateado => Comodidades.Sum(c => c.Precio).ToString("N0", new CultureInfo("es-ES"));
+
+        [JsonIgnore]
+        public string PrecioServicioFormateado => Servicios.Sum(s => s.Precio).ToString("N0", new CultureInfo("es-ES"));
     }
 }

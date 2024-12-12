@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,9 +19,14 @@ namespace RefugioVerde.Controllers
         {
             _context = context;
         }
+
         public async Task<IActionResult> Catalogo()
         {
             var habitaciones = await _context.Habitacions.Include(h => h.EstadoHabitacion).ToListAsync();
+            foreach (var habitacion in habitaciones)
+            {
+                habitacion.Precio = decimal.Parse(habitacion.Precio.ToString("N0", new CultureInfo("es-ES")));
+            }
             return View(habitaciones);
         }
 
@@ -28,6 +34,10 @@ namespace RefugioVerde.Controllers
         public async Task<IActionResult> Index()
         {
             var habitaciones = await _context.Habitacions.Include(h => h.EstadoHabitacion).ToListAsync();
+            foreach (var habitacion in habitaciones)
+            {
+                habitacion.Precio = decimal.Parse(habitacion.Precio.ToString("N0", new CultureInfo("es-ES")));
+            }
             return View(habitaciones);
         }
 
@@ -36,6 +46,10 @@ namespace RefugioVerde.Controllers
         public async Task<IActionResult> Listar()
         {
             var habitaciones = await _context.Habitacions.Include(h => h.EstadoHabitacion).ToListAsync();
+            foreach (var habitacion in habitaciones)
+            {
+                habitacion.Precio = decimal.Parse(habitacion.Precio.ToString("N0", new CultureInfo("es-ES")));
+            }
             return Json(habitaciones);
         }
 
@@ -48,6 +62,7 @@ namespace RefugioVerde.Controllers
             {
                 return NotFound();
             }
+            habitacion.Precio = decimal.Parse(habitacion.Precio.ToString("N0", new CultureInfo("es-ES")));
             return Json(habitacion);
         }
 

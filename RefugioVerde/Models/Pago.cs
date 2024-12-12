@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 namespace RefugioVerde.Models;
@@ -10,7 +11,6 @@ public partial class Pago
     public int IdPago { get; set; }
 
     [Required(ErrorMessage = "El monto es obligatorio.")]
-    [Range(0.01, double.MaxValue, ErrorMessage = "El monto debe ser un valor positivo.")]
     public decimal Monto { get; set; }
 
     [Required(ErrorMessage = "El método de pago es obligatorio")]
@@ -38,5 +38,7 @@ public partial class Pago
 
     [JsonIgnore]
     public virtual Reserva Reserva { get; set; }
+    [JsonIgnore]
+    public string MontoFormateado => Monto.ToString("N0", new CultureInfo("es-ES"));
 }
 

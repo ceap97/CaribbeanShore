@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace RefugioVerde.Models
 {
@@ -15,6 +16,9 @@ namespace RefugioVerde.Models
         public string EstadoPagoNombre { get; set; }
         public string MetodoDePagoNombre { get; set; }
         public string ReservaConfirmacion { get; set; }
+
+
+        public string MontoFormateado => Monto.ToString("N0", new CultureInfo("es-ES"));
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
         {

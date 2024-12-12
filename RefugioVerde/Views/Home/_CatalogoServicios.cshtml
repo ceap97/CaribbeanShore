@@ -23,10 +23,9 @@
                             <!-- Thumbnail -->
                             <img src="@servicio.Imagen" alt="Imagen de @servicio.Nombre" class="bg-thumbnail bg-img" style="background-image: url('@servicio.Imagen')" />
                             <!-- Price -->
-@*                             <p class="price-from">Precio: $@servicio.Precio</p>
- *@                            <!-- Rooms Text -->
+                            <p class="price-from">Precio: @servicio.PrecioFormateado</p>
+                            <!-- Rooms Text -->
                             <div class="rooms-text">
-                                <p class="price-from">Precio: $@servicio.Precio</p>
                                 <div class="line"></div>
                                 <h4>@servicio.Nombre</h4>
                                 <p>Descripcion: @servicio.Descripcion</p>
