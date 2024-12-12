@@ -177,13 +177,15 @@ namespace RefugioVerde.Controllers
             return Json(reservas);
         }
 
-         [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Obtener(int id)
         {
             var reserva = await _context.Reservas
                 .Include(r => r.Cliente)
                 .Include(r => r.Habitacion)
                 .Include(r => r.EstadoReserva)
+                .Include(r => r.Comodidades)
+                .Include(r => r.Servicios)
                 .FirstOrDefaultAsync(r => r.ReservaId == id);
 
             if (reserva == null)
@@ -195,9 +197,11 @@ namespace RefugioVerde.Controllers
             {
                 reserva.ReservaId,
                 reserva.FechaReserva,
-                reserva.ClienteId,
-                reserva.HabitacionId,
-                reserva.EstadoReservaId,
+                ClienteNombre = reserva.Cliente.Nombre,
+                HabitacionNombre = reserva.Habitacion.NombreHabitacion,
+                EstadoReservaNombre = reserva.EstadoReserva.Nombre,
+                Servicios = reserva.Servicios.Select(s => s.Nombre).ToList(),
+                Comodidades = reserva.Comodidades.Select(c => c.Nombre).ToList(),
                 reserva.FechaInicio,
                 reserva.FechaFin,
                 reserva.MontoTotal,
@@ -205,6 +209,9 @@ namespace RefugioVerde.Controllers
                 reserva.Confirmacion
             });
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Crear([FromForm] Reserva reserva)

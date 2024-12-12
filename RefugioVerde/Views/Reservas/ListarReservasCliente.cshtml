@@ -10,6 +10,8 @@
     <link href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
 </head>
 <h2>Historial de reservas</h2>
 
@@ -17,11 +19,6 @@
     <thead>
         <tr>
             <th>Fecha de Reserva</th>
-            <th>Fecha de Inicio</th>
-            <th>Fecha de Fin</th>
-            <th>Habitación</th>
-            <th>Comodidades</th>
-            <th>Servicios</th>
             <th>Estado de Reserva</th>
             <th>Monto Total</th>
             <th>Confirmación</th>
@@ -33,39 +30,6 @@
         {
             <tr id="reserva-@reserva.ReservaId" class="@((reserva.EstadoReserva == "Cancelada") ? "table-secondary" : "")">
                 <td>@reserva.FechaReserva.ToString("dd/MM/yyyy")</td>
-                <td>@reserva.FechaInicio.ToString("dd/MM/yyyy")</td>
-                <td>@reserva.FechaFin.ToString("dd/MM/yyyy")</td>
-                <td>@reserva.Habitacion</td>
-                <td>
-                    @if (reserva.Comodidades != null && reserva.Comodidades.Any())
-                    {
-                        <ul>
-                            @foreach (var comodidad in reserva.Comodidades)
-                            {
-                                <li>@comodidad</li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <span>No seleccionadas</span>
-                    }
-                </td>
-                <td>
-                    @if (reserva.Servicios != null && reserva.Servicios.Any())
-                    {
-                        <ul>
-                            @foreach (var servicio in reserva.Servicios)
-                            {
-                                <li>@servicio</li>
-                            }
-                        </ul>
-                    }
-                    else
-                    {
-                        <span>No seleccionados</span>
-                    }
-                </td>
                 <td id="estado-@reserva.ReservaId">@reserva.EstadoReserva</td>
                 <td>@reserva.MontoTotalFormateado</td>
                 <td>@reserva.Confirmacion</td>
@@ -73,15 +37,45 @@
                 <td>
                     @if (reserva.EstadoReserva != "Confirmada" && reserva.EstadoReserva != "Cancelada")
                     {
-                        <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)">Editar</button>
-                        <button class="btn btn-secondary" onclick="cancelarReserva(@reserva.ReservaId)">Cancelar</button>
-                        <button class="btn btn-success" onclick="openPagoModal(@reserva.ReservaId)">Pagar</button>
+                        <button class="btn btn-warning" onclick="openEditReservaModal(@reserva.ReservaId)">
+                            <i class="fas fa-edit"></i> 
+                        </button>
+                        <button class="btn btn-secondary" onclick="cancelarReserva(@reserva.ReservaId)">
+                            <i class="fas fa-times"></i> 
+                        </button>
+                        <button class="btn btn-success" onclick="openPagoModal(@reserva.ReservaId)">
+                            <i class="fas fa-dollar-sign"></i> 
+                        </button>
                     }
+                    <button class="btn btn-info" onclick="openDetalleModal(@reserva.ReservaId)">
+                        <i class="fas fa-info-circle"></i> 
+                    </button>
                 </td>
+
             </tr>
         }
     </tbody>
 </table>
+
+<!-- Modal para ver detalles de la reserva -->
+<div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detalleModalLabel">Detalles de la Reserva</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="detalleContenido">
+                    <!-- Aquí se cargarán los detalles de la reserva -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
@@ -95,7 +89,37 @@
     $(document).ready(function() {
         $('#reservasTable').DataTable();
     });
+
+    function openDetalleModal(reservaId) {
+        $.ajax({
+            url: '@Url.Action("Obtener", "Reservas")/' + reservaId,
+            type: 'GET',
+            success: function(data) {
+                var servicios = data.servicios.join(', ');
+                var comodidades = data.comodidades.join(', ');
+
+                var contenido = `
+                    <p><strong>Fecha de Reserva:</strong> ${new Date(data.fechaReserva).toLocaleDateString()}</p>
+                    <p><strong>Cliente:</strong> ${data.clienteNombre}</p>
+                    <p><strong>Habitación:</strong> ${data.habitacionNombre}</p>
+                    <p><strong>Estado de Reserva:</strong> ${data.estadoReservaNombre}</p>
+                    <p><strong>Servicios:</strong> ${servicios}</p>
+                    <p><strong>Comodidades:</strong> ${comodidades}</p>
+                    <p><strong>Fecha de Inicio:</strong> ${new Date(data.fechaInicio).toLocaleDateString()}</p>
+                    <p><strong>Fecha de Fin:</strong> ${new Date(data.fechaFin).toLocaleDateString()}</p>
+                    <p><strong>Monto Total:</strong> ${data.montoTotalFormateado}</p>
+                    <p><strong>Confirmación:</strong> ${data.confirmacion}</p>
+                `;
+                $('#detalleContenido').html(contenido);
+                $('#detalleModal').modal('show');
+            },
+            error: function() {
+                alert('Error al obtener los detalles de la reserva.');
+            }
+        });
+    }
 </script>
 <script>
     var cancelarReservaUrl = '@Url.Action("CancelarReserva", "Reservas")';
 </script>
+

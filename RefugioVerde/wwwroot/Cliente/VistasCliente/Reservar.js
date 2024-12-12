@@ -12,13 +12,21 @@
                             <input type="hidden" id="clienteId" name="clienteId" required>
                             <input type="hidden" id="estadoReservaId" name="estadoReservaId" required>
                             <div class="mb-3">
-                                <label for="habitacionId" class="form-label">Habitación</label>
+                                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                                <input type="text" class="form-control" id="fechaInicio" name="fechaInicio" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fechaFin" class="form-label">Fecha Fin</label>
+                                <input type="text" class="form-control" id="fechaFin" name="fechaFin" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="habitacionId" class="form-label">Cabañas</label>
                                 <select class="form-select" id="habitacionId" name="habitacionId" required>
                                     <!-- Opciones de habitaciones se cargarán aquí -->
                                 </select>
                                 <input type="hidden" id="precioHabitacion" name="precioHabitacion">
                                 <div class="mt-2">
-                                    <label for="subtotalHabitacion" class="form-label">Subtotal Habitación</label>
+                                    <label for="subtotalHabitacion" class="form-label">Subtotal Cabaña</label>
                                     <input type="text" class="form-control" id="subtotalHabitacion" name="subtotalHabitacion" readonly>
                                 </div>
                             </div>
@@ -42,14 +50,7 @@
                                     <input type="text" class="form-control" id="subtotalServicios" name="subtotalServicios" readonly>
                                 </div>
                             </div>
-                            <div class="mb-3">
-                                <label for="fechaInicio" class="form-label">Fecha Inicio</label>
-                                <input type="text" class="form-control" id="fechaInicio" name="fechaInicio" required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="fechaFin" class="form-label">Fecha Fin</label>
-                                <input type="text" class="form-control" id="fechaFin" name="fechaFin" required>
-                            </div>
+                            
                             <div class="mb-3">
                                 <label for="montoTotal" class="form-label">Monto Total</label>
                                 <input type="text" class="form-control" id="montoTotal" name="montoTotal" readonly>
@@ -231,14 +232,13 @@ function markUnavailableDates(habitacionId, instance) {
             });
         });
 }
-
 function loadHabitaciones() {
     return fetch('/Habitaciones/Listar') // Asegúrate de que la ruta sea correcta
         .then(response => response.json())
         .then(data => {
             let habitacionSelects = document.querySelectorAll('#habitacionId, #editHabitacionId');
             habitacionSelects.forEach(select => {
-                select.innerHTML = `<option value="">Seleccione una Habitación</option>`;
+                select.innerHTML = `<option value="">Seleccione una Cabaña</option>`;
                 data.forEach(habitacion => {
                     select.innerHTML += `<option value="${habitacion.habitacionId}" data-precio="${habitacion.precio}">${habitacion.nombreHabitacion}</option>`;
                 });

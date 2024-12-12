@@ -6,13 +6,10 @@
             data.forEach(reserva => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${reserva.reservaId}</td>
+                    <td>${reserva.reserva}</td>
                     <td>${new Date(reserva.fechaReserva).toLocaleDateString()}</td>
-                    <td>${reserva.clienteId}</td>
-                    <td>${reserva.habitacionId}</td>
-                    <td>${reserva.comodidadId}</td>
-                    <td>${reserva.servicioId}</td>
-                    <td>${reserva.estadoReservaId}</td>
+                    <td>${reserva.cliente}</td>
+                    <td>${reserva.estadoReserva}</td>
                     <td>${new Date(reserva.fechaInicio).toLocaleDateString()}</td>
                     <td>${new Date(reserva.fechaFin).toLocaleDateString()}</td>
                     <td>${reserva.montoTotal.toFixed(2)}</td>
